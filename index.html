@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KEA Digi Library</title>
+    <link rel="stylesheet" href="keadigi.css" />
+</head>
+<body class="kea-page">
+    <div class="kea-shell">
+        <header class="kea-topbar">
+            <div class="kea-topbar__brand">
+                <p class="kea-eyebrow">KEA Digi Library</p>
+                <h1 class="kea-app-title">Student Applets</h1>
+                <p class="kea-app-subtitle">One place to open the current KEA Digi activities.</p>
+            </div>
+            <div class="kea-topbar__actions">
+                <span class="kea-chip">Static v1 dashboard</span>
+                <span class="kea-chip">3 live applets</span>
+            </div>
+        </header>
+
+        <main class="kea-content">
+            <section class="kea-dashboard">
+                <section class="kea-hero kea-surface">
+                    <h2>Choose an activity and start exploring.</h2>
+                    <p>Quick visual tools for practice, play, and review.</p>
+                </section>
+
+                <section aria-labelledby="library-apps">
+                    <div class="kea-card-grid">
+                        <article class="kea-card kea-surface">
+                            <div class="kea-card__meta">
+                                <span class="kea-chip">Color</span>
+                                <span class="kea-chip">Observation</span>
+                            </div>
+                            <h3 id="library-apps">RGB Color Mixer</h3>
+                            <p>Mix red, green, and blue values to match a target color and improve visual color accuracy.</p>
+                            <a class="kea-card__link" href="ColorMatch.html">Launch RGB Color Mixer</a>
+                        </article>
+
+                        <article class="kea-card kea-surface">
+                            <div class="kea-card__meta">
+                                <span class="kea-chip">Keyboard</span>
+                                <span class="kea-chip">Hardware</span>
+                            </div>
+                            <h3>Interactive Keyboard</h3>
+                            <p>Explore a keyboard layout, reveal labels, and highlight different key groups to learn what each area does.</p>
+                            <a class="kea-card__link" href="Keyboard.html">Launch Interactive Keyboard</a>
+                        </article>
+
+                        <article class="kea-card kea-surface">
+                            <div class="kea-card__meta">
+                                <span class="kea-chip">Shapes</span>
+                                <span class="kea-chip">Matching</span>
+                            </div>
+                            <h3>Tangram Match</h3>
+                            <p>Match draggable shapes to their targets while tracking time and building combo streaks.</p>
+                            <a class="kea-card__link" href="ShapeMatch.html">Launch Tangram Match</a>
+                        </article>
+                    </div>
+                </section>
+
+                <section class="kea-coming-soon kea-surface" aria-labelledby="coming-soon-title">
+                    <h2 id="coming-soon-title" class="kea-section-label">More Activities Coming</h2>
+                    <p>More student tools and activities can be added here later.</p>
+                </section>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

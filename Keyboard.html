@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interactive Keyboard | KEA Digi</title>
+    <link rel="stylesheet" href="keadigi.css" />
+    <style>
+        .keyboard-page {
+            display: grid;
+            gap: var(--kea-space-3);
+        }
+
+        .toolbar {
+            display: grid;
+            gap: var(--kea-space-2);
+            padding: 0.9rem;
+        }
+
+        .toolbar-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--kea-space-2);
+            align-items: center;
+        }
+
+        .toolbar-label {
+            font-family: var(--kea-font-display);
+            font-size: 0.92rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-right: 0.25rem;
+        }
+
+        .toggle-pill {
+            --toggle-color: var(--kea-accent);
+            min-height: 40px;
+            padding: 0.5rem 0.75rem;
+            border: 4px solid var(--kea-border);
+            border-radius: 999px;
+            background: var(--kea-secondary);
+            color: var(--kea-text);
+            font-family: var(--kea-font-display);
+            cursor: pointer;
+            box-shadow: var(--kea-shadow);
+            transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+        }
+
+        .toggle-pill.active {
+            background-color: var(--toggle-color);
+            color: var(--kea-border);
+        }
+
+        .toggle-pill:hover {
+            transform: translateY(-1px);
+        }
+
+        .toggle-pill:active {
+            transform: translateY(4px);
+            box-shadow: var(--kea-shadow-pressed);
+        }
+
+        .toggle-pill:focus-visible,
+        .toolbar input:focus-visible,
+        .key:focus-visible {
+            outline: none;
+            box-shadow: var(--kea-shadow), var(--kea-focus-ring);
+        }
+
+        .toolbar input[type="range"] {
+            width: min(240px, 65vw);
+            margin: 0;
+            appearance: none;
+            height: 44px;
+            border: 4px solid var(--kea-border);
+            border-radius: 999px;
+            background: linear-gradient(90deg, #fff8ee, #29adff);
+        }
+
+        .toolbar input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 22px;
+            height: 44px;
+            border: 4px solid var(--kea-border);
+            border-radius: 999px;
+            background: var(--kea-panel);
+            cursor: pointer;
+        }
+
+        .toolbar input[type="range"]::-moz-range-thumb {
+            width: 22px;
+            height: 44px;
+            border: 4px solid var(--kea-border);
+            border-radius: 999px;
+            background: var(--kea-panel);
+            cursor: pointer;
+        }
+
+        .keyboard-frame {
+            padding: 0.85rem;
+            overflow: auto;
+        }
+
+        .keyboard-container {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            overflow: auto;
+        }
+
+        .keyboard {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            transition: width 0.2s ease;
+            box-sizing: border-box;
+        }
+
+        .row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            max-width: 100%;
+            gap: 8px;
+            height: var(--key-size);
+            margin-bottom: 8px;
+        }
+
+        .key {
+            border: 3px solid var(--kea-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            background-color: rgba(255, 248, 238, 0.94);
+            text-align: center;
+            border-radius: 14px;
+            width: var(--key-size);
+            height: var(--key-size);
+            flex-basis: var(--key-size);
+            box-shadow: 0 4px 0 rgba(17, 17, 17, 0.9);
+            user-select: none;
+        }
+
+        .key:hover {
+            transform: translateY(-1px);
+            border-color: var(--kea-accent-strong);
+        }
+
+        .key.is-pressed {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 rgba(17, 17, 17, 0.9);
+            border-color: var(--kea-accent-strong);
+        }
+
+        .hidden {
+            color: transparent;
+        }
+
+        .highlight-alphanumeric { background-color: #9ed8ff !important; }
+        .highlight-function { background-color: #ffe98e !important; }
+        .highlight-modifier { background-color: #ffc1d7 !important; }
+        .highlight-control { background-color: #ffa1a1 !important; }
+        .highlight-system { background-color: #d8d8da !important; }
+        .highlight-special { background-color: #b6f2b6 !important; }
+
+        @media (max-width: 720px) {
+            .toolbar-group {
+                align-items: stretch;
+            }
+
+            .toolbar input[type="range"] {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body class="kea-page">
+    <div class="kea-shell">
+        <header class="kea-topbar">
+            <div class="kea-topbar__brand">
+                <a class="kea-back-link" href="index.html">Back to KEA Digi</a>
+                <p class="kea-eyebrow">Keyboard and hardware</p>
+                <h1 class="kea-app-title">Interactive Keyboard</h1>
+                <p class="kea-app-subtitle">Press keys on your real keyboard to mirror them here.</p>
+            </div>
+            <div class="kea-topbar__actions">
+                <span class="kea-chip">Click to pin labels</span>
+            </div>
+        </header>
+
+        <main class="kea-content keyboard-page">
+            <section class="toolbar kea-surface" aria-label="Keyboard controls">
+                <div class="toolbar-group">
+                    <span class="toolbar-label">View</span>
+                    <button id="fitToViewBtn" class="toggle-pill active" type="button" onclick="toggleFitToView()">Fit to View</button>
+                    <button id="scaleBtn" class="toggle-pill" type="button" onclick="toggleScale()">Scale</button>
+                    <label class="visually-hidden" for="scaleSlider">Keyboard scale</label>
+                    <input type="range" id="scaleSlider" min="1" max="10" value="5" step="1" oninput="updateKeyboardSize()" disabled />
+                </div>
+
+                <div class="toolbar-group">
+                    <span class="toolbar-label">Highlights</span>
+                    <button class="toggle-pill" data-type="alphanumeric" type="button" onclick="toggleKeyType('alphanumeric')">Alphanumeric</button>
+                    <button class="toggle-pill" data-type="function" type="button" onclick="toggleKeyType('function')">Function</button>
+                    <button class="toggle-pill" data-type="modifier" type="button" onclick="toggleKeyType('modifier')">Modifier</button>
+                    <button class="toggle-pill" data-type="control" type="button" onclick="toggleKeyType('control')">Control</button>
+                    <button class="toggle-pill" data-type="special" type="button" onclick="toggleKeyType('special')">Special</button>
+                </div>
+
+                <div class="toolbar-group">
+                    <span class="toolbar-label">Labels</span>
+                    <button id="showLabelsBtn" class="toggle-pill" type="button" onclick="toggleShowLabels()">Show Labels</button>
+                    <button id="hideLabelsBtn" class="toggle-pill active" type="button" onclick="toggleHideLabels()">Hide Labels</button>
+                </div>
+            </section>
+
+            <section class="keyboard-frame kea-surface">
+                <div class="keyboard-container">
+                    <div class="keyboard" id="keyboard"></div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        let fitToViewActive = true;
+
+        const keyboard = document.getElementById("keyboard");
+        const scaleSlider = document.getElementById("scaleSlider");
+        const physicalKeyMap = new Map();
+
+        const keyData = [
+            [{ label: "Esc", type: "control", size: 2 }, { label: "F1", type: "function", size: 1 }, { label: "F2", type: "function", size: 1 },
+            { label: "F3", type: "function", size: 1 }, { label: "F4", type: "function", size: 1 }, { label: "F5", type: "function", size: 1 },
+            { label: "F6", type: "function", size: 1 }, { label: "F7", type: "function", size: 1 }, { label: "F8", type: "function", size: 1 },
+            { label: "F9", type: "function", size: 1 }, { label: "F10", type: "function", size: 1 }, { label: "F11", type: "function", size: 1 },
+            { label: "F12", type: "function", size: 1 }, { label: "Del", type: "control", size: 1 }],
+
+            [{ label: "`", type: "alphanumeric", size: 1 }, { label: "1", type: "alphanumeric", size: 1 }, { label: "2", type: "alphanumeric", size: 1 },
+            { label: "3", type: "alphanumeric", size: 1 }, { label: "4", type: "alphanumeric", size: 1 }, { label: "5", type: "alphanumeric", size: 1 },
+            { label: "6", type: "alphanumeric", size: 1 }, { label: "7", type: "alphanumeric", size: 1 }, { label: "8", type: "alphanumeric", size: 1 },
+            { label: "9", type: "alphanumeric", size: 1 }, { label: "0", type: "alphanumeric", size: 1 }, { label: "-", type: "alphanumeric", size: 1 },
+            { label: "=", type: "alphanumeric", size: 1 }, { label: "Backspace", type: "control", size: 2 }],
+
+            [{ label: "Tab", type: "control", size: 1.5 }, { label: "Q", type: "alphanumeric", size: 1 }, { label: "W", type: "alphanumeric", size: 1 },
+            { label: "E", type: "alphanumeric", size: 1 }, { label: "R", type: "alphanumeric", size: 1 }, { label: "T", type: "alphanumeric", size: 1 },
+            { label: "Y", type: "alphanumeric", size: 1 }, { label: "U", type: "alphanumeric", size: 1 }, { label: "I", type: "alphanumeric", size: 1 },
+            { label: "O", type: "alphanumeric", size: 1 }, { label: "P", type: "alphanumeric", size: 1 }, { label: "[", type: "alphanumeric", size: 1 },
+            { label: "]", type: "alphanumeric", size: 1 }, { label: "\\", type: "alphanumeric", size: 1.5 }],
+
+            [{ label: "CapsLock", type: "modifier", size: 1.75 }, { label: "A", type: "alphanumeric", size: 1 }, { label: "S", type: "alphanumeric", size: 1 },
+            { label: "D", type: "alphanumeric", size: 1 }, { label: "F", type: "alphanumeric", size: 1 }, { label: "G", type: "alphanumeric", size: 1 },
+            { label: "H", type: "alphanumeric", size: 1 }, { label: "J", type: "alphanumeric", size: 1 }, { label: "K", type: "alphanumeric", size: 1 },
+            { label: "L", type: "alphanumeric", size: 1 }, { label: ";", type: "alphanumeric", size: 1 }, { label: "'", type: "alphanumeric", size: 1 },
+            { label: "Enter", type: "control", size: 2.25 }],
+
+            [{ label: "Shift", type: "modifier", size: 2.25 }, { label: "Z", type: "alphanumeric", size: 1 }, { label: "X", type: "alphanumeric", size: 1 },
+            { label: "C", type: "alphanumeric", size: 1 }, { label: "V", type: "alphanumeric", size: 1 }, { label: "B", type: "alphanumeric", size: 1 },
+            { label: "N", type: "alphanumeric", size: 1 }, { label: "M", type: "alphanumeric", size: 1 }, { label: ",", type: "alphanumeric", size: 1 },
+            { label: ".", type: "alphanumeric", size: 1 }, { label: "/", type: "alphanumeric", size: 1 }, { label: "Shift", type: "modifier", size: 2.75 }],
+
+            [{ label: "Ctrl", type: "modifier", size: 1.25 }, { label: "Win", type: "modifier", size: 1.25 },
+            { label: "Alt", type: "modifier", size: 1.25 }, { label: "Space", type: "special", size: 6.25 },
+            { label: "Alt", type: "modifier", size: 1.25 }, { label: "Fn", type: "modifier", size: 1.25 },
+            { label: "Menu", type: "special", size: 1.25 }, { label: "Ctrl", type: "modifier", size: 1.25 }]
+        ];
+
+        function getAllKeys() {
+            return document.querySelectorAll(".key");
+        }
+
+        function getCodesForKey(label, rowIndex, keyIndex) {
+            if (/^F\d+$/.test(label)) return [label];
+            if (/^[A-Z]$/.test(label)) return ["Key" + label];
+            if (/^\d$/.test(label)) return ["Digit" + label];
+
+            switch (label) {
+                case "Esc": return ["Escape"];
+                case "Del": return ["Delete"];
+                case "`": return ["Backquote"];
+                case "-": return ["Minus"];
+                case "=": return ["Equal"];
+                case "Backspace": return ["Backspace"];
+                case "Tab": return ["Tab"];
+                case "[": return ["BracketLeft"];
+                case "]": return ["BracketRight"];
+                case "\\": return ["Backslash"];
+                case "CapsLock": return ["CapsLock"];
+                case ";": return ["Semicolon"];
+                case "'": return ["Quote"];
+                case "Enter": return ["Enter", "NumpadEnter"];
+                case "Shift": return [keyIndex === 0 ? "ShiftLeft" : "ShiftRight"];
+                case ",": return ["Comma"];
+                case ".": return ["Period"];
+                case "/": return ["Slash"];
+                case "Ctrl": return [keyIndex === 0 ? "ControlLeft" : "ControlRight"];
+                case "Win": return ["MetaLeft"];
+                case "Alt": return [keyIndex < 4 ? "AltLeft" : "AltRight"];
+                case "Space": return ["Space"];
+                case "Fn": return [];
+                case "Menu": return ["ContextMenu"];
+                default: return [];
+            }
+        }
+
+        function createKeyboard() {
+            keyData.forEach((row, rowIndex) => {
+                const rowDiv = document.createElement("div");
+                rowDiv.classList.add("row");
+
+                row.forEach((keyInfo, keyIndex) => {
+                    const keyElement = document.createElement("button");
+                    keyElement.type = "button";
+                    keyElement.classList.add("key", "hidden");
+                    keyElement.textContent = keyInfo.label;
+                    keyElement.dataset.type = keyInfo.type;
+                    keyElement.setAttribute("aria-pressed", "false");
+                    keyElement.setAttribute("aria-label", keyInfo.label + " key");
+
+                    keyElement.addEventListener("click", () => {
+                        keyElement.classList.toggle("hidden");
+                        keyElement.setAttribute("aria-pressed", String(!keyElement.classList.contains("hidden")));
+                        updateLabelPillState();
+                    });
+
+                    const codes = getCodesForKey(keyInfo.label, rowIndex, keyIndex);
+                    if (codes.length) {
+                        keyElement.dataset.codes = codes.join(",");
+                        codes.forEach(code => physicalKeyMap.set(code, keyElement));
+                    }
+
+                    rowDiv.appendChild(keyElement);
+                });
+
+                keyboard.appendChild(rowDiv);
+            });
+
+            updateKeyboardSize();
+        }
+
+        const keyColors = {
+            alphanumeric: "#9ed8ff",
+            function: "#ffe98e",
+            modifier: "#ffc1d7",
+            control: "#ffa1a1",
+            system: "#d8d8da",
+            special: "#b6f2b6"
+        };
+
+        function toggleKeyType(type) {
+            const keys = document.querySelectorAll(`.key[data-type='${type}']`);
+            const button = document.querySelector(`button[data-type='${type}']`);
+            const isActive = Array.from(keys).some(key => key.classList.contains(`highlight-${type}`));
+
+            keys.forEach(key => {
+                if (isActive) {
+                    key.classList.remove(`highlight-${type}`);
+                } else {
+                    key.classList.add(`highlight-${type}`);
+                }
+            });
+
+            if (isActive) {
+                button.classList.remove("active");
+                button.style.backgroundColor = "";
+            } else {
+                button.classList.add("active");
+                button.style.setProperty("--toggle-color", keyColors[type]);
+                button.style.backgroundColor = keyColors[type];
+            }
+        }
+
+        function updateKeyboardSize() {
+            const frame = document.querySelector(".keyboard-frame");
+            const frameWidth = frame ? frame.clientWidth - 24 : window.innerWidth;
+            const scaleValue = fitToViewActive ? window.innerWidth / 1920 * 10 : scaleSlider.value;
+            const keyboardPadding = 16;
+            const keyboardWidth = fitToViewActive ? Math.max(320, frameWidth) : Math.max(320, 1920 * (scaleValue / 10));
+
+            const availableWidth = keyboardWidth - (keyboardPadding * 2);
+            keyboard.style.width = `${keyboardWidth}px`;
+            keyboard.style.padding = `${keyboardPadding}px`;
+
+            const totalUnits = 15;
+            const rowGap = 8;
+            let standardKeySize;
+
+            document.querySelectorAll(".row").forEach((row, rowIndex) => {
+                const numKeys = keyData[rowIndex].length;
+                const totalGapWidth = (numKeys - 1) * rowGap;
+                const baseUnit = (availableWidth - totalGapWidth) / totalUnits;
+                standardKeySize = baseUnit;
+
+                row.childNodes.forEach((key, keyIndex) => {
+                    const keySize = keyData[rowIndex][keyIndex].size || 1;
+                    const keyWidth = baseUnit * keySize;
+
+                    key.style.width = `${keyWidth}px`;
+                    key.style.height = `${standardKeySize}px`;
+                    key.style.flex = `0 0 ${keyWidth}px`;
+                    key.style.fontSize = `${standardKeySize * 0.32}px`;
+                });
+
+                row.style.height = `${standardKeySize}px`;
+                row.style.maxWidth = `${availableWidth}px`;
+            });
+
+            const totalRows = document.querySelectorAll(".row").length;
+            const keyboardHeight = (standardKeySize * totalRows) + (rowGap * (totalRows - 1)) + (keyboardPadding * 2);
+            keyboard.style.height = `${keyboardHeight}px`;
+            document.documentElement.style.setProperty("--key-size", `${standardKeySize}px`);
+        }
+
+        function toggleFitToView() {
+            fitToViewActive = true;
+            document.getElementById("fitToViewBtn").classList.add("active");
+            document.getElementById("scaleBtn").classList.remove("active");
+            document.getElementById("scaleSlider").disabled = true;
+            updateKeyboardSize();
+        }
+
+        function toggleScale() {
+            fitToViewActive = false;
+            document.getElementById("scaleBtn").classList.add("active");
+            document.getElementById("fitToViewBtn").classList.remove("active");
+            scaleSlider.disabled = false;
+            updateKeyboardSize();
+        }
+
+        function toggleShowLabels() {
+            getAllKeys().forEach(key => {
+                key.classList.remove("hidden");
+                key.setAttribute("aria-pressed", "true");
+            });
+            updateLabelPillState();
+        }
+
+        function toggleHideLabels() {
+            getAllKeys().forEach(key => {
+                key.classList.add("hidden");
+                key.setAttribute("aria-pressed", "false");
+            });
+            updateLabelPillState();
+        }
+
+        function updateLabelPillState() {
+            const keys = getAllKeys();
+            const visibleKeys = keys.length - document.querySelectorAll(".key.hidden").length;
+
+            document.getElementById("showLabelsBtn").classList.toggle("active", visibleKeys === keys.length);
+            document.getElementById("hideLabelsBtn").classList.toggle("active", visibleKeys === 0);
+        }
+
+        function pressPhysicalKey(code) {
+            const keyElement = physicalKeyMap.get(code);
+            if (!keyElement) return;
+
+            keyElement.classList.add("is-pressed");
+            if (keyElement.classList.contains("hidden")) {
+                keyElement.dataset.restoreHidden = "true";
+                keyElement.classList.remove("hidden");
+                updateLabelPillState();
+            }
+        }
+
+        function releasePhysicalKey(code) {
+            const keyElement = physicalKeyMap.get(code);
+            if (!keyElement) return;
+
+            keyElement.classList.remove("is-pressed");
+            if (keyElement.dataset.restoreHidden === "true") {
+                keyElement.classList.add("hidden");
+                delete keyElement.dataset.restoreHidden;
+                updateLabelPillState();
+            }
+        }
+
+        window.addEventListener("resize", () => {
+            if (fitToViewActive) {
+                updateKeyboardSize();
+            }
+        });
+
+        window.addEventListener("keydown", (event) => {
+            pressPhysicalKey(event.code);
+        });
+
+        window.addEventListener("keyup", (event) => {
+            releasePhysicalKey(event.code);
+        });
+
+        window.addEventListener("blur", () => {
+            physicalKeyMap.forEach((keyElement) => {
+                keyElement.classList.remove("is-pressed");
+                if (keyElement.dataset.restoreHidden === "true") {
+                    keyElement.classList.add("hidden");
+                    delete keyElement.dataset.restoreHidden;
+                }
+            });
+            updateLabelPillState();
+        });
+
+        window.onload = () => {
+            createKeyboard();
+            toggleFitToView();
+        };
+    </script>
+</body>
+</html>

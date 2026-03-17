@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tangram Match | KEA Digi</title>
+    <link rel="stylesheet" href="keadigi.css" />
+    <style>
+        :root {
+            --tile-size: 110px;
+            --tile-gap: 0.75rem;
+            --tile-columns: 4;
+        }
+
+        body.kea-page.shape-match-page {
+            overflow: hidden;
+        }
+
+        .shape-match-shell {
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .shape-match-main {
+            flex: 1;
+            min-height: 0;
+            display: grid;
+            grid-template-rows: auto 1fr;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            overflow: hidden;
+        }
+
+        .status-bar {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 0.75rem;
+            align-items: center;
+            padding: 0.85rem 1rem;
+        }
+
+        .status-cluster {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            min-height: 38px;
+            padding: 0.35rem 0.65rem;
+            border: 3px solid var(--kea-border);
+            border-radius: 999px;
+            background: rgba(255, 248, 238, 0.96);
+            font-family: var(--kea-font-display);
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .timer {
+            justify-self: center;
+            margin: 0;
+            font-family: var(--kea-font-display);
+            font-size: clamp(1.2rem, 1.9vw, 1.7rem);
+            line-height: 1;
+            transition: transform 0.18s ease;
+        }
+
+        .timer.pulse {
+            transform: scale(1.06);
+        }
+
+        .combo-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            justify-self: end;
+            min-width: 0;
+        }
+
+        .combo-bar {
+            width: min(220px, 26vw);
+            max-width: 220px;
+            min-width: 110px;
+            height: 20px;
+            background: rgba(194, 195, 199, 0.65);
+            border: 3px solid var(--kea-border);
+            border-radius: 999px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .combo-fill {
+            position: absolute;
+            inset: 0 auto 0 0;
+            width: 0%;
+            background: linear-gradient(90deg, #00e436, #8dffb4);
+            transition: width 0.1s linear;
+        }
+
+        .combo-count {
+            min-width: 88px;
+            font-family: var(--kea-font-display);
+            font-size: 0.84rem;
+            text-transform: uppercase;
+        }
+
+        .play-area {
+            min-height: 0;
+            display: grid;
+            grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+            gap: 0.75rem;
+        }
+
+        .zone {
+            min-height: 0;
+            display: grid;
+            grid-template-rows: auto 1fr;
+            gap: 0.45rem;
+            padding: 0.7rem;
+            overflow: hidden;
+        }
+
+        .zone-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .label {
+            margin: 0;
+            font-family: var(--kea-font-display);
+            font-size: 0.95rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .zone-hint {
+            margin: 0;
+            color: var(--kea-text-muted);
+            font-size: 0.82rem;
+            white-space: nowrap;
+        }
+
+        .slot-grid {
+            min-height: 0;
+            display: grid;
+            grid-template-columns: repeat(var(--tile-columns), minmax(0, var(--tile-size)));
+            grid-auto-rows: var(--tile-size);
+            gap: var(--tile-gap);
+            justify-content: center;
+            align-content: center;
+            overflow: hidden;
+        }
+
+        .tile,
+        .shape {
+            width: var(--tile-size);
+            height: var(--tile-size);
+            border-radius: 1rem;
+        }
+
+        .tile {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(194, 195, 199, 0.22);
+            border: 4px dashed var(--kea-border);
+            position: relative;
+            transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease;
+        }
+
+        .tile svg,
+        .shape svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .tile svg * {
+            transition: stroke 0.2s ease, fill 0.2s ease, opacity 0.2s ease;
+        }
+
+        .tile.highlight {
+            border-color: var(--kea-accent);
+            background: rgba(41, 173, 255, 0.12);
+            transform: scale(1.02);
+        }
+
+        .tile.invalid {
+            border-color: var(--kea-danger);
+            background: rgba(255, 0, 77, 0.08);
+        }
+
+        .tile.filled {
+            border-style: solid;
+            background: rgba(255, 255, 255, 0.85);
+        }
+
+        .shape {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: grab;
+            position: relative;
+            border: 4px solid transparent;
+            background: rgba(255, 255, 255, 0.7);
+            transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+            touch-action: manipulation;
+        }
+
+        .shape svg {
+            filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.16));
+        }
+
+        .shape:hover {
+            transform: translateY(-2px);
+        }
+
+        .shape.selected {
+            border-color: var(--kea-accent);
+            box-shadow: 0 0 0 4px rgba(41, 173, 255, 0.22);
+        }
+
+        .shape.dragging {
+            opacity: 0.72;
+        }
+
+        .shape.placed {
+            cursor: grab;
+        }
+
+        .tile.complete {
+            border-color: var(--kea-success);
+            background: rgba(0, 228, 54, 0.08);
+        }
+
+        .board-complete {
+            animation: boardWin 0.5s ease;
+        }
+
+        @keyframes boardWin {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.01); }
+            100% { transform: scale(1); }
+        }
+
+        @media (max-width: 860px) {
+            .status-bar {
+                grid-template-columns: 1fr;
+                justify-items: stretch;
+            }
+
+            .timer,
+            .combo-wrap {
+                justify-self: stretch;
+                justify-content: center;
+            }
+
+            .zone-hint {
+                display: none;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .shape-match-main {
+                padding: 0.55rem;
+                gap: 0.55rem;
+            }
+
+            .status-bar,
+            .zone {
+                padding: 0.6rem;
+            }
+
+            .play-area {
+                gap: 0.55rem;
+            }
+        }
+    </style>
+</head>
+<body class="kea-page shape-match-page">
+    <div class="kea-shell shape-match-shell">
+        <header class="kea-topbar">
+            <div class="kea-topbar__brand">
+                <a class="kea-back-link" href="index.html">Back to KEA Digi</a>
+                <p class="kea-eyebrow">Shapes and matching</p>
+                <h1 class="kea-app-title">Tangram Match</h1>
+                <p class="kea-app-subtitle">Match every piece to any valid target before the next level begins.</p>
+            </div>
+            <div class="kea-topbar__actions">
+                <button class="kea-button" type="button" id="startButton">Start Game</button>
+            </div>
+        </header>
+
+        <main class="shape-match-main">
+            <section class="status-bar kea-surface">
+                <div class="status-cluster">
+                    <span class="status-pill" id="levelPill">Level 1</span>
+                    <span class="status-pill" id="modePill">1 shape</span>
+                </div>
+                <p class="timer" id="timer">00:00.000</p>
+                <div class="combo-wrap">
+                    <div class="combo-bar" aria-hidden="true">
+                        <div class="combo-fill" id="comboFill"></div>
+                    </div>
+                    <div class="combo-count" id="comboCount">Combo x0</div>
+                </div>
+            </section>
+
+            <section class="play-area">
+                <section class="zone kea-surface">
+                    <div class="zone-header">
+                        <p class="label">Targets</p>
+                        <p class="zone-hint">Place a piece on any matching slot.</p>
+                    </div>
+                    <div class="slot-grid board" id="board"></div>
+                </section>
+
+                <section class="zone kea-surface">
+                    <div class="zone-header">
+                        <p class="label">Pieces</p>
+                        <p class="zone-hint">Tap a piece, then tap a target on touchscreens.</p>
+                    </div>
+                    <div class="slot-grid pieces" id="pieces"></div>
+                </section>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const board = document.getElementById('board');
+        const pieces = document.getElementById('pieces');
+        const timerDisplay = document.getElementById('timer');
+        const comboFill = document.getElementById('comboFill');
+        const comboCountDisplay = document.getElementById('comboCount');
+        const levelPill = document.getElementById('levelPill');
+        const modePill = document.getElementById('modePill');
+        const startButton = document.getElementById('startButton');
+
+        let level = 1;
+        let currentRound = null;
+        let selectedPieceId = null;
+        let startTime = 0;
+        let interval = null;
+        let comboCount = 0;
+        let comboDecayInterval = null;
+        let comboValue = 0;
+        let completingLevel = false;
+
+        const COLORS = [
+            { key: 'red', value: '#FF004D' },
+            { key: 'green', value: '#00E436' },
+            { key: 'blue', value: '#29ADFF' },
+            { key: 'peach', value: '#FFCCAA' },
+            { key: 'lavender', value: '#83769C' },
+            { key: 'pink', value: '#FF77A8' },
+            { key: 'orange', value: '#FFA300' },
+            { key: 'purple', value: '#7E2553' },
+            { key: 'brown', value: '#AB5236' },
+            { key: 'grey', value: '#C2C3C7' }
+        ];
+
+        const SHAPE_TYPES = ['square', 'triangle', 'circle'];
+
+        function shuffle(arr) {
+            const clone = [...arr];
+            for (let i = clone.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [clone[i], clone[j]] = [clone[j], clone[i]];
+            }
+            return clone;
+        }
+
+        function getLevelConfig(levelNumber) {
+            const pieceCount = Math.min(levelNumber, 10);
+            const colorMode = levelNumber >= 4;
+            const shapeMode = levelNumber >= 7;
+            const colorCount = colorMode ? Math.min(1 + Math.floor((levelNumber - 4) / 2), Math.min(pieceCount, COLORS.length)) : 1;
+            const shapeCount = shapeMode ? Math.min(1 + Math.floor((levelNumber - 7) / 2), SHAPE_TYPES.length) : 1;
+
+            return {
+                pieceCount,
+                colorMode,
+                shapeMode,
+                colorCount,
+                shapeCount
+            };
+        }
+
+        function buildRound(levelNumber) {
+            const config = getLevelConfig(levelNumber);
+            const palette = COLORS.slice(0, config.colorCount);
+            const shapes = SHAPE_TYPES.slice(0, config.shapeCount);
+            const targets = [];
+
+            for (let i = 0; i < config.pieceCount; i++) {
+                const shapeType = shapes[i % shapes.length];
+                const color = palette[i % palette.length];
+                targets.push({
+                    slotId: `slot-${levelNumber}-${i}`,
+                    shapeType,
+                    colorKey: config.colorMode ? color.key : null,
+                    colorValue: config.colorMode ? color.value : '#C2C3C7'
+                });
+            }
+
+            const piecesForRound = shuffle(targets).map((target, index) => ({
+                id: `piece-${levelNumber}-${index}`,
+                shapeType: target.shapeType,
+                colorKey: target.colorKey,
+                colorValue: target.colorValue,
+                slotId: null
+            }));
+
+            return { ...config, targets, pieces: piecesForRound };
+        }
+
+        function describeMode(config) {
+            const parts = [`${config.pieceCount} ${config.pieceCount === 1 ? 'shape' : 'shapes'}`];
+            if (config.shapeMode) parts.push(`${config.shapeCount} shape types`);
+            if (config.colorMode) parts.push(`${config.colorCount} colors`);
+            return parts.join(' | ');
+        }
+
+        function createSvgShape(shapeType, fillValue, strokeValue, dashed) {
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('viewBox', '0 0 100 100');
+
+            let shape;
+            if (shapeType === 'circle') {
+                shape = document.createElementNS(svg.namespaceURI, 'circle');
+                shape.setAttribute('cx', 50);
+                shape.setAttribute('cy', 50);
+                shape.setAttribute('r', 42);
+            } else if (shapeType === 'triangle') {
+                shape = document.createElementNS(svg.namespaceURI, 'polygon');
+                shape.setAttribute('points', '50,8 92,90 8,90');
+            } else {
+                shape = document.createElementNS(svg.namespaceURI, 'rect');
+                shape.setAttribute('x', 10);
+                shape.setAttribute('y', 10);
+                shape.setAttribute('width', 80);
+                shape.setAttribute('height', 80);
+                shape.setAttribute('rx', 8);
+            }
+
+            shape.setAttribute('fill', fillValue);
+            shape.setAttribute('stroke', strokeValue);
+            shape.setAttribute('stroke-width', 5);
+            if (dashed) shape.setAttribute('stroke-dasharray', '8,5');
+            svg.appendChild(shape);
+            return svg;
+        }
+
+        function renderBoard() {
+            board.innerHTML = '';
+            pieces.innerHTML = '';
+
+            currentRound.targets.forEach((target) => {
+                const tile = document.createElement('button');
+                tile.type = 'button';
+                tile.className = 'tile';
+                tile.dataset.slotId = target.slotId;
+                tile.dataset.shapeType = target.shapeType;
+                tile.dataset.colorKey = target.colorKey || '';
+                tile.setAttribute('aria-label', `Target for ${target.colorKey ? target.colorKey + ' ' : ''}${target.shapeType}`);
+                tile.appendChild(
+                    createSvgShape(
+                        target.shapeType,
+                        'rgba(255,255,255,0.06)',
+                        target.colorValue || '#111111',
+                        true
+                    )
+                );
+
+                tile.addEventListener('dragover', (event) => {
+                    event.preventDefault();
+                    const piece = getPieceById(event.dataTransfer.getData('text/plain'));
+                    if (!piece) return;
+                    tile.classList.toggle('highlight', canPlacePieceOnSlot(piece, target));
+                    tile.classList.toggle('invalid', !canPlacePieceOnSlot(piece, target));
+                });
+
+                tile.addEventListener('dragleave', () => {
+                    tile.classList.remove('highlight', 'invalid');
+                });
+
+                tile.addEventListener('drop', (event) => {
+                    event.preventDefault();
+                    tile.classList.remove('highlight', 'invalid');
+                    const piece = getPieceById(event.dataTransfer.getData('text/plain'));
+                    if (piece) placePiece(piece.id, target.slotId);
+                });
+
+                tile.addEventListener('click', () => {
+                    if (selectedPieceId) {
+                        placePiece(selectedPieceId, target.slotId);
+                    } else {
+                        const occupant = getPieceInSlot(target.slotId);
+                        if (occupant) {
+                            selectPiece(occupant.id);
+                            movePieceToTray(occupant.id, false);
+                        }
+                    }
+                });
+
+                board.appendChild(tile);
+            });
+
+            currentRound.pieces.forEach((piece) => {
+                pieces.appendChild(createPieceElement(piece));
+            });
+
+            syncBoardState();
+            fitBoardToViewport();
+        }
+
+        function createPieceElement(piece) {
+            const pieceEl = document.createElement('button');
+            pieceEl.type = 'button';
+            pieceEl.className = 'shape';
+            pieceEl.dataset.pieceId = piece.id;
+            pieceEl.dataset.shapeType = piece.shapeType;
+            pieceEl.dataset.colorKey = piece.colorKey || '';
+            pieceEl.setAttribute('draggable', 'true');
+            pieceEl.setAttribute('aria-label', `${piece.colorKey ? piece.colorKey + ' ' : ''}${piece.shapeType} piece`);
+            pieceEl.appendChild(createSvgShape(piece.shapeType, piece.colorValue, '#111111', false));
+
+            pieceEl.addEventListener('click', () => {
+                if (selectedPieceId === piece.id) {
+                    clearSelection();
+                } else {
+                    selectPiece(piece.id);
+                }
+            });
+
+            pieceEl.addEventListener('dragstart', (event) => {
+                selectedPieceId = piece.id;
+                pieceEl.classList.add('dragging');
+                event.dataTransfer.setData('text/plain', piece.id);
+            });
+
+            pieceEl.addEventListener('dragend', () => {
+                pieceEl.classList.remove('dragging');
+            });
+
+            return pieceEl;
+        }
+
+        function getPieceById(pieceId) {
+            return currentRound.pieces.find((piece) => piece.id === pieceId) || null;
+        }
+
+        function getSlotById(slotId) {
+            return currentRound.targets.find((slot) => slot.slotId === slotId) || null;
+        }
+
+        function getPieceInSlot(slotId) {
+            return currentRound.pieces.find((piece) => piece.slotId === slotId) || null;
+        }
+
+        function canPlacePieceOnSlot(piece, slot) {
+            const shapeMatches = piece.shapeType === slot.shapeType;
+            const colorMatches = !slot.colorKey || piece.colorKey === slot.colorKey;
+            return shapeMatches && colorMatches;
+        }
+
+        function selectPiece(pieceId) {
+            selectedPieceId = pieceId;
+            document.querySelectorAll('.shape').forEach((element) => {
+                element.classList.toggle('selected', element.dataset.pieceId === pieceId);
+            });
+        }
+
+        function clearSelection() {
+            selectedPieceId = null;
+            document.querySelectorAll('.shape').forEach((element) => element.classList.remove('selected'));
+            document.querySelectorAll('.tile').forEach((tile) => tile.classList.remove('highlight', 'invalid'));
+        }
+
+        function movePieceToTray(pieceId, resetComboOnMove = true) {
+            const piece = getPieceById(pieceId);
+            if (!piece) return;
+            piece.slotId = null;
+            syncBoardState();
+            if (resetComboOnMove) resetCombo();
+        }
+
+        function placePiece(pieceId, slotId) {
+            if (completingLevel) return;
+
+            const piece = getPieceById(pieceId);
+            const slot = getSlotById(slotId);
+            if (!piece || !slot) return;
+
+            if (!canPlacePieceOnSlot(piece, slot)) {
+                flashInvalid(slotId);
+                resetCombo();
+                return;
+            }
+
+            const occupyingPiece = getPieceInSlot(slotId);
+            if (occupyingPiece && occupyingPiece.id !== piece.id) {
+                occupyingPiece.slotId = null;
+            }
+
+            piece.slotId = slotId;
+            clearSelection();
+            incrementCombo();
+            syncBoardState();
+            checkLevelComplete();
+        }
+
+        function flashInvalid(slotId) {
+            const tile = document.querySelector(`.tile[data-slot-id="${slotId}"]`);
+            if (!tile) return;
+            tile.classList.add('invalid');
+            setTimeout(() => tile.classList.remove('invalid'), 220);
+        }
+
+        function syncBoardState() {
+            currentRound.targets.forEach((slot) => {
+                const tile = document.querySelector(`.tile[data-slot-id="${slot.slotId}"]`);
+                if (!tile) return;
+
+                const occupant = getPieceInSlot(slot.slotId);
+                tile.classList.toggle('filled', Boolean(occupant));
+                tile.classList.toggle('complete', Boolean(occupant) && canPlacePieceOnSlot(occupant, slot));
+            });
+
+            currentRound.pieces.forEach((piece) => {
+                const element = document.querySelector(`.shape[data-piece-id="${piece.id}"]`);
+                if (!element) return;
+
+                if (piece.slotId) {
+                    const tile = document.querySelector(`.tile[data-slot-id="${piece.slotId}"]`);
+                    if (tile && element.parentElement !== tile) {
+                        tile.appendChild(element);
+                    }
+                    element.classList.add('placed');
+                } else if (element.parentElement !== pieces) {
+                    pieces.appendChild(element);
+                    element.classList.remove('placed');
+                } else {
+                    element.classList.remove('placed');
+                }
+            });
+        }
+
+        function checkLevelComplete() {
+            const solved = currentRound.targets.every((slot) => {
+                const piece = getPieceInSlot(slot.slotId);
+                return piece && canPlacePieceOnSlot(piece, slot);
+            });
+
+            if (!solved) return;
+
+            completingLevel = true;
+            board.classList.add('board-complete');
+            clearInterval(interval);
+
+            setTimeout(() => {
+                board.classList.remove('board-complete');
+                level += 1;
+                startGame();
+            }, 650);
+        }
+
+        function fitBoardToViewport() {
+            const availableHeight = document.querySelector('.play-area').clientHeight;
+            const availableWidth = document.querySelector('.play-area').clientWidth;
+            const pieceCount = currentRound ? currentRound.pieceCount : 1;
+            const zonePadding = 60;
+            const perZoneHeight = Math.max(availableHeight / 2 - zonePadding, 120);
+            const maxCols = Math.min(pieceCount, 5);
+            let best = { cols: 1, size: 90 };
+
+            for (let cols = 1; cols <= maxCols; cols++) {
+                const rows = Math.ceil(pieceCount / cols);
+                const widthSize = (availableWidth - 32 - ((cols - 1) * 12)) / cols;
+                const heightSize = (perZoneHeight - 28 - ((rows - 1) * 12)) / rows;
+                const size = Math.floor(Math.min(widthSize, heightSize, 156));
+                if (size > best.size) {
+                    best = { cols, size };
+                }
+            }
+
+            const clampedSize = Math.max(56, best.size);
+            document.documentElement.style.setProperty('--tile-columns', best.cols);
+            document.documentElement.style.setProperty('--tile-size', `${clampedSize}px`);
+        }
+
+        function updateHud(config) {
+            levelPill.textContent = `Level ${level}`;
+            modePill.textContent = describeMode(config);
+        }
+
+        function startTimer() {
+            startTime = Date.now();
+            let lastSecond = 0;
+
+            clearInterval(interval);
+            interval = setInterval(() => {
+                const elapsed = Date.now() - startTime;
+                const minutes = Math.floor(elapsed / 60000).toString().padStart(2, '0');
+                const seconds = Math.floor((elapsed % 60000) / 1000).toString().padStart(2, '0');
+                const ms = (elapsed % 1000).toString().padStart(3, '0');
+
+                timerDisplay.textContent = `${minutes}:${seconds}.${ms}`;
+
+                const currentSecond = Math.floor(elapsed / 1000);
+                if (currentSecond !== lastSecond) {
+                    timerDisplay.classList.add('pulse');
+                    setTimeout(() => timerDisplay.classList.remove('pulse'), 180);
+                    lastSecond = currentSecond;
+                }
+            }, 33);
+        }
+
+        function updateComboDisplay() {
+            comboFill.style.width = `${comboValue * 100}%`;
+            comboCountDisplay.textContent = `Combo x${comboCount}`;
+        }
+
+        function incrementCombo() {
+            comboCount += 1;
+            comboValue = Math.min(comboValue + 0.18, 1);
+            updateComboDisplay();
+
+            clearInterval(comboDecayInterval);
+            comboDecayInterval = setInterval(() => {
+                comboValue -= 0.01;
+                if (comboValue <= 0) {
+                    comboValue = 0;
+                    comboCount = 0;
+                    clearInterval(comboDecayInterval);
+                }
+                updateComboDisplay();
+            }, 90);
+        }
+
+        function resetCombo() {
+            comboCount = 0;
+            comboValue = 0;
+            clearInterval(comboDecayInterval);
+            updateComboDisplay();
+        }
+
+        function startGame() {
+            completingLevel = false;
+            selectedPieceId = null;
+            currentRound = buildRound(level);
+            updateHud(currentRound);
+            renderBoard();
+            startTimer();
+        }
+
+        pieces.addEventListener('dragover', (event) => {
+            event.preventDefault();
+        });
+
+        pieces.addEventListener('drop', (event) => {
+            event.preventDefault();
+            const pieceId = event.dataTransfer.getData('text/plain');
+            if (pieceId) movePieceToTray(pieceId);
+        });
+
+        startButton.addEventListener('click', () => {
+            level = 1;
+            resetCombo();
+            timerDisplay.textContent = '00:00.000';
+            startGame();
+        });
+
+        window.addEventListener('resize', () => {
+            if (currentRound) fitBoardToViewport();
+        });
+
+        window.addEventListener('load', () => {
+            timerDisplay.textContent = '00:00.000';
+            updateComboDisplay();
+            currentRound = buildRound(level);
+            updateHud(currentRound);
+            renderBoard();
+        });
+    </script>
+</body>
+</html>

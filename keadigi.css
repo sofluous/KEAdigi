@@ -1,0 +1,317 @@
+:root {
+  --kea-bg: #f4bc2e;
+  --kea-bg-soft: #ffd766;
+  --kea-panel: #fff8ee;
+  --kea-panel-strong: #ffffff;
+  --kea-text: #141414;
+  --kea-text-muted: #4e4a43;
+  --kea-border: #111111;
+  --kea-accent: #29adff;
+  --kea-accent-strong: #1477bd;
+  --kea-secondary: #c2c3c7;
+  --kea-success: #00e436;
+  --kea-danger: #ff004d;
+  --kea-shadow: 0 6px 0 rgba(17, 17, 17, 0.96);
+  --kea-shadow-pressed: 0 2px 0 rgba(17, 17, 17, 0.96);
+  --kea-font-sans: "Trebuchet MS", "Segoe UI", Helvetica, Arial, sans-serif;
+  --kea-font-display: "Arial Black", "Trebuchet MS", Helvetica, Arial, sans-serif;
+  --kea-font-mono: "Courier New", Courier, monospace;
+  --kea-space-1: 0.5rem;
+  --kea-space-2: 0.75rem;
+  --kea-space-3: 1rem;
+  --kea-space-4: 1.5rem;
+  --kea-space-5: 2rem;
+  --kea-space-6: 3rem;
+  --kea-radius-sm: 0.5rem;
+  --kea-radius-md: 0.9rem;
+  --kea-radius-lg: 1.2rem;
+  --kea-shell-border: 8px;
+  --kea-card-border: 4px;
+  --kea-focus-ring: 0 0 0 4px rgba(41, 173, 255, 0.32);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body.kea-page {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--kea-font-sans);
+  color: var(--kea-text);
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.35), transparent 28%),
+    linear-gradient(180deg, #ffd978 0%, var(--kea-bg) 38%, #efad1e 100%);
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+.kea-shell {
+  min-height: 100vh;
+  border: var(--kea-shell-border) solid var(--kea-border);
+  display: flex;
+  flex-direction: column;
+}
+
+.kea-topbar {
+  background: var(--kea-border);
+  color: var(--kea-panel);
+  padding: 0.8rem 1.1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--kea-space-2);
+  flex-wrap: wrap;
+}
+
+.kea-topbar__brand {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.kea-eyebrow {
+  margin: 0;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 248, 238, 0.8);
+}
+
+.kea-app-title {
+  margin: 0;
+  font-family: var(--kea-font-display);
+  font-size: clamp(1.35rem, 2.1vw, 2rem);
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.kea-app-subtitle {
+  margin: 0;
+  max-width: 32rem;
+  font-size: 0.92rem;
+  color: rgba(255, 248, 238, 0.86);
+}
+
+.kea-topbar__actions {
+  display: flex;
+  gap: var(--kea-space-2);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.kea-back-link,
+.kea-button,
+.kea-card__link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 40px;
+  padding: 0.58rem 0.9rem;
+  border: 4px solid var(--kea-border);
+  border-radius: var(--kea-radius-md);
+  background: var(--kea-accent);
+  color: var(--kea-border);
+  font-family: var(--kea-font-display);
+  font-size: 0.92rem;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: var(--kea-shadow);
+  transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+}
+
+.kea-back-link {
+  min-height: 34px;
+  padding: 0.35rem 0.65rem;
+  border-width: 3px;
+  border-radius: var(--kea-radius-sm);
+  font-size: 0.78rem;
+  box-shadow: 0 4px 0 rgba(17, 17, 17, 0.96);
+}
+
+.kea-back-link,
+.kea-button--secondary {
+  background: var(--kea-secondary);
+}
+
+.kea-button--ghost {
+  background: transparent;
+  color: var(--kea-panel);
+  border-color: var(--kea-panel);
+  box-shadow: none;
+}
+
+.kea-back-link:hover,
+.kea-button:hover,
+.kea-card__link:hover {
+  transform: translateY(-1px);
+}
+
+.kea-back-link:active,
+.kea-button:active,
+.kea-card__link:active {
+  transform: translateY(4px);
+  box-shadow: var(--kea-shadow-pressed);
+}
+
+.kea-button:disabled,
+.kea-button[disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.kea-back-link:focus-visible,
+.kea-button:focus-visible,
+.kea-card__link:focus-visible,
+input:focus-visible {
+  outline: none;
+  box-shadow: var(--kea-shadow), var(--kea-focus-ring);
+}
+
+.kea-content {
+  flex: 1;
+  padding: 1rem;
+}
+
+.kea-surface {
+  background: var(--kea-panel-strong);
+  border: var(--kea-card-border) solid var(--kea-border);
+  border-radius: var(--kea-radius-lg);
+}
+
+.kea-section-label {
+  margin: 0;
+  font-family: var(--kea-font-display);
+  font-size: 1rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.kea-muted {
+  color: var(--kea-text-muted);
+}
+
+.kea-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.55rem;
+  border: 2px solid var(--kea-border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.62);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.kea-dashboard {
+  display: grid;
+  gap: var(--kea-space-4);
+}
+
+.kea-hero {
+  padding: clamp(1.1rem, 2vw, 1.7rem);
+  display: grid;
+  gap: var(--kea-space-2);
+}
+
+.kea-hero h2 {
+  margin: 0;
+  font-family: var(--kea-font-display);
+  font-size: clamp(1.45rem, 3vw, 2.35rem);
+  line-height: 0.95;
+  text-transform: uppercase;
+}
+
+.kea-hero p {
+  margin: 0;
+  max-width: 42rem;
+  font-size: 0.96rem;
+}
+
+.kea-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--kea-space-4);
+}
+
+.kea-card {
+  padding: 1.1rem;
+  display: grid;
+  gap: var(--kea-space-2);
+  align-content: start;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(255, 248, 238, 0.98)),
+    var(--kea-panel-strong);
+}
+
+.kea-card h3,
+.kea-card p {
+  margin: 0;
+}
+
+.kea-card h3 {
+  font-family: var(--kea-font-display);
+  font-size: 1.15rem;
+  text-transform: uppercase;
+}
+
+.kea-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.kea-card__link {
+  justify-self: start;
+}
+
+.kea-coming-soon {
+  padding: 1rem 1.1rem;
+  display: grid;
+  gap: var(--kea-space-2);
+  background: rgba(255, 248, 238, 0.7);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 720px) {
+  .kea-topbar {
+    padding: 0.8rem;
+  }
+
+  .kea-content {
+    padding: 0.8rem;
+  }
+}

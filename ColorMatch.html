@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RGB Color Mixer | KEA Digi</title>
+    <link rel="stylesheet" href="keadigi.css" />
+    <style>
+        .color-match-shell {
+            min-height: 100vh;
+        }
+
+        .color-match-layout {
+            display: grid;
+            gap: var(--kea-space-3);
+        }
+
+        .match-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+            gap: var(--kea-space-3);
+            align-items: stretch;
+        }
+
+        .comparison-column {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: var(--kea-space-3);
+        }
+
+        .comparison-card,
+        .results-card,
+        .control-row {
+            padding: 1rem;
+        }
+
+        .comparison-card,
+        .results-card {
+            display: grid;
+            gap: var(--kea-space-3);
+            align-content: start;
+        }
+
+        .color-box {
+            min-height: 13rem;
+            border: 4px solid var(--kea-border);
+            border-radius: var(--kea-radius-lg);
+            background: rgba(255, 255, 255, 0.82);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mixed-box {
+            display: grid;
+            align-items: end;
+        }
+
+        .accuracy-text {
+            margin: 0;
+            padding: 0.75rem 1rem;
+            background: rgba(255, 248, 238, 0.92);
+            border-top: 4px solid var(--kea-border);
+            font-family: var(--kea-font-display);
+            font-size: 1rem;
+            text-align: center;
+            min-height: 3.8rem;
+        }
+
+        .mixed-value {
+            margin: 0;
+            padding: 0.85rem 1rem 0;
+            font-family: var(--kea-font-mono);
+            font-weight: 700;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: var(--kea-space-2);
+        }
+
+        .reset-link {
+            background: none;
+            border: none;
+            color: var(--kea-text);
+            font-family: var(--kea-font-display);
+            font-size: 0.95rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .reset-link:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        #stats {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        #stats p,
+        #resultText {
+            margin: 0;
+            font-size: 1.05rem;
+        }
+
+        .control-row {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: var(--kea-space-3);
+        }
+
+        .control-container {
+            display: grid;
+            gap: var(--kea-space-2);
+        }
+
+        .control-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            gap: var(--kea-space-2);
+        }
+
+        .control-header label {
+            font-family: var(--kea-font-display);
+            font-size: 1.2rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .rgb-input {
+            width: 88px;
+            min-height: 52px;
+            border: 4px solid var(--kea-border);
+            border-radius: var(--kea-radius-md);
+            background: var(--kea-border);
+            color: var(--kea-panel);
+            font-family: var(--kea-font-mono);
+            font-size: 1.35rem;
+            text-align: right;
+            padding: 0.4rem 0.6rem;
+        }
+
+        .slider-container {
+            display: grid;
+            grid-template-columns: 56px minmax(0, 1fr) 56px;
+            align-items: center;
+        }
+
+        .slider-step {
+            min-height: 52px;
+            padding: 0;
+            font-size: 1.4rem;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            margin: 0;
+            appearance: none;
+            height: 52px;
+            border: 4px solid var(--kea-border);
+            border-left: 0;
+            border-right: 0;
+            background: var(--kea-secondary);
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 24px;
+            height: 52px;
+            border: 4px solid var(--kea-border);
+            background: var(--kea-panel);
+            cursor: pointer;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 24px;
+            height: 52px;
+            border: 4px solid var(--kea-border);
+            background: var(--kea-panel);
+            cursor: pointer;
+        }
+
+        #rSlider {
+            background: linear-gradient(to right, #000000, #ff004d);
+        }
+
+        #gSlider {
+            background: linear-gradient(to right, #000000, #00e436);
+        }
+
+        #bSlider {
+            background: linear-gradient(to right, #000000, #29adff);
+        }
+
+        #instructionBox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            padding: var(--kea-space-4);
+            background: rgba(17, 17, 17, 0.52);
+            z-index: 20;
+        }
+
+        .instruction-card {
+            max-width: 38rem;
+            margin: min(12vh, 6rem) auto 0;
+            padding: var(--kea-space-4);
+            display: grid;
+            gap: var(--kea-space-3);
+        }
+
+        .instruction-card p {
+            margin: 0;
+            font-size: 1.05rem;
+        }
+
+        @media (max-width: 980px) {
+            .match-grid,
+            .comparison-column,
+            .control-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="kea-page">
+    <div class="kea-shell color-match-shell">
+        <header class="kea-topbar">
+            <div class="kea-topbar__brand">
+                <a class="kea-back-link" href="index.html">Back to KEA Digi</a>
+                <p class="kea-eyebrow">Color and observation</p>
+                <h1 class="kea-app-title">RGB Color Mixer</h1>
+                <p class="kea-app-subtitle">Match the target color by adjusting the RGB sliders.</p>
+            </div>
+            <div class="kea-topbar__actions">
+                <button class="kea-button kea-button--secondary" type="button" onclick="showInstructions()">Instructions</button>
+            </div>
+        </header>
+
+        <main class="kea-content">
+            <div class="color-match-layout">
+                <section class="match-grid">
+                    <div class="comparison-column">
+                        <article class="comparison-card kea-surface">
+                            <h2 class="kea-section-label">Target</h2>
+                            <div class="color-box" id="randomBox" aria-label="Target color display"></div>
+                            <button id="newColorButton" class="kea-button kea-button--secondary" type="button" onclick="startColorTest()">New Color</button>
+                        </article>
+
+                        <article class="comparison-card kea-surface">
+                            <h2 class="kea-section-label">RGB Mix</h2>
+                            <div class="color-box mixed-box" id="mixedBox" aria-label="Mixed color display">
+                                <div id="accuracyText" class="accuracy-text"></div>
+                            </div>
+                            <p id="mixedValue" class="mixed-value">R: 0, G: 0, B: 0</p>
+                            <button id="confirmButton" class="kea-button kea-button--secondary" type="button" onclick="confirmChoice()" disabled>Check Mix</button>
+                        </article>
+                    </div>
+
+                    <article class="results-card kea-surface">
+                        <div class="results-header">
+                            <h2 class="kea-section-label">Results</h2>
+                            <button id="resetButton" class="reset-link" type="button" onclick="resetAll()" disabled>Clear</button>
+                        </div>
+                        <div id="resultText" class="kea-muted"></div>
+                        <div id="stats">
+                            <p>Attempts: <span id="attempts">0</span></p>
+                            <p>Average Speed: <span id="avgSpeed">0</span> sec</p>
+                            <p>Top Accuracy: <span id="bestAccuracy">0%</span></p>
+                        </div>
+                    </article>
+                </section>
+
+                <section class="control-row kea-surface" aria-label="RGB controls">
+                    <div class="control-container">
+                        <div class="control-header">
+                            <label for="rInput">Red</label>
+                            <input type="number" id="rInput" class="rgb-input" value="0" min="0" max="255" oninput="validateInput('r')" />
+                        </div>
+                        <div class="slider-container">
+                            <button class="kea-button kea-button--secondary slider-step" type="button" onclick="changeValue('r', -1)" aria-label="Decrease red">&larr;</button>
+                            <input type="range" min="0" max="255" value="0" id="rSlider" oninput="updateValue('r')" />
+                            <button class="kea-button kea-button--secondary slider-step" type="button" onclick="changeValue('r', 1)" aria-label="Increase red">&rarr;</button>
+                        </div>
+                    </div>
+
+                    <div class="control-container">
+                        <div class="control-header">
+                            <label for="gInput">Green</label>
+                            <input type="number" id="gInput" class="rgb-input" value="0" min="0" max="255" oninput="validateInput('g')" />
+                        </div>
+                        <div class="slider-container">
+                            <button class="kea-button kea-button--secondary slider-step" type="button" onclick="changeValue('g', -1)" aria-label="Decrease green">&larr;</button>
+                            <input type="range" min="0" max="255" value="0" id="gSlider" oninput="updateValue('g')" />
+                            <button class="kea-button kea-button--secondary slider-step" type="button" onclick="changeValue('g', 1)" aria-label="Increase green">&rarr;</button>
+                        </div>
+                    </div>
+
+                    <div class="control-container">
+                        <div class="control-header">
+                            <label for="bInput">Blue</label>
+                            <input type="number" id="bInput" class="rgb-input" value="0" min="0" max="255" oninput="validateInput('b')" />
+                        </div>
+                        <div class="slider-container">
+                            <button class="kea-button kea-button--secondary slider-step" type="button" onclick="changeValue('b', -1)" aria-label="Decrease blue">&larr;</button>
+                            <input type="range" min="0" max="255" value="0" id="bSlider" oninput="updateValue('b')" />
+                            <button class="kea-button kea-button--secondary slider-step" type="button" onclick="changeValue('b', 1)" aria-label="Increase blue">&rarr;</button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <div id="instructionBox" role="dialog" aria-modal="true" aria-labelledby="instructionTitle">
+        <div class="instruction-card kea-surface">
+            <h2 id="instructionTitle" class="kea-section-label">How to Play</h2>
+            <p>Adjust the RGB sliders or type values directly to mix a color. Start a round, compare your mix to the target, and check how accurate your result is.</p>
+            <button class="kea-button kea-button--secondary" type="button" onclick="closeInstructions()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        let targetColor = { r: 0, g: 0, b: 0 };
+        let attempts = 0;
+        let totalSpeed = 0;
+        let bestAccuracy = 0;
+        let startTime = 0;
+        let hasChecked = false;
+        let hasStartedTest = false;
+
+        function updateValue(color) {
+            const slider = document.getElementById(color + 'Slider');
+            const input = document.getElementById(color + 'Input');
+            input.value = slider.value;
+            updateMixedColor();
+        }
+
+        function changeValue(color, amount) {
+            const slider = document.getElementById(color + 'Slider');
+            let newValue = parseInt(slider.value, 10) + amount;
+            if (newValue < 0) newValue = 0;
+            if (newValue > 255) newValue = 255;
+            slider.value = newValue;
+            updateValue(color);
+        }
+
+        function validateInput(color) {
+            const input = document.getElementById(color + 'Input');
+            let value = parseInt(input.value, 10);
+            if (isNaN(value) || value < 0) value = 0;
+            if (value > 255) {
+                value = 255;
+                input.style.backgroundColor = '#ffcccc';
+                setTimeout(() => { input.style.backgroundColor = ''; }, 300);
+            }
+            input.value = value;
+            document.getElementById(color + 'Slider').value = value;
+            updateValue(color);
+        }
+
+        function updateMixedColor() {
+            const r = document.getElementById('rSlider').value;
+            const g = document.getElementById('gSlider').value;
+            const b = document.getElementById('bSlider').value;
+
+            document.getElementById('mixedBox').style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+            document.getElementById('mixedValue').textContent = `R: ${r}, G: ${g}, B: ${b}`;
+        }
+
+        function applySliderGradients() {
+            ['r', 'g', 'b'].forEach(color => {
+                const slider = document.getElementById(color + 'Slider');
+                slider.style.background = `linear-gradient(to right, black, ${color === 'r' ? '#ff004d' : color === 'g' ? '#00e436' : '#29adff'})`;
+            });
+        }
+
+        function updateColorDisplay(color, value) {
+            const display = document.getElementById(color + 'ColorDisplay');
+            if (!display) return;
+            if (color === 'r') display.style.backgroundColor = `rgb(${value},0,0)`;
+            if (color === 'g') display.style.backgroundColor = `rgb(0,${value},0)`;
+            if (color === 'b') display.style.backgroundColor = `rgb(0,0,${value})`;
+        }
+
+        function showInstructions() {
+            document.getElementById('instructionBox').style.display = 'block';
+        }
+
+        function closeInstructions() {
+            document.getElementById('instructionBox').style.display = 'none';
+        }
+
+        function startColorTest() {
+            hasStartedTest = true;
+            targetColor.r = Math.floor(Math.random() * 256);
+            targetColor.g = Math.floor(Math.random() * 256);
+            targetColor.b = Math.floor(Math.random() * 256);
+            document.getElementById('randomBox').style.backgroundColor = `rgb(${targetColor.r}, ${targetColor.g}, ${targetColor.b})`;
+            document.getElementById('resultText').textContent = '';
+            document.getElementById('accuracyText').textContent = '';
+
+            startTime = Date.now();
+            hasChecked = false;
+            updateButtonStates();
+        }
+
+        function confirmChoice() {
+            const r = parseInt(document.getElementById('rSlider').value, 10);
+            const g = parseInt(document.getElementById('gSlider').value, 10);
+            const b = parseInt(document.getElementById('bSlider').value, 10);
+
+            const diff = Math.abs(targetColor.r - r) + Math.abs(targetColor.g - g) + Math.abs(targetColor.b - b);
+            const maxDiff = 3 * 255;
+            const accuracy = ((maxDiff - diff) / maxDiff) * 100;
+            const resultText = accuracy === 100 ? 'Perfect Match! 100% Accuracy!' : `Accuracy: ${accuracy.toFixed(1)}%`;
+            document.getElementById('accuracyText').textContent = resultText;
+
+            attempts++;
+            const timeTaken = (Date.now() - startTime) / 1000;
+            totalSpeed += timeTaken;
+            if (accuracy > bestAccuracy) bestAccuracy = accuracy;
+
+            document.getElementById('attempts').textContent = attempts;
+            document.getElementById('avgSpeed').textContent = (totalSpeed / attempts).toFixed(2);
+            document.getElementById('bestAccuracy').textContent = `${bestAccuracy.toFixed(1)}%`;
+            hasChecked = true;
+            updateButtonStates();
+        }
+
+        function resetAll() {
+            ['r', 'g', 'b'].forEach(color => {
+                document.getElementById(color + 'Slider').value = 0;
+                document.getElementById(color + 'Input').value = 0;
+                document.getElementById(color + 'Slider').style.background =
+                    `linear-gradient(to right, black, ${color === 'r' ? '#ff004d' : color === 'g' ? '#00e436' : '#29adff'})`;
+            });
+
+            targetColor = { r: 0, g: 0, b: 0 };
+            hasStartedTest = false;
+            hasChecked = false;
+
+            document.getElementById('randomBox').style.backgroundColor = '#ffffff';
+            document.getElementById('resultText').textContent = '';
+            document.getElementById('mixedBox').style.backgroundColor = '#ffffff';
+            document.getElementById('accuracyText').textContent = '';
+
+            attempts = 0;
+            totalSpeed = 0;
+            bestAccuracy = 0;
+
+            document.getElementById('attempts').textContent = 0;
+            document.getElementById('avgSpeed').textContent = 0;
+            document.getElementById('bestAccuracy').textContent = '0%';
+            document.getElementById('resetButton').disabled = true;
+
+            updateMixedColor();
+            updateButtonStates();
+        }
+
+        function updateButtonStates() {
+            const confirmButton = document.getElementById('confirmButton');
+            const resetButton = document.getElementById('resetButton');
+            const newColorButton = document.getElementById('newColorButton');
+
+            confirmButton.disabled = !hasStartedTest || hasChecked;
+            newColorButton.disabled = hasStartedTest && !hasChecked;
+            resetButton.disabled = attempts === 0;
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key.toLowerCase() === 'r') document.getElementById('rInput').focus();
+            if (e.key.toLowerCase() === 'g') document.getElementById('gInput').focus();
+            if (e.key.toLowerCase() === 'b') document.getElementById('bInput').focus();
+            if (e.key === 'Escape') closeInstructions();
+            if (document.activeElement && document.activeElement.classList.contains('rgb-input')) {
+                const color = document.activeElement.id[0];
+                if (e.key === 'ArrowLeft') changeValue(color, -1);
+                if (e.key === 'ArrowRight') changeValue(color, 1);
+                if (e.key === 'Enter' && !document.getElementById('confirmButton').disabled) confirmChoice();
+            }
+        });
+
+        ['r', 'g', 'b'].forEach(color => {
+            updateColorDisplay(color, 0);
+            document.getElementById(color + 'Slider').style.background = `linear-gradient(to right, black, ${color === 'r' ? '#ff004d' : color === 'g' ? '#00e436' : '#29adff'})`;
+        });
+
+        window.onload = () => {
+            applySliderGradients();
+            updateMixedColor();
+            updateButtonStates();
+        };
+    </script>
+</body>
+</html>
