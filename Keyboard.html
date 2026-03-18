@@ -8,7 +8,10 @@
     <style>
         .keyboard-page {
             display: grid;
+            grid-template-rows: auto minmax(0, 1fr);
             gap: var(--kea-space-3);
+            min-height: 0;
+            height: 100%;
             padding: 1rem;
             border: 4px solid var(--kea-border);
             border-radius: calc(var(--kea-radius-lg) + 0.2rem);
@@ -16,6 +19,14 @@
                 linear-gradient(180deg, rgba(76, 78, 84, 0.95), rgba(34, 36, 41, 0.98)),
                 var(--kea-control-face-dark);
             box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.12), inset 0 -4px 0 rgba(0, 0, 0, 0.28);
+        }
+
+        body.kea-page.keyboard-page-body {
+            overflow: hidden;
+        }
+
+        .keyboard-shell {
+            height: 100vh;
         }
 
         .toolbar {
@@ -138,8 +149,9 @@
         }
 
         .keyboard-frame {
+            min-height: 0;
             padding: 0.85rem;
-            overflow: auto;
+            overflow: hidden;
             background:
                 linear-gradient(180deg, rgba(103, 107, 115, 0.92), rgba(53, 56, 62, 0.98));
             box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.1), inset 0 -3px 0 rgba(0, 0, 0, 0.26);
@@ -148,8 +160,10 @@
         .keyboard-container {
             display: flex;
             justify-content: center;
+            align-items: center;
             width: 100%;
-            overflow: auto;
+            height: 100%;
+            overflow: auto hidden;
             padding: 0.9rem;
             border: 4px solid var(--kea-border);
             border-radius: calc(var(--kea-radius-lg) - 0.1rem);
@@ -238,6 +252,11 @@
             text-shadow: none;
         }
 
+        .keyboard-help-copy {
+            display: grid;
+            gap: 0.75rem;
+        }
+
         @media (max-width: 720px) {
             .toolbar {
                 grid-template-columns: 1fr;
@@ -256,16 +275,22 @@
         }
     </style>
 </head>
-<body class="kea-page">
-    <div class="kea-shell">
+<body class="kea-page keyboard-page-body">
+    <div class="kea-shell keyboard-shell">
         <header class="kea-topbar kea-topbar--centered">
             <a class="kea-back-link" href="index.html">Back to KEA Digi</a>
             <div class="kea-topbar__brand kea-topbar__brand--center">
-                <p class="kea-eyebrow">Keyboard and hardware</p>
-                <h1 class="kea-app-title">Interactive Keyboard</h1>
-                <p class="kea-app-subtitle">Press keys on your real keyboard to mirror them here.</p>
+                <div class="kea-title-row">
+                    <h1 class="kea-app-title">Interactive Keyboard</h1>
+                    <div class="kea-skill-chips" aria-label="Skills">
+                        <span class="kea-skill-chip">Keyboard</span>
+                        <span class="kea-skill-chip">Hardware</span>
+                    </div>
+                </div>
+                <p class="kea-app-subtitle" hidden>Press keys on your real keyboard to mirror them here.</p>
             </div>
             <div class="kea-topbar__actions">
+                <button class="kea-button kea-button--secondary" id="helpButton" type="button">How to Play</button>
                 <span class="keyboard-note">Tap keys to pin labels</span>
             </div>
         </header>
@@ -294,7 +319,7 @@
                         </div>
                         <div class="toolbar-slider-shell">
                             <label class="visually-hidden" for="scaleSlider">Keyboard scale</label>
-                            <input type="range" id="scaleSlider" min="1" max="10" value="5" step="1" oninput="updateKeyboardSize()" disabled />
+                            <input type="range" id="scaleSlider" min="3" max="8" value="5" step="1" oninput="updateKeyboardSize()" disabled />
                         </div>
                     </div>
                 </div>
@@ -308,6 +333,23 @@
         </main>
     </div>
 
+    <div class="kea-help-overlay" id="helpOverlay" hidden>
+        <div class="kea-help-dialog kea-console-surface" role="dialog" aria-modal="true" aria-labelledby="keyboardHelpTitle">
+            <h2 id="keyboardHelpTitle" class="kea-section-label">How to Play</h2>
+            <div class="kea-help-copy keyboard-help-copy">
+                <p>Press keys on your real keyboard to light up the matching keys here.</p>
+                <ul>
+                    <li>Tap on-screen keys to show or hide their labels.</li>
+                    <li>Use the highlight buttons to reveal groups like function, modifier, or control keys.</li>
+                    <li>Switch between fit-to-view and scale mode depending on the screen size you need.</li>
+                </ul>
+            </div>
+            <div class="kea-actions">
+                <button class="kea-button kea-button--secondary" id="closeHelpButton" type="button">Close</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let fitToViewActive = true;
         let pointerHandledToolbarTarget = null;
@@ -315,6 +357,9 @@
         const keyboard = document.getElementById("keyboard");
         const scaleSlider = document.getElementById("scaleSlider");
         const physicalKeyMap = new Map();
+        const helpButton = document.getElementById("helpButton");
+        const closeHelpButton = document.getElementById("closeHelpButton");
+        const helpOverlay = document.getElementById("helpOverlay");
 
         const keyData = [
             [{ label: "Esc", type: "control", size: 2 }, { label: "F1", type: "function", size: 1 }, { label: "F2", type: "function", size: 1 },
@@ -459,28 +504,29 @@
 
         function updateKeyboardSize() {
             const frame = document.querySelector(".keyboard-frame");
-            const frameWidth = frame ? frame.clientWidth - 24 : window.innerWidth;
-            const scaleValue = fitToViewActive ? window.innerWidth / 1920 * 10 : scaleSlider.value;
+            const frameWidth = Math.max(320, (frame ? frame.clientWidth : window.innerWidth) - 56);
+            const frameHeight = Math.max(220, (frame ? frame.clientHeight : window.innerHeight) - 56);
             const keyboardPadding = 16;
-            const keyboardWidth = fitToViewActive ? Math.max(320, frameWidth) : Math.max(320, 1920 * (scaleValue / 10));
+            const rowGap = 8;
+            const totalRows = keyData.length;
+            const totalUnits = 15;
+            const maxKeysInRow = Math.max(...keyData.map((row) => row.length));
+            const widthLimitedKeySize = (frameWidth - (keyboardPadding * 2) - ((maxKeysInRow - 1) * rowGap)) / totalUnits;
+            const heightLimitedKeySize = (frameHeight - (keyboardPadding * 2) - ((totalRows - 1) * rowGap)) / totalRows;
+            const fitKeySize = Math.max(24, Math.floor(Math.min(widthLimitedKeySize, heightLimitedKeySize, 92)));
+            const sliderProgress = (Number(scaleSlider.value) - Number(scaleSlider.min)) / (Number(scaleSlider.max) - Number(scaleSlider.min));
+            const scaledKeySize = Math.round(24 + ((fitKeySize - 24) * sliderProgress));
+            const standardKeySize = fitToViewActive ? fitKeySize : Math.min(fitKeySize, scaledKeySize);
+            const keyboardWidth = Math.round((standardKeySize * totalUnits) + ((maxKeysInRow - 1) * rowGap) + (keyboardPadding * 2));
 
             const availableWidth = keyboardWidth - (keyboardPadding * 2);
             keyboard.style.width = `${keyboardWidth}px`;
             keyboard.style.padding = `${keyboardPadding}px`;
 
-            const totalUnits = 15;
-            const rowGap = 8;
-            let standardKeySize;
-
             document.querySelectorAll(".row").forEach((row, rowIndex) => {
-                const numKeys = keyData[rowIndex].length;
-                const totalGapWidth = (numKeys - 1) * rowGap;
-                const baseUnit = (availableWidth - totalGapWidth) / totalUnits;
-                standardKeySize = baseUnit;
-
                 row.childNodes.forEach((key, keyIndex) => {
                     const keySize = keyData[rowIndex][keyIndex].size || 1;
-                    const keyWidth = baseUnit * keySize;
+                    const keyWidth = standardKeySize * keySize;
 
                     key.style.width = `${keyWidth}px`;
                     key.style.height = `${standardKeySize}px`;
@@ -492,7 +538,6 @@
                 row.style.maxWidth = `${availableWidth}px`;
             });
 
-            const totalRows = document.querySelectorAll(".row").length;
             const keyboardHeight = (standardKeySize * totalRows) + (rowGap * (totalRows - 1)) + (keyboardPadding * 2);
             keyboard.style.height = `${keyboardHeight}px`;
             document.documentElement.style.setProperty("--key-size", `${standardKeySize}px`);
@@ -620,6 +665,12 @@
             createKeyboard();
             toggleFitToView();
         };
+
+        helpButton.addEventListener("click", () => { helpOverlay.hidden = false; });
+        closeHelpButton.addEventListener("click", () => { helpOverlay.hidden = true; });
+        helpOverlay.addEventListener("click", (event) => {
+            if (event.target === helpOverlay) helpOverlay.hidden = true;
+        });
     </script>
 </body>
 </html>

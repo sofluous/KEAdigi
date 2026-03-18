@@ -310,12 +310,17 @@
         <header class="kea-topbar kea-topbar--centered">
             <a class="kea-back-link" href="index.html">Back to KEA Digi</a>
             <div class="kea-topbar__brand kea-topbar__brand--center">
-                <p class="kea-eyebrow">Color and observation</p>
-                <h1 class="kea-app-title">RGB Color Mixer</h1>
-                <p class="kea-app-subtitle">Match the target color by adjusting the RGB sliders.</p>
+                <div class="kea-title-row">
+                    <h1 class="kea-app-title">RGB Color Mixer</h1>
+                    <div class="kea-skill-chips" aria-label="Skills">
+                        <span class="kea-skill-chip">Color</span>
+                        <span class="kea-skill-chip">Observation</span>
+                    </div>
+                </div>
+                <p class="kea-app-subtitle" hidden>Match the target color by adjusting the RGB sliders.</p>
             </div>
             <div class="kea-topbar__actions">
-                <button class="kea-button kea-button--secondary" type="button" onclick="showInstructions()">Instructions</button>
+                <button class="kea-button kea-button--secondary" type="button" onclick="showInstructions()">How to Play</button>
             </div>
         </header>
 

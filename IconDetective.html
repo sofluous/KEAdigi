@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Icon Detective | KEA Digi</title>
+    <link rel="stylesheet" href="keadigi.css" />
+    <style>
+        .icon-detective-page {
+            display: grid;
+            gap: var(--kea-space-3);
+            padding: 1rem;
+            border: 4px solid var(--kea-border);
+            border-radius: calc(var(--kea-radius-lg) + 0.2rem);
+            background:
+                linear-gradient(180deg, rgba(76, 78, 84, 0.95), rgba(34, 36, 41, 0.98)),
+                var(--kea-control-face-dark);
+            box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.12), inset 0 -4px 0 rgba(0, 0, 0, 0.28);
+        }
+
+        .icon-detective-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+            gap: var(--kea-space-3);
+            align-items: stretch;
+        }
+
+        .hud,
+        .icon-board,
+        .coach-panel {
+            padding: 1rem;
+        }
+
+        .hud {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.75rem;
+        }
+
+        .readout {
+            padding: 0.7rem 0.85rem;
+            text-align: center;
+        }
+
+        .readout-label {
+            display: block;
+            margin-bottom: 0.35rem;
+            font-family: var(--kea-font-display);
+            font-size: 0.78rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #d7ffd8;
+        }
+
+        .readout-value {
+            display: block;
+            font-size: clamp(1.2rem, 2vw, 1.65rem);
+            font-weight: 800;
+        }
+
+        .icon-board,
+        .coach-panel {
+            display: grid;
+            gap: var(--kea-space-3);
+            align-content: start;
+        }
+
+        .prompt-screen {
+            padding: 1rem 1.1rem;
+            min-height: 7rem;
+            display: grid;
+            align-content: start;
+            gap: 0.6rem;
+        }
+
+        .prompt-label {
+            margin: 0;
+        }
+
+        .prompt-text {
+            margin: 0;
+            font-size: clamp(1.25rem, 2vw, 1.8rem);
+            line-height: 1.15;
+        }
+
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1rem;
+        }
+
+        .icon-choice {
+            min-height: 170px;
+            padding: 1rem 0.8rem 0.9rem;
+            display: grid;
+            justify-items: center;
+            align-content: center;
+            gap: 0.85rem;
+            text-align: center;
+        }
+
+        .icon-choice.correct {
+            border-color: var(--kea-success);
+            background: linear-gradient(180deg, #d7ffdd 0%, #8effaf 100%);
+        }
+
+        .icon-choice.wrong {
+            border-color: var(--kea-danger);
+            background: linear-gradient(180deg, #ffd4df 0%, #ff8daf 100%);
+        }
+
+        .icon-badge {
+            width: clamp(62px, 8vw, 88px);
+            height: clamp(62px, 8vw, 88px);
+            display: grid;
+            place-items: center;
+            border: 4px solid var(--kea-border);
+            border-radius: 1rem;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(229, 225, 214, 1));
+            box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.7), inset 0 -2px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .icon-choice svg {
+            width: 62%;
+            height: 62%;
+            stroke: var(--kea-border);
+            fill: none;
+            stroke-width: 6;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .icon-name {
+            margin: 0;
+            font-family: var(--kea-font-display);
+            font-weight: 800;
+            font-size: 0.92rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--kea-border);
+        }
+
+        .coach-panel {
+            grid-template-rows: auto auto auto 1fr auto;
+        }
+
+        .coach-copy {
+            margin: 0;
+            color: rgba(255, 248, 238, 0.88);
+            line-height: 1.45;
+        }
+
+        .hint-list {
+            margin: 0;
+            padding-left: 1.1rem;
+            color: rgba(255, 248, 238, 0.88);
+            display: grid;
+            gap: 0.45rem;
+        }
+
+        .feedback-screen {
+            padding: 0.9rem 1rem;
+            min-height: 6.5rem;
+            display: grid;
+            gap: 0.4rem;
+            align-content: start;
+        }
+
+        @media (max-width: 860px) {
+            .icon-detective-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .hud {
+                grid-template-columns: 1fr;
+            }
+
+            .icon-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="kea-page">
+    <div class="kea-shell">
+        <header class="kea-topbar kea-topbar--centered">
+            <a class="kea-back-link" href="index.html">Back to KEA Digi</a>
+            <div class="kea-topbar__brand kea-topbar__brand--center">
+                <div class="kea-title-row">
+                    <h1 class="kea-app-title">Icon Detective</h1>
+                    <div class="kea-skill-chips" aria-label="Skills">
+                        <span class="kea-skill-chip">Icons</span>
+                        <span class="kea-skill-chip">Interface</span>
+                    </div>
+                </div>
+                <p class="kea-app-subtitle" hidden>Read the clue, spot the matching interface icon, and build a streak.</p>
+            </div>
+            <div class="kea-topbar__actions">
+                <button class="kea-button kea-button--secondary" id="helpButton" type="button">How to Play</button>
+                <button class="kea-button" id="resetButton" type="button">New Set</button>
+            </div>
+        </header>
+
+        <main class="kea-content icon-detective-page">
+            <section class="hud kea-console-surface" aria-label="Game status">
+                <div class="readout kea-console-screen">
+                    <span class="readout-label">Round</span>
+                    <span class="readout-value" id="roundValue">1</span>
+                </div>
+                <div class="readout kea-console-screen">
+                    <span class="readout-label">Score</span>
+                    <span class="readout-value" id="scoreValue">0</span>
+                </div>
+                <div class="readout kea-console-screen">
+                    <span class="readout-label">Streak</span>
+                    <span class="readout-value" id="streakValue">0</span>
+                </div>
+            </section>
+
+            <section class="icon-detective-grid">
+                <section class="icon-board kea-console-surface">
+                    <div class="prompt-screen kea-console-screen">
+                        <p class="prompt-label readout-label">Find This Icon</p>
+                        <p class="prompt-text" id="promptText">Open settings.</p>
+                    </div>
+                    <div class="icon-grid" id="iconGrid" aria-live="polite"></div>
+                </section>
+
+                <aside class="coach-panel kea-console-surface">
+                    <div class="feedback-screen kea-console-screen" id="feedbackScreen">
+                        <strong>Ready</strong>
+                        <p>Choose the icon that matches the clue.</p>
+                    </div>
+                    <div class="coach-actions kea-actions">
+                        <button class="kea-button" id="nextButton" type="button" disabled>Next Clue</button>
+                    </div>
+                </aside>
+            </section>
+        </main>
+    </div>
+
+    <div class="kea-help-overlay" id="helpOverlay" hidden>
+        <div class="kea-help-dialog kea-console-surface" role="dialog" aria-modal="true" aria-labelledby="iconHelpTitle">
+            <h2 id="iconHelpTitle" class="kea-section-label">How to Play</h2>
+            <div class="kea-help-copy">
+                <p>Each round gives you one common computer action. Tap the icon that matches what the clue means.</p>
+                <ul>
+                    <li>Look for familiar symbols you have seen in apps and menus.</li>
+                    <li>Try to build a streak by answering several clues in a row.</li>
+                    <li>If you miss, the next clue will still keep the game moving.</li>
+                </ul>
+            </div>
+            <div class="kea-actions">
+                <button class="kea-button kea-button--secondary" id="closeHelpButton" type="button">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const ICONS = [
+            { id: "settings", label: "Settings", prompt: "Open settings.", detail: "The gear icon usually opens app controls and preferences.", svg: '<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="14"></circle><path d="M50 16v10M50 74v10M16 50h10M74 50h10M25 25l7 7M68 68l7 7M25 75l7-7M68 32l7-7"></path></svg>' },
+            { id: "home", label: "Home", prompt: "Go back to the home page.", detail: "The house icon usually takes you to the main screen.", svg: '<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M18 46L50 20l32 26"></path><path d="M28 42v38h44V42"></path><path d="M42 80V57h16v23"></path></svg>' },
+            { id: "search", label: "Search", prompt: "Look for something.", detail: "The magnifying glass helps you find files, pages, or information.", svg: '<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="43" cy="43" r="23"></circle><path d="M60 60l20 20"></path></svg>' },
+            { id: "save", label: "Save", prompt: "Save your work.", detail: "This icon means keep your changes.", svg: '<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M24 18h42l10 10v54H24z"></path><path d="M34 18v22h28V18"></path><rect x="34" y="56" width="32" height="18"></rect></svg>' },
+            { id: "print", label: "Print", prompt: "Print the page.", detail: "A printer icon sends a copy to paper.", svg: '<svg viewBox="0 0 100 100" aria-hidden="true"><rect x="28" y="18" width="44" height="18"></rect><rect x="22" y="36" width="56" height="26" rx="6"></rect><rect x="30" y="54" width="40" height="24"></rect><path d="M68 47h4"></path></svg>' },
+            { id: "undo", label: "Undo", prompt: "Undo the last change.", detail: "Undo goes back one step after a mistake.", svg: '<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M38 30L20 48l18 18"></path><path d="M24 48h28c18 0 28 10 28 24"></path></svg>' },
+            { id: "trash", label: "Delete", prompt: "Delete this item.", detail: "The trash can usually removes something.", svg: '<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M30 30h40"></path><path d="M38 30v-8h24v8"></path><path d="M34 30l4 44h24l4-44"></path><path d="M44 40v24M56 40v24"></path></svg>' },
+            { id: "zoom", label: "Zoom In", prompt: "Make the view bigger.", detail: "Zoom in makes the thing you are viewing appear larger.", svg: '<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="43" cy="43" r="23"></circle><path d="M43 33v20M33 43h20M60 60l20 20"></path></svg>' }
+        ];
+
+        const roundValue = document.getElementById("roundValue");
+        const scoreValue = document.getElementById("scoreValue");
+        const streakValue = document.getElementById("streakValue");
+        const promptText = document.getElementById("promptText");
+        const iconGrid = document.getElementById("iconGrid");
+        const feedbackScreen = document.getElementById("feedbackScreen");
+        const nextButton = document.getElementById("nextButton");
+        const resetButton = document.getElementById("resetButton");
+        const helpButton = document.getElementById("helpButton");
+        const closeHelpButton = document.getElementById("closeHelpButton");
+        const helpOverlay = document.getElementById("helpOverlay");
+
+        let round = 1;
+        let score = 0;
+        let streak = 0;
+        let answered = false;
+        let currentAnswer = null;
+        let availablePrompts = [];
+
+        function shuffle(items) {
+            const clone = [...items];
+            for (let i = clone.length - 1; i > 0; i -= 1) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [clone[i], clone[j]] = [clone[j], clone[i]];
+            }
+            return clone;
+        }
+
+        function drawRound() {
+            if (!availablePrompts.length) availablePrompts = shuffle(ICONS);
+
+            answered = false;
+            currentAnswer = availablePrompts.pop();
+            const choices = shuffle([
+                currentAnswer,
+                ...shuffle(ICONS.filter((icon) => icon.id !== currentAnswer.id)).slice(0, 3)
+            ]);
+
+            roundValue.textContent = String(round);
+            scoreValue.textContent = String(score);
+            streakValue.textContent = String(streak);
+            promptText.textContent = currentAnswer.prompt;
+            feedbackScreen.innerHTML = "<strong>Ready</strong><p>Choose the icon that matches the clue.</p>";
+            nextButton.disabled = true;
+            iconGrid.innerHTML = "";
+
+            choices.forEach((choice) => {
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "kea-button icon-choice";
+                button.setAttribute("aria-label", choice.label);
+                button.innerHTML = `<span class="icon-badge">${choice.svg}</span><p class="icon-name">${choice.label}</p>`;
+                button.addEventListener("click", () => handleChoice(button, choice));
+                iconGrid.appendChild(button);
+            });
+        }
+
+        function handleChoice(button, choice) {
+            if (answered) return;
+
+            answered = true;
+            const isCorrect = choice.id === currentAnswer.id;
+            const buttons = iconGrid.querySelectorAll(".icon-choice");
+
+            buttons.forEach((item) => {
+                item.disabled = true;
+                if (item.getAttribute("aria-label") === currentAnswer.label) item.classList.add("correct");
+            });
+
+            if (isCorrect) {
+                score += 1;
+                streak += 1;
+                button.classList.add("correct");
+                feedbackScreen.innerHTML = `<strong>Correct</strong><p>${currentAnswer.detail}</p>`;
+            } else {
+                streak = 0;
+                button.classList.add("wrong");
+                feedbackScreen.innerHTML = `<strong>Not this one</strong><p>${currentAnswer.detail}</p>`;
+            }
+
+            scoreValue.textContent = String(score);
+            streakValue.textContent = String(streak);
+            nextButton.disabled = false;
+        }
+
+        function nextRound() {
+            round += 1;
+            drawRound();
+        }
+
+        function resetGame() {
+            round = 1;
+            score = 0;
+            streak = 0;
+            availablePrompts = shuffle(ICONS);
+            drawRound();
+        }
+
+        nextButton.addEventListener("click", nextRound);
+        resetButton.addEventListener("click", resetGame);
+        helpButton.addEventListener("click", () => { helpOverlay.hidden = false; });
+        closeHelpButton.addEventListener("click", () => { helpOverlay.hidden = true; });
+        helpOverlay.addEventListener("click", (event) => {
+            if (event.target === helpOverlay) helpOverlay.hidden = true;
+        });
+
+        resetGame();
+    </script>
+</body>
+</html>

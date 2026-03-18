@@ -24,7 +24,7 @@
                 var(--kea-control-face-dark);
             box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.12), inset 0 -4px 0 rgba(0, 0, 0, 0.28);
         }
-        .status-bar { display: grid; grid-template-columns: auto 1fr auto; gap: 0.75rem; align-items: center; padding: 0.8rem 0.95rem; }
+        .status-bar { display: grid; grid-template-columns: auto auto minmax(0,1fr); gap: 0.75rem; align-items: center; padding: 0.8rem 0.95rem; }
         .status-cluster { display: inline-flex; gap: 0.45rem; flex-wrap: wrap; }
         .status-pill { display: inline-flex; align-items: center; min-height: 34px; padding: 0.3rem 0.62rem; border: 3px solid var(--kea-border); border-radius: 999px; background: linear-gradient(180deg, rgba(255,255,255,.94), rgba(234,231,221,.98)); font: 800 .78rem var(--kea-font-display); letter-spacing: .04em; text-transform: uppercase; white-space: nowrap; box-shadow: none; text-shadow: none; }
         .mode-pill { background: linear-gradient(180deg,#8ed8ff 0%,#2f9ee6 100%); }
@@ -40,22 +40,23 @@
             transition: transform .18s ease;
         }
         .timer.pulse { transform: scale(1.06); }
-        .combo-wrap { display: flex; align-items: center; gap: .55rem; justify-self: end; min-width: 0; }
+        .combo-wrap { display: grid; grid-template-columns: auto minmax(0,1fr); align-items: center; gap: .55rem; justify-self: stretch; min-width: 0; width: 100%; }
         .combo-wrap.warning .combo-fill { background: linear-gradient(90deg,#ffec27,#ffa300); }
         .combo-wrap.warning .combo-count { color: #ffdf7a; }
         .combo-wrap.critical { animation: comboJitter .18s linear infinite; }
         .combo-wrap.critical .combo-fill { background: linear-gradient(90deg,#ff77a8,#ff004d); }
         .combo-wrap.critical .combo-count { color: #ff96b8; }
         @keyframes comboJitter { 0%,100% { transform: translateX(0); } 25%,75% { transform: translateX(-1px); } 50% { transform: translateX(1px); } }
-        .combo-bar { width: min(210px,25vw); max-width: 210px; min-width: 112px; height: 20px; background: rgba(12,15,10,.78); border: 3px solid var(--kea-border); border-radius: 999px; position: relative; overflow: hidden; box-shadow: inset 0 3px 5px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.08); }
+        .combo-bar { width: 100%; max-width: none; min-width: 120px; height: 24px; background: rgba(12,15,10,.78); border: 3px solid var(--kea-border); border-radius: 999px; position: relative; overflow: hidden; box-shadow: inset 0 3px 5px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.08); }
         .combo-fill { position: absolute; inset: 0 auto 0 0; width: 0%; background: linear-gradient(90deg,#00e436,#8dffb4); transition: width .1s linear, background .16s ease; }
         .combo-count {
-            min-width: 88px;
+            min-width: 102px;
             padding: 0.5rem 0.75rem;
             font: 800 .84rem var(--kea-font-mono);
             text-transform: uppercase;
             transition: color .16s ease;
             color: #8dff9c;
+            text-align: center;
         }
         .play-area { min-height: 0; display: grid; grid-template-rows: minmax(0,1fr) minmax(0,1fr); gap: 0.75rem; }
         .zone {
@@ -120,12 +121,15 @@
         .tile.spark { animation: slotSpark .28s ease; }
         @keyframes snapPop { 0% { transform: scale(.92); } 55% { transform: scale(1.05); } 100% { transform: scale(1); } }
         @keyframes slotSpark { 0% { box-shadow: 0 0 0 rgba(0,228,54,0); } 40% { box-shadow: 0 0 0 10px rgba(0,228,54,.22); } 100% { box-shadow: 0 0 0 rgba(0,228,54,0); } }
-        .slot-badge, .piece-badge { position: absolute; top: .32rem; min-width: 1.55rem; min-height: 1.55rem; padding: 0 .32rem; display: inline-flex; align-items: center; justify-content: center; border: 2px solid var(--kea-border); border-radius: 999px; background: linear-gradient(180deg, rgba(255,255,255,.94), rgba(234,231,221,.98)); font: 800 .72rem var(--kea-font-display); z-index: 3; box-shadow: none; text-shadow: none; }
-        .slot-badge { left: .32rem; }
-        .piece-badge { right: .32rem; background: rgba(41,173,255,.18); }
+        .slot-badge, .piece-badge { position: absolute; inset: 50% auto auto 50%; min-width: clamp(2.5rem, calc(var(--tile-size) * 0.36), 3.5rem); min-height: clamp(2.5rem, calc(var(--tile-size) * 0.36), 3.5rem); padding: 0 .35rem; display: inline-flex; align-items: center; justify-content: center; border: 3px solid var(--kea-border); border-radius: 999px; background: linear-gradient(180deg, rgba(255,255,255,.94), rgba(234,231,221,.98)); font: 800 clamp(1rem, calc(var(--tile-size) * 0.16), 1.45rem)/1 var(--kea-font-display); letter-spacing: .02em; z-index: 3; box-shadow: none; text-shadow: none; transform: translate(-50%, -50%) scale(.94); opacity: 0; pointer-events: none; transition: opacity .12s ease, transform .12s ease, background .12s ease, color .12s ease, border-color .12s ease; }
+        .typing-mode .slot-badge,
+        .typing-mode .piece-badge { opacity: .94; }
+        .slot-badge.active,
+        .piece-badge.active { opacity: 1; transform: translate(-50%, -50%) scale(1.06); border-color: var(--kea-accent-strong); background: linear-gradient(180deg, #fff0aa 0%, #ffa300 100%); color: var(--kea-border); }
+        .piece-badge { background: linear-gradient(180deg, #dff1ff 0%, #8ed8ff 100%); }
         .board-complete { animation: boardWin .5s ease; }
         @keyframes boardWin { 0%,100% { transform: scale(1); } 50% { transform: scale(1.01); } }
-        @media (max-width: 860px) { .status-bar { grid-template-columns: 1fr; justify-items: stretch; } .timer, .combo-wrap { justify-self: stretch; justify-content: center; } .zone-hint { display: none; } }
+        @media (max-width: 860px) { .status-bar { grid-template-columns: 1fr; justify-items: stretch; } .timer, .combo-wrap { justify-self: stretch; } .combo-wrap { grid-template-columns: auto minmax(0,1fr); } .zone-hint { display: none; } }
         @media (max-width: 640px) { .shape-match-main { padding: .55rem; gap: .55rem; } .status-bar, .zone { padding: .6rem; } .play-area { gap: .55rem; } }
     </style>
 </head>
@@ -134,11 +138,17 @@
         <header class="kea-topbar kea-topbar--centered">
             <a class="kea-back-link" href="index.html">Back to KEA Digi</a>
             <div class="kea-topbar__brand kea-topbar__brand--center">
-                <p class="kea-eyebrow">Shapes and matching</p>
-                <h1 class="kea-app-title">Tangram Match</h1>
-                <p class="kea-app-subtitle">Drag, tap, or type a target-piece combo to snap matches into place.</p>
+                <div class="kea-title-row">
+                    <h1 class="kea-app-title">Tangram Match</h1>
+                    <div class="kea-skill-chips" aria-label="Skills">
+                        <span class="kea-skill-chip">Shapes</span>
+                        <span class="kea-skill-chip">Matching</span>
+                    </div>
+                </div>
+                <p class="kea-app-subtitle" hidden>Drag, tap, or type a target-piece combo to snap matches into place.</p>
             </div>
             <div class="kea-topbar__actions">
+                <button class="kea-button kea-button--secondary" type="button" id="helpButton">How to Play</button>
                 <button class="kea-button" type="button" id="startButton">Start Game</button>
             </div>
         </header>
@@ -151,8 +161,8 @@
                 </div>
                 <p class="timer kea-console-screen" id="timer">00:00.000</p>
                 <div class="combo-wrap" id="comboWrap">
-                    <div class="combo-bar" aria-hidden="true"><div class="combo-fill" id="comboFill"></div></div>
                     <div class="combo-count kea-console-screen" id="comboCount">Combo x0</div>
+                    <div class="combo-bar" aria-hidden="true"><div class="combo-fill" id="comboFill"></div></div>
                 </div>
             </section>
             <section class="play-area">
@@ -173,11 +183,27 @@
             </section>
         </main>
     </div>
+    <div class="kea-help-overlay" id="helpOverlay" hidden>
+        <div class="kea-help-dialog kea-console-surface" role="dialog" aria-modal="true" aria-labelledby="shapeHelpTitle">
+            <h2 id="shapeHelpTitle" class="kea-section-label">How to Play</h2>
+            <div class="kea-help-copy">
+                <p>Match each piece to a target with the same shape, and later the same color too.</p>
+                <ul>
+                    <li>Drag a piece onto a matching target, or tap a piece and then a target.</li>
+                    <li>When typing mode is active, press a target number and a piece letter to place it.</li>
+                    <li>Build combos by making quick correct matches before the combo bar runs out.</li>
+                </ul>
+            </div>
+            <div class="kea-actions">
+                <button class="kea-button kea-button--secondary" type="button" id="closeHelpButton">Close</button>
+            </div>
+        </div>
+    </div>
     <script>
-        const board = document.getElementById('board'), pieces = document.getElementById('pieces'), timerDisplay = document.getElementById('timer'), comboWrap = document.getElementById('comboWrap'), comboFill = document.getElementById('comboFill'), comboCountDisplay = document.getElementById('comboCount'), levelPill = document.getElementById('levelPill'), modePill = document.getElementById('modePill'), typingPill = document.getElementById('typingPill'), startButton = document.getElementById('startButton');
+        const board = document.getElementById('board'), pieces = document.getElementById('pieces'), timerDisplay = document.getElementById('timer'), comboWrap = document.getElementById('comboWrap'), comboFill = document.getElementById('comboFill'), comboCountDisplay = document.getElementById('comboCount'), levelPill = document.getElementById('levelPill'), modePill = document.getElementById('modePill'), typingPill = document.getElementById('typingPill'), startButton = document.getElementById('startButton'), helpButton = document.getElementById('helpButton'), closeHelpButton = document.getElementById('closeHelpButton'), helpOverlay = document.getElementById('helpOverlay');
         const TARGET_KEYS = ['1','2','3','4','5','6','7','8','9','0'], PIECE_KEYS = ['A','S','D','F','G','H','J','K','L','P'], SHAPE_TYPES = ['square','triangle','circle'];
         const COLORS = [{ key:'red', value:'#FF004D' },{ key:'green', value:'#00E436' },{ key:'blue', value:'#29ADFF' },{ key:'peach', value:'#FFCCAA' },{ key:'lavender', value:'#83769C' },{ key:'pink', value:'#FF77A8' },{ key:'orange', value:'#FFA300' },{ key:'purple', value:'#7E2553' },{ key:'brown', value:'#AB5236' },{ key:'grey', value:'#C2C3C7' }];
-        let level = 1, currentRound = null, selectedPieceId = null, pendingTargetSlotId = null, pendingPieceId = null, startTime = 0, interval = null, comboCount = 0, comboDecayInterval = null, comboValue = 0, completingLevel = false;
+        let level = 1, currentRound = null, selectedPieceId = null, pendingTargetSlotId = null, pendingPieceId = null, heldTargetShortcut = null, heldPieceShortcut = null, startTime = 0, interval = null, comboCount = 0, comboDecayInterval = null, comboValue = 0, completingLevel = false;
 
         function shuffle(arr) { const clone = [...arr]; for (let i = clone.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [clone[i], clone[j]] = [clone[j], clone[i]]; } return clone; }
         function getLevelConfig(n) { const pieceCount = Math.min(n,10), colorMode = n >= 4, shapeMode = n >= 7, typingMode = n >= 3; return { pieceCount, colorMode, shapeMode, typingMode, colorCount: colorMode ? Math.min(1 + Math.floor((n - 4) / 2), Math.min(pieceCount, COLORS.length)) : 1, shapeCount: shapeMode ? Math.min(1 + Math.floor((n - 7) / 2), SHAPE_TYPES.length) : 1 }; }
@@ -212,7 +238,7 @@
                 board.appendChild(tile);
             });
             currentRound.pieces.forEach((piece) => pieces.appendChild(createPieceElement(piece)));
-            syncBoardState(); fitBoardToViewport(); updateTypingHint();
+            syncBoardState(); fitBoardToViewport(); updateTypingHint(); updateShortcutBadges();
         }
 
         function createPieceElement(piece) {
@@ -226,13 +252,27 @@
 
         function selectPiece(pieceId) { selectedPieceId = pieceId; document.querySelectorAll('.shape').forEach((el) => el.classList.toggle('selected', el.dataset.pieceId === pieceId)); }
         function clearSelection() { selectedPieceId = null; document.querySelectorAll('.shape').forEach((el) => el.classList.remove('selected')); document.querySelectorAll('.tile').forEach((tile) => tile.classList.remove('highlight', 'invalid')); }
-        function clearTypingSelection() { pendingTargetSlotId = null; pendingPieceId = null; updateTypingHint(); }
-        function setPendingTarget(slotId) { pendingTargetSlotId = slotId; updateTypingHint(); attemptKeyboardPlacement(); }
-        function setPendingPiece(pieceId) { pendingPieceId = pieceId; updateTypingHint(); attemptKeyboardPlacement(); }
+        function clearTypingSelection() { pendingTargetSlotId = null; pendingPieceId = null; updateTypingHint(); updateShortcutBadges(); }
+        function setPendingTarget(slotId) { pendingTargetSlotId = slotId; updateTypingHint(); updateShortcutBadges(); attemptKeyboardPlacement(); }
+        function setPendingPiece(pieceId) { pendingPieceId = pieceId; updateTypingHint(); updateShortcutBadges(); attemptKeyboardPlacement(); }
         function updateTypingHint() {
             if (!currentRound || !currentRound.typingMode) { typingPill.textContent = 'Typing locked'; return; }
             const target = pendingTargetSlotId ? getSlotById(pendingTargetSlotId) : null, piece = pendingPieceId ? getPieceById(pendingPieceId) : null;
             typingPill.textContent = target && piece ? `${target.shortcut} + ${piece.shortcut}` : target ? `Target ${target.shortcut}` : piece ? `Piece ${piece.shortcut}` : 'Type 1 + A';
+        }
+        function updateShortcutBadges() {
+            const typingMode = Boolean(currentRound && currentRound.typingMode);
+            document.querySelectorAll('.tile, .shape').forEach((el) => el.classList.toggle('typing-mode', typingMode));
+            document.querySelectorAll('.slot-badge').forEach((badge) => {
+                const shortcut = badge.parentElement?.dataset.shortcut;
+                const slotId = badge.parentElement?.dataset.slotId;
+                badge.classList.toggle('active', typingMode && (shortcut === heldTargetShortcut || slotId === pendingTargetSlotId));
+            });
+            document.querySelectorAll('.piece-badge').forEach((badge) => {
+                const shortcut = badge.parentElement?.dataset.shortcut;
+                const pieceId = badge.parentElement?.dataset.pieceId;
+                badge.classList.toggle('active', typingMode && (shortcut === heldPieceShortcut || pieceId === pendingPieceId));
+            });
         }
         function movePieceToTray(pieceId, resetComboOnMove = true) { const piece = getPieceById(pieceId); if (!piece) return; piece.slotId = null; syncBoardState(); if (resetComboOnMove) resetCombo(); }
         function placementFx(slotId, pieceId) {
@@ -288,21 +328,33 @@
             comboDecayInterval = setInterval(() => { comboValue -= .01; if (comboValue <= 0) { comboValue = 0; comboCount = 0; clearInterval(comboDecayInterval); } updateComboDisplay(); }, 90);
         }
         function resetCombo() { comboCount = 0; comboValue = 0; clearInterval(comboDecayInterval); updateComboDisplay(); }
-        function startGame() { completingLevel = false; selectedPieceId = null; pendingTargetSlotId = null; pendingPieceId = null; currentRound = buildRound(level); updateHud(currentRound); renderBoard(); startTimer(); }
+        function startGame() { completingLevel = false; selectedPieceId = null; pendingTargetSlotId = null; pendingPieceId = null; heldTargetShortcut = null; heldPieceShortcut = null; currentRound = buildRound(level); updateHud(currentRound); renderBoard(); startTimer(); }
         const normalizeTargetKey = (event) => event.code && event.code.startsWith('Digit') ? (event.code === 'Digit0' ? '0' : event.code.replace('Digit', '')) : null;
         const normalizePieceKey = (event) => { const key = (event.key || '').toUpperCase(); return PIECE_KEYS.includes(key) ? key : null; };
 
         pieces.addEventListener('dragover', (event) => event.preventDefault());
         pieces.addEventListener('drop', (event) => { event.preventDefault(); const pieceId = event.dataTransfer.getData('text/plain'); if (pieceId) movePieceToTray(pieceId); });
         startButton.addEventListener('click', () => { level = 1; resetCombo(); timerDisplay.textContent = '00:00.000'; startGame(); });
+        helpButton.addEventListener('click', () => { helpOverlay.hidden = false; });
+        closeHelpButton.addEventListener('click', () => { helpOverlay.hidden = true; });
+        helpOverlay.addEventListener('click', (event) => { if (event.target === helpOverlay) helpOverlay.hidden = true; });
         window.addEventListener('keydown', (event) => {
             if (!currentRound || !currentRound.typingMode || event.repeat) return;
-            if (event.key === 'Escape') { clearSelection(); clearTypingSelection(); return; }
-            const targetShortcut = normalizeTargetKey(event); if (targetShortcut) { const slot = getSlotByShortcut(targetShortcut); if (slot) { setPendingTarget(slot.slotId); return; } }
-            const pieceShortcut = normalizePieceKey(event); if (pieceShortcut) { const piece = getPieceByShortcut(pieceShortcut); if (piece) { selectPiece(piece.id); setPendingPiece(piece.id); } }
+            if (event.key === 'Escape') { heldTargetShortcut = null; heldPieceShortcut = null; clearSelection(); clearTypingSelection(); updateShortcutBadges(); return; }
+            const targetShortcut = normalizeTargetKey(event); if (targetShortcut) { heldTargetShortcut = targetShortcut; updateShortcutBadges(); const slot = getSlotByShortcut(targetShortcut); if (slot) { setPendingTarget(slot.slotId); return; } }
+            const pieceShortcut = normalizePieceKey(event); if (pieceShortcut) { heldPieceShortcut = pieceShortcut; updateShortcutBadges(); const piece = getPieceByShortcut(pieceShortcut); if (piece) { selectPiece(piece.id); setPendingPiece(piece.id); } }
         });
+        window.addEventListener('keyup', (event) => {
+            if (!currentRound || !currentRound.typingMode) return;
+            const targetShortcut = normalizeTargetKey(event);
+            const pieceShortcut = normalizePieceKey(event);
+            if (targetShortcut && heldTargetShortcut === targetShortcut) heldTargetShortcut = null;
+            if (pieceShortcut && heldPieceShortcut === pieceShortcut) heldPieceShortcut = null;
+            updateShortcutBadges();
+        });
+        window.addEventListener('blur', () => { heldTargetShortcut = null; heldPieceShortcut = null; updateShortcutBadges(); });
         window.addEventListener('resize', () => { if (currentRound) fitBoardToViewport(); });
-        window.addEventListener('load', () => { timerDisplay.textContent = '00:00.000'; updateComboDisplay(); currentRound = buildRound(level); updateHud(currentRound); renderBoard(); });
+        window.addEventListener('load', () => { timerDisplay.textContent = '00:00.000'; updateComboDisplay(); currentRound = buildRound(level); updateHud(currentRound); renderBoard(); updateShortcutBadges(); });
     </script>
 </body>
 </html>

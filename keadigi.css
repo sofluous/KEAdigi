@@ -111,6 +111,39 @@ textarea {
   color: rgba(255, 248, 238, 0.8);
 }
 
+.kea-title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+}
+
+.kea-skill-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.kea-skill-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.8rem;
+  padding: 0.2rem 0.55rem;
+  border: 2px solid rgba(255, 248, 238, 0.26);
+  border-radius: 999px;
+  background: rgba(255, 248, 238, 0.12);
+  color: rgba(255, 248, 238, 0.92);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  box-shadow: none;
+  text-shadow: none;
+}
+
 .kea-app-title {
   margin: 0;
   font-family: var(--kea-font-display);
@@ -126,6 +159,10 @@ textarea {
   max-width: 32rem;
   font-size: 0.92rem;
   color: rgba(255, 248, 238, 0.86);
+}
+
+.kea-app-subtitle[hidden] {
+  display: none;
 }
 
 .kea-topbar__actions {
@@ -300,6 +337,24 @@ input:focus-visible {
   text-shadow: none;
 }
 
+.kea-chip--wip {
+  background: linear-gradient(180deg, #fff0aa 0%, #ffa300 100%);
+  color: var(--kea-border);
+}
+
+.kea-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--kea-space-2);
+  align-items: flex-end;
+  justify-content: flex-end;
+  margin-top: auto;
+}
+
+.kea-actions--center {
+  justify-content: center;
+}
+
 .kea-toolbar {
   display: grid;
   gap: var(--kea-space-2);
@@ -388,8 +443,9 @@ input:focus-visible {
 .kea-card {
   padding: 1.1rem;
   display: grid;
+  grid-template-rows: auto auto auto 1fr auto;
   gap: var(--kea-space-2);
-  align-content: start;
+  align-content: stretch;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(255, 248, 238, 0.98)),
     var(--kea-panel-strong);
@@ -412,8 +468,36 @@ input:focus-visible {
   gap: 0.5rem;
 }
 
+.kea-card__thumb {
+  min-height: 7.25rem;
+  border: 4px solid var(--kea-border);
+  border-radius: 1rem;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 30% 25%, rgba(255,255,255,0.45), transparent 24%),
+    linear-gradient(180deg, rgba(103, 107, 115, 0.92), rgba(53, 56, 62, 0.98));
+  box-shadow: inset 0 2px 0 rgba(255,255,255,0.12), inset 0 -3px 0 rgba(0,0,0,0.26);
+}
+
+.kea-card__thumb-mark {
+  width: 4.2rem;
+  height: 4.2rem;
+  display: grid;
+  place-items: center;
+  border: 4px solid var(--kea-border);
+  border-radius: 1rem;
+  background: linear-gradient(180deg, rgba(255,255,255,.94), rgba(234,231,221,.98));
+  font-family: var(--kea-font-display);
+  font-size: 1.3rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--kea-border);
+}
+
 .kea-card__link {
-  justify-self: start;
+  justify-self: center;
 }
 
 .kea-coming-soon {
@@ -421,6 +505,45 @@ input:focus-visible {
   display: grid;
   gap: var(--kea-space-2);
   background: rgba(255, 248, 238, 0.7);
+}
+
+.kea-help-overlay[hidden] {
+  display: none;
+}
+
+.kea-help-overlay {
+  position: fixed;
+  inset: 0;
+  padding: var(--kea-space-4);
+  background: rgba(17, 17, 17, 0.52);
+  z-index: 40;
+}
+
+.kea-help-dialog {
+  max-width: 38rem;
+  margin: min(12vh, 6rem) auto 0;
+  padding: var(--kea-space-4);
+  display: grid;
+  gap: var(--kea-space-3);
+}
+
+.kea-help-copy {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.kea-help-copy p,
+.kea-help-copy li {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.45;
+}
+
+.kea-help-copy ul {
+  margin: 0;
+  padding-left: 1.2rem;
+  display: grid;
+  gap: 0.5rem;
 }
 
 .visually-hidden {

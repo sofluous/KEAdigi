@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Color Sort Studio | KEA Digi</title>
+    <link rel="stylesheet" href="keadigi.css" />
+    <style>
+        .color-sort-page {
+            display: grid;
+            grid-template-rows: auto minmax(0, 1fr);
+            gap: var(--kea-space-3);
+            min-height: 0;
+            padding: 1rem;
+            border: 4px solid var(--kea-border);
+            border-radius: calc(var(--kea-radius-lg) + 0.2rem);
+            background:
+                linear-gradient(180deg, rgba(76, 78, 84, 0.95), rgba(34, 36, 41, 0.98)),
+                var(--kea-control-face-dark);
+            box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.12), inset 0 -4px 0 rgba(0, 0, 0, 0.28);
+        }
+
+        .sort-hud {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 0.75rem;
+            padding: 1rem;
+        }
+
+        .sort-readout {
+            padding: 0.72rem 0.9rem;
+            text-align: center;
+        }
+
+        .sort-readout__label {
+            display: block;
+            margin-bottom: 0.35rem;
+            font-family: var(--kea-font-display);
+            font-size: 0.78rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #d7ffd8;
+        }
+
+        .sort-readout__value {
+            display: block;
+            font-size: clamp(1.15rem, 1.9vw, 1.55rem);
+            font-weight: 800;
+        }
+
+        .sort-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.85fr);
+            gap: var(--kea-space-3);
+            align-items: stretch;
+        }
+
+        .sort-board,
+        .sort-console {
+            padding: 1rem;
+            display: grid;
+            gap: var(--kea-space-3);
+            align-content: stretch;
+            min-height: 0;
+        }
+
+        .sort-board {
+            grid-template-rows: auto auto minmax(0, 1fr);
+        }
+
+        .sort-console {
+            grid-template-rows: auto 1fr auto;
+        }
+
+        .prompt-screen,
+        .feedback-screen {
+            padding: 0.95rem 1rem;
+            display: grid;
+            gap: 0.5rem;
+            align-content: start;
+        }
+
+        .prompt-screen p,
+        .feedback-screen p,
+        .guide-list p {
+            margin: 0;
+        }
+
+        .prompt-screen strong,
+        .feedback-screen strong {
+            display: block;
+            font-size: 1.08rem;
+        }
+
+        .swatch-tray {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-rows: repeat(3, 104px);
+            gap: 0.85rem;
+            min-height: calc((104px * 3) + (0.85rem * 2) + 2rem);
+            max-height: calc((104px * 3) + (0.85rem * 2) + 2rem);
+            align-content: start;
+            padding: 1rem;
+        }
+
+        .swatch-button {
+            min-height: 104px;
+            height: 104px;
+            padding: 0.55rem;
+            display: grid;
+            gap: 0.55rem;
+            grid-template-rows: 52px minmax(0, 1fr);
+            align-content: start;
+            justify-items: center;
+            text-align: center;
+        }
+
+        .swatch-slot {
+            min-height: 104px;
+        }
+
+        .swatch-slot--empty,
+        .bucket-slot--empty {
+            border: 3px dashed rgba(255, 248, 238, 0.2);
+            border-radius: 0.85rem;
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .swatch-button.is-selected {
+            background: linear-gradient(180deg, #fff0aa 0%, #ffa300 100%);
+        }
+
+        .swatch-chip {
+            width: 52px;
+            height: 52px;
+            border: 4px solid var(--kea-border);
+            border-radius: 0.95rem;
+            box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.32), inset 0 -2px 0 rgba(0, 0, 0, 0.18);
+        }
+
+        .swatch-name {
+            margin: 0;
+            font-family: var(--kea-font-display);
+            font-size: 0.76rem;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--kea-border);
+        }
+
+        .bucket-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.85rem;
+            grid-auto-rows: 1fr;
+        }
+
+        .bucket {
+            padding: 0.8rem;
+            display: grid;
+            grid-template-rows: auto auto minmax(0, 1fr);
+            gap: 0.75rem;
+            align-content: stretch;
+            min-height: 260px;
+            background:
+                linear-gradient(180deg, rgba(103, 107, 115, 0.92), rgba(53, 56, 62, 0.98));
+            box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.1), inset 0 -3px 0 rgba(0, 0, 0, 0.26);
+        }
+
+        .bucket.is-targeted {
+            border-color: var(--kea-accent-strong);
+        }
+
+        .bucket-label {
+            margin: 0;
+        }
+
+        .bucket-count {
+            color: rgba(255, 248, 238, 0.82);
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .bucket-slots {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-rows: repeat(1, 104px);
+            gap: 0.55rem;
+            min-height: 0;
+            align-content: start;
+            overflow: hidden;
+        }
+
+        .placed-swatch {
+            display: grid;
+            gap: 0.35rem;
+            justify-items: center;
+            grid-template-rows: 52px minmax(0, 1fr);
+            padding: 0.55rem 0.4rem 0.4rem;
+            border: 3px solid var(--kea-border);
+            border-radius: 0.85rem;
+            background: linear-gradient(180deg, rgba(255,255,255,.94), rgba(234,231,221,.98));
+            min-height: 104px;
+        }
+
+        .bucket-slot {
+            min-height: 104px;
+        }
+
+        .placed-swatch__chip {
+            width: 52px;
+            height: 52px;
+            border: 4px solid var(--kea-border);
+            border-radius: 0.95rem;
+            flex: 0 0 auto;
+            box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.32), inset 0 -2px 0 rgba(0, 0, 0, 0.18);
+        }
+
+        .placed-swatch__name {
+            margin: 0;
+            font-family: var(--kea-font-display);
+            font-size: 0.66rem;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--kea-border);
+            text-align: center;
+        }
+
+        .guide-list {
+            display: grid;
+            gap: 0.55rem;
+            color: rgba(255, 248, 238, 0.88);
+        }
+
+        .sort-actions {
+            justify-content: flex-end;
+        }
+
+        @media (max-width: 900px) {
+            .sort-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .bucket-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 680px) {
+            .sort-hud {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .swatch-tray,
+            .bucket-slots {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .swatch-tray {
+                grid-template-rows: repeat(5, 104px);
+                min-height: calc((104px * 5) + (0.85rem * 4) + 2rem);
+                max-height: calc((104px * 5) + (0.85rem * 4) + 2rem);
+            }
+
+            .bucket-slots {
+                grid-template-rows: repeat(2, 104px);
+            }
+        }
+    </style>
+</head>
+<body class="kea-page">
+    <div class="kea-shell">
+        <header class="kea-topbar kea-topbar--centered">
+            <a class="kea-back-link" href="index.html">Back to KEA Digi</a>
+            <div class="kea-topbar__brand kea-topbar__brand--center">
+                <div class="kea-title-row">
+                    <h1 class="kea-app-title">Color Sort Studio</h1>
+                    <div class="kea-skill-chips" aria-label="Skills">
+                        <span class="kea-skill-chip">Color</span>
+                        <span class="kea-skill-chip">Sorting</span>
+                    </div>
+                </div>
+                <p class="kea-app-subtitle" hidden>Pick a swatch, then place it into the color group where it belongs.</p>
+            </div>
+            <div class="kea-topbar__actions">
+                <button class="kea-button kea-button--secondary" id="helpButton" type="button">How to Play</button>
+                <button class="kea-button" id="newRoundButton" type="button">New Round</button>
+            </div>
+        </header>
+
+        <main class="kea-content color-sort-page">
+            <section class="sort-hud kea-console-surface" aria-label="Color Sort Studio status">
+                <div class="sort-readout kea-console-screen">
+                    <span class="sort-readout__label">Round</span>
+                    <span class="sort-readout__value" id="roundValue">1</span>
+                </div>
+                <div class="sort-readout kea-console-screen">
+                    <span class="sort-readout__label">Sorted</span>
+                    <span class="sort-readout__value" id="sortedValue">0 / 9</span>
+                </div>
+                <div class="sort-readout kea-console-screen">
+                    <span class="sort-readout__label">Score</span>
+                    <span class="sort-readout__value" id="scoreValue">0</span>
+                </div>
+                <div class="sort-readout kea-console-screen">
+                    <span class="sort-readout__label">Streak</span>
+                    <span class="sort-readout__value" id="streakValue">0</span>
+                </div>
+            </section>
+
+            <section class="sort-grid">
+                <section class="sort-board kea-console-surface">
+                    <div class="prompt-screen kea-console-screen" id="promptScreen">
+                        <strong>Sort The Palette</strong>
+                        <p>Warm colors feel sunlit or fiery. Cool colors feel watery or icy. Neutral colors feel balanced or earthy.</p>
+                    </div>
+
+                    <section>
+                        <p class="kea-console-label">Palette Tray</p>
+                        <div class="swatch-tray kea-console-well" id="swatchTray"></div>
+                    </section>
+
+                    <section>
+                        <p class="kea-console-label">Color Groups</p>
+                        <div class="bucket-grid" id="bucketGrid"></div>
+                    </section>
+                </section>
+
+                <aside class="sort-console kea-console-surface">
+                    <div class="feedback-screen kea-console-screen" id="feedbackScreen">
+                        <strong>Ready</strong>
+                        <p>Select a swatch from the tray, then tap a color group.</p>
+                    </div>
+
+                    <div class="sort-actions kea-actions">
+                        <button class="kea-button kea-button--secondary" id="clearButton" type="button">Clear Sort</button>
+                        <button class="kea-button" id="nextRoundButton" type="button" disabled>Next Round</button>
+                    </div>
+                </aside>
+            </section>
+        </main>
+    </div>
+
+    <div class="kea-help-overlay" id="helpOverlay" hidden>
+        <div class="kea-help-dialog kea-console-surface" role="dialog" aria-modal="true" aria-labelledby="colorSortHelpTitle">
+            <h2 id="colorSortHelpTitle" class="kea-section-label">How to Play</h2>
+            <div class="kea-help-copy">
+                <p>Select a swatch from the tray, then tap the color group where it belongs.</p>
+                <ul>
+                    <li>Warm colors feel sunlit or fiery.</li>
+                    <li>Cool colors feel watery, icy, or leafy.</li>
+                    <li>Neutral colors feel earthy, balanced, or quiet.</li>
+                </ul>
+            </div>
+            <div class="kea-actions">
+                <button class="kea-button kea-button--secondary" id="closeHelpButton" type="button">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const ROUNDS = [
+            [
+                { id: "tomato", name: "Tomato", hex: "#ff5a36", group: "warm" },
+                { id: "sunbeam", name: "Sunbeam", hex: "#ffd84b", group: "warm" },
+                { id: "apricot", name: "Apricot", hex: "#ffb173", group: "warm" },
+                { id: "lagoon", name: "Lagoon", hex: "#1fa7d8", group: "cool" },
+                { id: "mint", name: "Mint", hex: "#7de2b1", group: "cool" },
+                { id: "violet", name: "Violet", hex: "#6d73ff", group: "cool" },
+                { id: "stone", name: "Stone", hex: "#a7a39a", group: "neutral" },
+                { id: "sand", name: "Sand", hex: "#dfc29f", group: "neutral" },
+                { id: "walnut", name: "Walnut", hex: "#8d6541", group: "neutral" }
+            ],
+            [
+                { id: "rose", name: "Rose", hex: "#ff7691", group: "warm" },
+                { id: "gold", name: "Gold", hex: "#f2b630", group: "warm" },
+                { id: "peach", name: "Peach", hex: "#ffc49a", group: "warm" },
+                { id: "ocean", name: "Ocean", hex: "#267dff", group: "cool" },
+                { id: "ice", name: "Ice", hex: "#bfefff", group: "cool" },
+                { id: "fern", name: "Fern", hex: "#43b97c", group: "cool" },
+                { id: "charcoal", name: "Charcoal", hex: "#6a6872", group: "neutral" },
+                { id: "linen", name: "Linen", hex: "#f4e7d1", group: "neutral" },
+                { id: "cocoa", name: "Cocoa", hex: "#71513e", group: "neutral" }
+            ],
+            [
+                { id: "ember", name: "Ember", hex: "#ff6c2f", group: "warm" },
+                { id: "lemon", name: "Lemon", hex: "#fff064", group: "warm" },
+                { id: "coral", name: "Coral", hex: "#ff9186", group: "warm" },
+                { id: "aqua", name: "Aqua", hex: "#40d8df", group: "cool" },
+                { id: "indigo", name: "Indigo", hex: "#515ae7", group: "cool" },
+                { id: "spruce", name: "Spruce", hex: "#2d8a73", group: "cool" },
+                { id: "fog", name: "Fog", hex: "#c5c6cc", group: "neutral" },
+                { id: "clay", name: "Clay", hex: "#b48f74", group: "neutral" },
+                { id: "ash", name: "Ash", hex: "#8a837e", group: "neutral" }
+            ]
+        ];
+
+        const GROUPS = [
+            { id: "warm", label: "Warm" },
+            { id: "cool", label: "Cool" },
+            { id: "neutral", label: "Neutral" }
+        ];
+
+        const roundValue = document.getElementById("roundValue");
+        const sortedValue = document.getElementById("sortedValue");
+        const scoreValue = document.getElementById("scoreValue");
+        const streakValue = document.getElementById("streakValue");
+        const swatchTray = document.getElementById("swatchTray");
+        const bucketGrid = document.getElementById("bucketGrid");
+        const feedbackScreen = document.getElementById("feedbackScreen");
+        const clearButton = document.getElementById("clearButton");
+        const nextRoundButton = document.getElementById("nextRoundButton");
+        const newRoundButton = document.getElementById("newRoundButton");
+        const helpButton = document.getElementById("helpButton");
+        const closeHelpButton = document.getElementById("closeHelpButton");
+        const helpOverlay = document.getElementById("helpOverlay");
+
+        let roundIndex = 0;
+        let score = 0;
+        let streak = 0;
+        let availableRounds = [];
+        let currentRound = [];
+        let selectedSwatchId = null;
+        let placements = {};
+
+        function shuffle(items) {
+            const clone = [...items];
+            for (let i = clone.length - 1; i > 0; i -= 1) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [clone[i], clone[j]] = [clone[j], clone[i]];
+            }
+            return clone;
+        }
+
+        function getSwatchById(id) {
+            return currentRound.find((swatch) => swatch.id === id);
+        }
+
+        function buildBuckets() {
+            bucketGrid.innerHTML = "";
+            GROUPS.forEach((group) => {
+                const count = Object.values(placements).filter((value) => value === group.id).length;
+                const groupedSwatches = currentRound.filter((swatch) => placements[swatch.id] === group.id);
+                const bucket = document.createElement("button");
+                bucket.type = "button";
+                bucket.className = "bucket kea-surface";
+                bucket.dataset.group = group.id;
+                bucket.innerHTML = `
+                    <p class="bucket-label kea-console-label">${group.label}</p>
+                    <p class="bucket-count">${count} sorted</p>
+                    <div class="bucket-slots"></div>
+                `;
+                bucket.addEventListener("click", () => placeSelectedSwatch(group.id));
+
+                const slotHost = bucket.querySelector(".bucket-slots");
+                const bucketCapacity = 3;
+                for (let index = 0; index < bucketCapacity; index += 1) {
+                    const slot = document.createElement("div");
+                    slot.className = "bucket-slot";
+                    const swatch = groupedSwatches[index];
+                    if (swatch) {
+                        slot.classList.add("placed-swatch");
+                        slot.innerHTML = `
+                            <span class="placed-swatch__chip" style="background:${swatch.hex}"></span>
+                            <p class="placed-swatch__name">${swatch.name}</p>
+                        `;
+                    } else {
+                        slot.classList.add("bucket-slot--empty");
+                    }
+                    slotHost.appendChild(slot);
+                }
+
+                bucketGrid.appendChild(bucket);
+            });
+        }
+
+        function buildTray() {
+            swatchTray.innerHTML = "";
+            currentRound.forEach((swatch) => {
+                const slot = document.createElement("div");
+                slot.className = "swatch-slot";
+                if (placements[swatch.id]) {
+                    slot.classList.add("swatch-slot--empty");
+                    swatchTray.appendChild(slot);
+                    return;
+                }
+
+                    const button = document.createElement("button");
+                    button.type = "button";
+                    button.className = "kea-button swatch-button";
+                    if (selectedSwatchId === swatch.id) button.classList.add("is-selected");
+                    button.innerHTML = `
+                        <span class="swatch-chip" style="background:${swatch.hex}"></span>
+                        <p class="swatch-name">${swatch.name}</p>
+                    `;
+                    button.addEventListener("click", () => {
+                        selectedSwatchId = selectedSwatchId === swatch.id ? null : swatch.id;
+                        updateBoard();
+                    });
+                    slot.appendChild(button);
+                    swatchTray.appendChild(slot);
+                });
+        }
+
+        function updateHud() {
+            const sortedCount = Object.keys(placements).length;
+            roundValue.textContent = String(roundIndex + 1);
+            sortedValue.textContent = `${sortedCount} / ${currentRound.length}`;
+            scoreValue.textContent = String(score);
+            streakValue.textContent = String(streak);
+            nextRoundButton.disabled = sortedCount !== currentRound.length;
+        }
+
+        function updateBoard() {
+            buildTray();
+            buildBuckets();
+            updateHud();
+        }
+
+        function finishRound() {
+            const correct = currentRound.every((swatch) => placements[swatch.id] === swatch.group);
+            if (correct) {
+                score += currentRound.length;
+                streak += 1;
+                feedbackScreen.innerHTML = "<strong>Sorted</strong><p>You grouped the colors correctly. Warm, cool, and neutral are all in the right places.</p>";
+            } else {
+                streak = 0;
+                feedbackScreen.innerHTML = "<strong>Almost</strong><p>Some swatches are in the wrong group. Clear the board and try again.</p>";
+            }
+            updateHud();
+        }
+
+        function placeSelectedSwatch(groupId) {
+            if (!selectedSwatchId) {
+                feedbackScreen.innerHTML = "<strong>Select a swatch</strong><p>Pick a color from the tray first, then tap a color group.</p>";
+                return;
+            }
+
+            placements[selectedSwatchId] = groupId;
+            const swatch = getSwatchById(selectedSwatchId);
+            if (swatch.group === groupId) {
+                feedbackScreen.innerHTML = `<strong>Nice sort</strong><p>${swatch.name} fits in the ${groupId} group.</p>`;
+            } else {
+                feedbackScreen.innerHTML = `<strong>Check this one</strong><p>${swatch.name} may belong in a different group.</p>`;
+            }
+            selectedSwatchId = null;
+            updateBoard();
+
+            if (Object.keys(placements).length === currentRound.length) finishRound();
+        }
+
+        function startRound(index) {
+            roundIndex = index;
+            if (!availableRounds.length) availableRounds = shuffle(ROUNDS);
+            currentRound = shuffle(availableRounds.pop()).map((swatch) => ({ ...swatch }));
+            selectedSwatchId = null;
+            placements = {};
+            feedbackScreen.innerHTML = "<strong>Ready</strong><p>Select a swatch from the tray, then tap the group where it belongs.</p>";
+            updateBoard();
+        }
+
+        function nextRound() {
+            startRound((roundIndex + 1) % ROUNDS.length);
+        }
+
+        clearButton.addEventListener("click", () => {
+            selectedSwatchId = null;
+            placements = {};
+            feedbackScreen.innerHTML = "<strong>Cleared</strong><p>The palette is back in the tray. Try sorting again.</p>";
+            updateBoard();
+        });
+
+        nextRoundButton.addEventListener("click", nextRound);
+        newRoundButton.addEventListener("click", nextRound);
+        helpButton.addEventListener("click", () => { helpOverlay.hidden = false; });
+        closeHelpButton.addEventListener("click", () => { helpOverlay.hidden = true; });
+        helpOverlay.addEventListener("click", (event) => {
+            if (event.target === helpOverlay) helpOverlay.hidden = true;
+        });
+
+        startRound(0);
+    </script>
+</body>
+</html>
