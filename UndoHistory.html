@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Undo History | KEA Digi</title>
+    <link rel="stylesheet" href="keadigi.css" />
+    <style>
+        html, body { height:100%; overflow:hidden; }
+        body.kea-page { overflow:hidden; }
+        .kea-shell { height:100dvh; min-height:100vh; overflow:hidden; }
+        .kea-topbar { flex:0 0 auto; padding:0.65rem 0.9rem; }
+        .history-page { display:grid; grid-template-rows:auto minmax(0,1fr); gap:0.7rem; min-height:0; padding:0.7rem; overflow:hidden; }
+        .history-layout { display:grid; grid-template-columns:minmax(0,1.22fr) minmax(245px,0.58fr); gap:0.7rem; min-height:0; }
+        .history-stage, .history-console { min-height:0; padding:0.75rem; display:grid; gap:0.65rem; overflow:hidden; }
+        .history-stage { grid-template-rows:auto minmax(0,1fr); }
+        .history-toolbar { display:flex; justify-content:space-between; gap:0.55rem; align-items:center; flex-wrap:wrap; }
+        .history-board { min-height:0; padding:0.25rem; display:grid; grid-template-columns:minmax(0,1fr) 15rem; gap:0.6rem; align-items:stretch; }
+        .history-canvas-shell { min-height:0; display:grid; place-items:center; overflow:hidden; }
+        .history-canvas { width:auto; height:100%; max-width:100%; max-height:100%; aspect-ratio:4 / 3; display:block; }
+        .history-console { grid-template-rows:minmax(0,1fr) auto; }
+        .history-list { min-height:0; display:grid; gap:0.4rem; overflow:auto; padding:0.2rem; }
+        .history-item { padding:0.55rem; display:grid; gap:0.18rem; }
+        .history-item.is-active { border-color:var(--kea-accent-strong); }
+        .history-item p { margin:0; }
+        .history-item strong { font-family:var(--kea-font-display); letter-spacing:0.05em; text-transform:uppercase; }
+        .history-readouts { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.4rem; }
+        .history-mini { min-height:0; padding:0.6rem; display:grid; gap:0.25rem; align-content:start; }
+        @media (max-width: 980px) { .history-layout { grid-template-columns:1fr; } }
+        @media (max-width: 760px) { .history-board { grid-template-columns:1fr; } }
+        @media (max-width: 760px) { .history-readouts { grid-template-columns:1fr; } }
+    </style>
+</head>
+<body class="kea-page">
+    <div class="kea-shell">
+        <header class="kea-topbar kea-topbar--centered">
+            <a class="kea-button kea-button--secondary" href="index.html">&larr; Go back</a>
+            <div class="kea-topbar__brand kea-topbar__brand--center">
+                <div class="kea-title-row">
+                    <h1 class="kea-app-title">Undo History</h1>
+                    <div class="kea-skill-chips" aria-label="Skills">
+                        <span class="kea-skill-chip">Undo</span>
+                        <span class="kea-skill-chip">State</span>
+                    </div>
+                </div>
+                <p class="kea-app-subtitle" hidden>Step backward and forward through a visual history to see how undo and redo work.</p>
+            </div>
+            <div class="kea-topbar__actions">
+                <button class="kea-button kea-button--secondary" id="helpButton" type="button">How to Play</button>
+            </div>
+        </header>
+        <main class="kea-content history-page kea-console-frame">
+            <section class="kea-hud kea-console-surface" aria-label="Undo History status">
+                <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Step</span><span class="kea-hud__value" id="stepHud">1 / 7</span></div>
+                <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Undo</span><span class="kea-hud__value" id="undoHud">Available</span></div>
+                <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Redo</span><span class="kea-hud__value" id="redoHud">Waiting</span></div>
+                <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Action</span><span class="kea-hud__value" id="actionHud">Add sky</span></div>
+            </section>
+            <section class="history-layout">
+                <section class="history-stage kea-console-surface">
+                    <div class="history-toolbar">
+                        <p class="kea-console-label">Canvas History</p>
+                        <div class="kea-segmented" aria-label="History controls">
+                            <button class="kea-button kea-button--secondary" id="undoButton" type="button">Undo</button>
+                            <button class="kea-button kea-button--secondary" id="redoButton" type="button">Redo</button>
+                            <button class="kea-button kea-button--secondary" id="resetButton" type="button">Reset</button>
+                        </div>
+                    </div>
+                    <div class="history-board kea-console-well">
+                        <div class="history-canvas-shell">
+                            <canvas class="history-canvas" id="historyCanvas" width="800" height="600"></canvas>
+                        </div>
+                        <div class="history-list" id="historyList"></div>
+                    </div>
+                </section>
+                <aside class="history-console kea-side-panel kea-side-panel--console">
+                    <div class="kea-side-panel__body kea-side-panel__body--fill">
+                        <div class="history-readouts">
+                            <div class="history-mini kea-console-screen"><strong>Undo</strong><p>Undo moves one step backward in the history of actions.</p></div>
+                            <div class="history-mini kea-console-screen"><strong>Redo</strong><p>Redo moves forward again through actions you already undid.</p></div>
+                            <div class="history-mini kea-console-screen"><strong>History</strong><p>Many creative tools store each change so you can revisit an earlier state.</p></div>
+                            <div class="history-mini kea-console-screen"><strong>Try This</strong><p>Step backward to remove actions, then step forward to restore them.</p></div>
+                        </div>
+                    </div>
+                    <div class="kea-actions"><button class="kea-button kea-button--secondary" id="stepButton" type="button">Next Action</button></div>
+                </aside>
+            </section>
+        </main>
+    </div>
+    <div class="kea-help-overlay" id="helpOverlay" hidden>
+        <div class="kea-help-dialog" role="dialog" aria-modal="true" aria-labelledby="historyHelpTitle">
+            <h2 id="historyHelpTitle" class="kea-section-label">How to Play</h2>
+            <div class="kea-help-copy">
+                <p>This module shows how a program can store and revisit visual states.</p>
+                <ul>
+                    <li>Use Next Action to add one more change to the picture.</li>
+                    <li>Use Undo to step backward through the history.</li>
+                    <li>Use Redo to move forward again.</li>
+                    <li>Watch the history list highlight the currently visible state.</li>
+                </ul>
+            </div>
+            <div class="kea-actions"><button class="kea-button kea-button--secondary" id="closeHelpButton" type="button">Close</button></div>
+        </div>
+    </div>
+    <script>
+        const historyCanvas = document.getElementById("historyCanvas");
+        const historyCtx = historyCanvas.getContext("2d");
+        const historyList = document.getElementById("historyList");
+        const undoButton = document.getElementById("undoButton");
+        const redoButton = document.getElementById("redoButton");
+        const resetButton = document.getElementById("resetButton");
+        const stepButton = document.getElementById("stepButton");
+        const stepHud = document.getElementById("stepHud");
+        const undoHud = document.getElementById("undoHud");
+        const redoHud = document.getElementById("redoHud");
+        const actionHud = document.getElementById("actionHud");
+        const helpButton = document.getElementById("helpButton");
+        const closeHelpButton = document.getElementById("closeHelpButton");
+        const helpOverlay = document.getElementById("helpOverlay");
+        const actions = [
+            { label: "Blank canvas", draw: () => {} },
+            { label: "Add sky", draw: (ctx) => { ctx.fillStyle = "#8ed8ff"; ctx.fillRect(0, 0, 800, 600); } },
+            { label: "Add ground", draw: (ctx) => { ctx.fillStyle = "#8ed8ff"; ctx.fillRect(0, 0, 800, 600); ctx.fillStyle = "#55b15a"; ctx.fillRect(0, 420, 800, 180); } },
+            { label: "Add sun", draw: (ctx) => { ctx.fillStyle = "#8ed8ff"; ctx.fillRect(0, 0, 800, 600); ctx.fillStyle = "#55b15a"; ctx.fillRect(0, 420, 800, 180); ctx.fillStyle = "#ffd978"; ctx.beginPath(); ctx.arc(120, 110, 48, 0, Math.PI * 2); ctx.fill(); } },
+            { label: "Add mountain", draw: (ctx) => { ctx.fillStyle = "#8ed8ff"; ctx.fillRect(0, 0, 800, 600); ctx.fillStyle = "#55b15a"; ctx.fillRect(0, 420, 800, 180); ctx.fillStyle = "#ffd978"; ctx.beginPath(); ctx.arc(120, 110, 48, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = "#655b7a"; ctx.beginPath(); ctx.moveTo(180, 420); ctx.lineTo(430, 170); ctx.lineTo(680, 420); ctx.closePath(); ctx.fill(); } },
+            { label: "Add tree", draw: (ctx) => { actions[4].draw(ctx); ctx.fillStyle = "#7b4d2a"; ctx.fillRect(560, 310, 26, 110); ctx.fillStyle = "#26a65b"; ctx.beginPath(); ctx.arc(573, 280, 54, 0, Math.PI * 2); ctx.fill(); } },
+            { label: "Add cloud", draw: (ctx) => { actions[5].draw(ctx); ctx.fillStyle = "rgba(255,255,255,0.85)"; ctx.beginPath(); ctx.arc(320, 110, 22, 0, Math.PI * 2); ctx.arc(350, 102, 26, 0, Math.PI * 2); ctx.arc(382, 112, 20, 0, Math.PI * 2); ctx.fill(); } }
+        ];
+        let currentStep = 1;
+        function renderList() {
+            historyList.innerHTML = "";
+            actions.forEach((action, index) => {
+                const item = document.createElement("button");
+                item.type = "button";
+                item.className = `history-item kea-button kea-button--secondary${index === currentStep ? " is-active" : ""}`;
+                item.innerHTML = `<strong>${index}. ${action.label}</strong><p>${index < currentStep ? "Already applied" : index === currentStep ? "Current state" : "Future state"}</p>`;
+                item.addEventListener("click", () => { currentStep = index; renderScene(); });
+                historyList.appendChild(item);
+            });
+        }
+        function renderScene() {
+            historyCtx.clearRect(0, 0, 800, 600);
+            actions[currentStep].draw(historyCtx);
+            stepHud.textContent = `${currentStep + 1} / ${actions.length}`;
+            undoHud.textContent = currentStep > 0 ? "Available" : "Start";
+            redoHud.textContent = currentStep < actions.length - 1 ? "Available" : "End";
+            actionHud.textContent = actions[currentStep].label;
+            renderList();
+        }
+        undoButton.addEventListener("click", () => { currentStep = Math.max(0, currentStep - 1); renderScene(); });
+        redoButton.addEventListener("click", () => { currentStep = Math.min(actions.length - 1, currentStep + 1); renderScene(); });
+        stepButton.addEventListener("click", () => { currentStep = Math.min(actions.length - 1, currentStep + 1); renderScene(); });
+        resetButton.addEventListener("click", () => { currentStep = 0; renderScene(); });
+        helpButton.addEventListener("click", () => { helpOverlay.hidden = false; });
+        closeHelpButton.addEventListener("click", () => { helpOverlay.hidden = true; });
+        helpOverlay.addEventListener("click", (event) => { if (event.target === helpOverlay) helpOverlay.hidden = true; });
+        renderScene();
+    </script>
+</body>
+</html>

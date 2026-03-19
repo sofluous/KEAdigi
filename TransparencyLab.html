@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Transparency Lab | KEA Digi</title>
+    <link rel="stylesheet" href="keadigi.css" />
+    <style>
+        html, body { height:100%; overflow:hidden; }
+        body.kea-page { overflow:hidden; }
+        .kea-shell { height:100dvh; min-height:100vh; overflow:hidden; }
+        .kea-topbar { flex:0 0 auto; padding:0.65rem 0.9rem; }
+        .alpha-page { display:grid; grid-template-rows:auto minmax(0,1fr); gap:0.7rem; min-height:0; padding:0.7rem; overflow:hidden; }
+        .alpha-layout { display:grid; grid-template-columns:minmax(0,1.28fr) minmax(255px,0.62fr); gap:0.7rem; min-height:0; }
+        .alpha-stage, .alpha-console { min-height:0; padding:0.75rem; display:grid; gap:0.65rem; overflow:hidden; }
+        .alpha-stage { grid-template-rows:auto minmax(0,1fr); }
+        .alpha-toolbar { display:flex; justify-content:space-between; gap:0.55rem; align-items:center; flex-wrap:wrap; }
+        .alpha-board { min-height:0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.65rem; }
+        .alpha-panel { min-height:0; display:grid; grid-template-rows:auto minmax(0,1fr) auto; gap:0.45rem; }
+        .alpha-shell { min-height:0; padding:0.2rem; display:grid; place-items:center; overflow:hidden; }
+        .alpha-canvas { width:auto; height:100%; max-width:100%; max-height:100%; aspect-ratio:1; display:block; }
+        .alpha-console { grid-template-rows:auto minmax(0,1fr) auto; }
+        .alpha-slider-bank { display:grid; gap:0.55rem; }
+        .alpha-slider-row { display:grid; gap:0.25rem; }
+        .alpha-slider-head { display:flex; justify-content:space-between; gap:0.5rem; align-items:center; }
+        .alpha-slider-head label { font-family:var(--kea-font-display); font-size:0.74rem; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:rgba(255,248,238,0.82); }
+        .alpha-slider-head span { font-family:var(--kea-font-mono); color:var(--kea-console-screen-text); }
+        .alpha-slider-row input { width:100%; }
+        .alpha-readouts { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.4rem; }
+        .alpha-mini { min-height:0; padding:0.6rem; display:grid; gap:0.25rem; align-content:start; }
+        @media (max-width: 980px) { .alpha-layout { grid-template-columns:1fr; } }
+        @media (max-width: 760px) { .alpha-board, .alpha-readouts { grid-template-columns:1fr; } }
+    </style>
+</head>
+<body class="kea-page">
+    <div class="kea-shell">
+        <header class="kea-topbar kea-topbar--centered">
+            <a class="kea-button kea-button--secondary" href="index.html">&larr; Go back</a>
+            <div class="kea-topbar__brand kea-topbar__brand--center">
+                <div class="kea-title-row">
+                    <h1 class="kea-app-title">Transparency Lab</h1>
+                    <div class="kea-skill-chips" aria-label="Skills">
+                        <span class="kea-skill-chip">Alpha</span>
+                        <span class="kea-skill-chip">Layers</span>
+                    </div>
+                </div>
+                <p class="kea-app-subtitle" hidden>See how opacity changes overlap, visibility, and the final blended color.</p>
+            </div>
+            <div class="kea-topbar__actions">
+                <button class="kea-button kea-button--secondary" id="helpButton" type="button">How to Play</button>
+            </div>
+        </header>
+        <main class="kea-content alpha-page kea-console-frame">
+            <section class="kea-hud kea-console-surface" aria-label="Transparency Lab status">
+                <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Top Alpha</span><span class="kea-hud__value" id="topAlphaHud">70%</span></div>
+                <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Bottom Alpha</span><span class="kea-hud__value" id="bottomAlphaHud">100%</span></div>
+                <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Overlap</span><span class="kea-hud__value" id="overlapHud">Partial</span></div>
+                <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Result</span><span class="kea-hud__value" id="resultHud">Blend</span></div>
+            </section>
+            <section class="alpha-layout">
+                <section class="alpha-stage kea-console-surface">
+                    <div class="alpha-toolbar">
+                        <p class="kea-console-label">Compare Surfaces</p>
+                        <div class="kea-segmented" id="shapeButtons" aria-label="Shape set"></div>
+                    </div>
+                    <div class="alpha-board">
+                        <section class="alpha-panel">
+                            <p class="kea-console-label">Isolated Layers</p>
+                            <div class="alpha-shell kea-console-well"><canvas class="alpha-canvas" id="splitCanvas" width="420" height="420"></canvas></div>
+                            <div class="kea-console-screen kea-screen-panel"><strong>Separate Parts</strong><p>Each layer has its own color and opacity before the layers combine.</p></div>
+                        </section>
+                        <section class="alpha-panel">
+                            <p class="kea-console-label">Combined Result</p>
+                            <div class="alpha-shell kea-console-well"><canvas class="alpha-canvas" id="blendCanvas" width="420" height="420"></canvas></div>
+                            <div class="kea-console-screen kea-screen-panel"><strong>Overlap</strong><p>Where shapes overlap, the colors mix and the lower shape still shows through.</p></div>
+                        </section>
+                    </div>
+                </section>
+                <aside class="alpha-console kea-side-panel kea-side-panel--console">
+                    <div class="alpha-slider-bank">
+                        <div class="alpha-slider-row">
+                            <div class="alpha-slider-head"><label for="topAlphaSlider">Top Opacity</label><span id="topAlphaValue">70%</span></div>
+                            <input id="topAlphaSlider" type="range" min="0" max="100" step="5" value="70" />
+                        </div>
+                        <div class="alpha-slider-row">
+                            <div class="alpha-slider-head"><label for="bottomAlphaSlider">Bottom Opacity</label><span id="bottomAlphaValue">100%</span></div>
+                            <input id="bottomAlphaSlider" type="range" min="0" max="100" step="5" value="100" />
+                        </div>
+                    </div>
+                    <div class="kea-side-panel__body kea-side-panel__body--fill">
+                        <div class="alpha-readouts">
+                            <div class="alpha-mini kea-console-screen"><strong>Opaque</strong><p>At 100%, a layer fully hides what is behind it.</p></div>
+                            <div class="alpha-mini kea-console-screen"><strong>Transparent</strong><p>At 0%, a layer becomes invisible.</p></div>
+                            <div class="alpha-mini kea-console-screen"><strong>Alpha</strong><p>Alpha is the amount of opacity a computer uses for a layer or color.</p></div>
+                            <div class="alpha-mini kea-console-screen"><strong>Try This</strong><p>Set the top shape to 50% and watch the overlap region change.</p></div>
+                        </div>
+                    </div>
+                    <div class="kea-actions"><button class="kea-button kea-button--secondary" id="resetButton" type="button">Reset</button></div>
+                </aside>
+            </section>
+        </main>
+    </div>
+    <div class="kea-help-overlay" id="helpOverlay" hidden>
+        <div class="kea-help-dialog" role="dialog" aria-modal="true" aria-labelledby="alphaHelpTitle">
+            <h2 id="alphaHelpTitle" class="kea-section-label">How to Play</h2>
+            <div class="kea-help-copy">
+                <p>This module shows how opacity changes the way layers combine.</p>
+                <ul>
+                    <li>Change the top and bottom opacity sliders.</li>
+                    <li>Switch between shape sets.</li>
+                    <li>Compare the isolated layers on the left with the combined result on the right.</li>
+                    <li>Watch how overlap and visibility change as alpha values change.</li>
+                </ul>
+            </div>
+            <div class="kea-actions"><button class="kea-button kea-button--secondary" id="closeHelpButton" type="button">Close</button></div>
+        </div>
+    </div>
+    <script>
+        const splitCanvas = document.getElementById("splitCanvas");
+        const blendCanvas = document.getElementById("blendCanvas");
+        const splitCtx = splitCanvas.getContext("2d");
+        const blendCtx = blendCanvas.getContext("2d");
+        const topAlphaSlider = document.getElementById("topAlphaSlider");
+        const bottomAlphaSlider = document.getElementById("bottomAlphaSlider");
+        const topAlphaValue = document.getElementById("topAlphaValue");
+        const bottomAlphaValue = document.getElementById("bottomAlphaValue");
+        const topAlphaHud = document.getElementById("topAlphaHud");
+        const bottomAlphaHud = document.getElementById("bottomAlphaHud");
+        const overlapHud = document.getElementById("overlapHud");
+        const resultHud = document.getElementById("resultHud");
+        const shapeButtons = document.getElementById("shapeButtons");
+        const resetButton = document.getElementById("resetButton");
+        const helpButton = document.getElementById("helpButton");
+        const closeHelpButton = document.getElementById("closeHelpButton");
+        const helpOverlay = document.getElementById("helpOverlay");
+        const shapeModes = [{ id: "circle", label: "Circles" }, { id: "square", label: "Squares" }, { id: "diamond", label: "Diamonds" }];
+        let currentShape = "circle";
+        function drawShape(ctx, mode, x, y, size, color, alpha) {
+            ctx.save();
+            ctx.globalAlpha = alpha;
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            if (mode === "circle") ctx.arc(x, y, size / 2, 0, Math.PI * 2);
+            if (mode === "square") ctx.rect(x - size / 2, y - size / 2, size, size);
+            if (mode === "diamond") { ctx.moveTo(x, y - size / 2); ctx.lineTo(x + size / 2, y); ctx.lineTo(x, y + size / 2); ctx.lineTo(x - size / 2, y); ctx.closePath(); }
+            ctx.fill();
+            ctx.restore();
+        }
+        function renderShapeButtons() {
+            shapeButtons.innerHTML = "";
+            shapeModes.forEach((mode) => {
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "kea-button kea-button--secondary";
+                button.textContent = mode.label;
+                button.setAttribute("aria-pressed", String(mode.id === currentShape));
+                if (mode.id === currentShape) button.classList.add("is-active");
+                button.addEventListener("click", () => { currentShape = mode.id; renderShapeButtons(); render(); });
+                shapeButtons.appendChild(button);
+            });
+        }
+        function render() {
+            const topAlpha = Number(topAlphaSlider.value) / 100;
+            const bottomAlpha = Number(bottomAlphaSlider.value) / 100;
+            topAlphaValue.textContent = `${Math.round(topAlpha * 100)}%`;
+            bottomAlphaValue.textContent = `${Math.round(bottomAlpha * 100)}%`;
+            topAlphaHud.textContent = `${Math.round(topAlpha * 100)}%`;
+            bottomAlphaHud.textContent = `${Math.round(bottomAlpha * 100)}%`;
+            overlapHud.textContent = topAlpha > 0 && bottomAlpha > 0 ? "Partial" : "Hidden";
+            resultHud.textContent = topAlpha > 0.8 ? "Strong top" : topAlpha < 0.3 ? "Lower shows" : "Blend";
+            [splitCtx, blendCtx].forEach((ctx) => { ctx.clearRect(0, 0, 420, 420); ctx.fillStyle = "#121418"; ctx.fillRect(0, 0, 420, 420); });
+            drawShape(splitCtx, currentShape, 120, 210, 150, "#29adff", bottomAlpha);
+            drawShape(splitCtx, currentShape, 300, 210, 150, "#ff5c93", topAlpha);
+            drawShape(blendCtx, currentShape, 165, 210, 180, "#29adff", bottomAlpha);
+            drawShape(blendCtx, currentShape, 255, 210, 180, "#ff5c93", topAlpha);
+        }
+        resetButton.addEventListener("click", () => { topAlphaSlider.value = "70"; bottomAlphaSlider.value = "100"; currentShape = "circle"; renderShapeButtons(); render(); });
+        [topAlphaSlider, bottomAlphaSlider].forEach((slider) => slider.addEventListener("input", render));
+        helpButton.addEventListener("click", () => { helpOverlay.hidden = false; });
+        closeHelpButton.addEventListener("click", () => { helpOverlay.hidden = true; });
+        helpOverlay.addEventListener("click", (event) => { if (event.target === helpOverlay) helpOverlay.hidden = true; });
+        renderShapeButtons();
+        render();
+    </script>
+</body>
+</html>

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cursor Mechanics | KEA Digi</title>
+    <link rel="stylesheet" href="keadigi.css" />
+    <style>
+        html, body { height:100%; overflow:hidden; }
+        body.kea-page { overflow:hidden; }
+        .kea-shell { height:100dvh; min-height:100vh; overflow:hidden; }
+        .kea-topbar { flex:0 0 auto; padding:0.65rem 0.9rem; }
+        .cursor-page { display:grid; grid-template-rows:auto minmax(0,1fr); gap:0.7rem; min-height:0; padding:0.7rem; overflow:hidden; }
+        .cursor-layout { display:grid; grid-template-columns:minmax(0,1.28fr) minmax(260px,0.62fr); gap:0.7rem; min-height:0; }
+        .cursor-stage, .cursor-console { min-height:0; padding:0.75rem; display:grid; gap:0.65rem; overflow:hidden; }
+        .cursor-stage { grid-template-rows:auto minmax(0,1fr); }
+        .cursor-toolbar { display:flex; justify-content:space-between; gap:0.55rem; align-items:center; flex-wrap:wrap; }
+        .cursor-well { min-height:0; padding:0.4rem; position:relative; overflow:hidden; touch-action:none; }
+        .cursor-board { position:relative; width:100%; height:100%; min-height:0; border-radius:1rem; background:
+            linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px),
+            linear-gradient(180deg, rgba(255,255,255,0.04) 1px, transparent 1px),
+            #101317;
+            background-size:32px 32px, 32px 32px, auto; }
+        .cursor-target, .cursor-window, .cursor-reveal, .cursor-resize { position:absolute; border:4px solid var(--kea-border); border-radius:1rem; }
+        .cursor-target { left:8%; top:12%; width:22%; height:22%; background:linear-gradient(180deg,#8ed8ff,#2f9ee6); }
+        .cursor-reveal { left:40%; top:15%; width:24%; height:18%; background:linear-gradient(180deg,#2c2f35,#1a1c20); color:#fff8ee; display:grid; place-items:center; font-family:var(--kea-font-display); font-size:0.9rem; font-weight:800; letter-spacing:0.05em; text-transform:uppercase; }
+        .cursor-window { left:18%; top:52%; width:30%; height:28%; background:linear-gradient(180deg,#fffaf1,#e7e0d2); padding-top:1.3rem; }
+        .cursor-window::before { content:"Window"; position:absolute; top:0.15rem; left:0.75rem; font-family:var(--kea-font-display); font-size:0.72rem; font-weight:800; letter-spacing:0.07em; text-transform:uppercase; color:var(--kea-border); }
+        .cursor-resize { right:10%; bottom:12%; width:26%; height:22%; background:linear-gradient(180deg,#ffd978,#e0a529); }
+        .cursor-handle { position:absolute; right:-2px; bottom:-2px; width:1.4rem; height:1.4rem; border-top:4px solid var(--kea-border); border-left:4px solid transparent; border-right:4px solid var(--kea-border); border-bottom:4px solid var(--kea-border); background:#fff4cc; }
+        .cursor-dot { position:absolute; width:1.1rem; height:1.1rem; border-radius:999px; background:#ff5c93; border:4px solid var(--kea-border); transform:translate(-50%, -50%); pointer-events:none; }
+        .cursor-console { grid-template-rows:auto auto minmax(0,1fr) auto; }
+        .cursor-screen-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.4rem; }
+        .cursor-mini { min-height:0; padding:0.6rem; display:grid; gap:0.25rem; align-content:start; }
+        @media (max-width: 980px) { .cursor-layout { grid-template-columns:1fr; } }
+        @media (max-width: 760px) { .cursor-screen-grid { grid-template-columns:1fr; } }
+    </style>
+</head>
+<body class="kea-page">
+    <div class="kea-shell">
+        <header class="kea-topbar kea-topbar--centered">
+            <a class="kea-button kea-button--secondary" href="index.html">&larr; Go back</a>
+            <div class="kea-topbar__brand kea-topbar__brand--center">
+                <div class="kea-title-row">
+                    <h1 class="kea-app-title">Cursor Mechanics</h1>
+                    <div class="kea-skill-chips" aria-label="Skills">
+                        <span class="kea-skill-chip">Pointer</span>
+                        <span class="kea-skill-chip">Interface</span>
+                    </div>
+                </div>
+                <p class="kea-app-subtitle" hidden>Inspect how hover, click, drag, and resize interactions change interface state.</p>
+            </div>
+            <div class="kea-topbar__actions">
+                <button class="kea-button kea-button--secondary" id="helpButton" type="button">How to Play</button>
+            </div>
+        </header>
+        <main class="kea-content cursor-page kea-console-frame">
+            <section class="kea-hud kea-console-surface" aria-label="Cursor Mechanics status">
+                <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Mode</span><span class="kea-hud__value" id="modeHud">Hover</span></div>
+                <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Hover</span><span class="kea-hud__value" id="hoverHud">Idle</span></div>
+                <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Drag</span><span class="kea-hud__value" id="dragHud">Ready</span></div>
+                <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Resize</span><span class="kea-hud__value" id="resizeHud">Ready</span></div>
+            </section>
+            <section class="cursor-layout">
+                <section class="cursor-stage kea-console-surface">
+                    <div class="cursor-toolbar">
+                        <p class="kea-console-label">Interaction Board</p>
+                        <div class="kea-segmented" id="modeButtons" aria-label="Pointer mode"></div>
+                    </div>
+                    <div class="cursor-well kea-console-well">
+                        <div class="cursor-board" id="cursorBoard">
+                            <div class="cursor-target" id="hoverTarget"></div>
+                            <div class="cursor-reveal" id="revealTarget">Hover Me</div>
+                            <div class="cursor-window" id="dragWindow"></div>
+                            <div class="cursor-resize" id="resizeBox"><div class="cursor-handle"></div></div>
+                            <div class="cursor-dot" id="cursorDot"></div>
+                        </div>
+                    </div>
+                </section>
+                <aside class="cursor-console kea-side-panel kea-side-panel--console">
+                    <div class="kea-console-screen kea-screen-panel">
+                        <strong id="modeTitle">Hover</strong>
+                        <p id="modeCopy">Move over something without pressing. Hover often reveals that an item can react.</p>
+                    </div>
+                    <div class="kea-side-panel__body kea-side-panel__body--fill">
+                        <div class="cursor-screen-grid">
+                            <div class="cursor-mini kea-console-screen"><strong>Hover</strong><p>Objects may highlight or reveal information when the cursor passes over them.</p></div>
+                            <div class="cursor-mini kea-console-screen"><strong>Click</strong><p>A click usually selects or activates a single item.</p></div>
+                            <div class="cursor-mini kea-console-screen"><strong>Drag</strong><p>Dragging moves an object while the pointer stays pressed.</p></div>
+                            <div class="cursor-mini kea-console-screen"><strong>Resize</strong><p>Some corners and edges change size instead of moving the whole object.</p></div>
+                        </div>
+                    </div>
+                    <div class="kea-actions"><button class="kea-button kea-button--secondary" id="resetButton" type="button">Reset Board</button></div>
+                </aside>
+            </section>
+        </main>
+    </div>
+    <div class="kea-help-overlay" id="helpOverlay" hidden>
+        <div class="kea-help-dialog" role="dialog" aria-modal="true" aria-labelledby="cursorHelpTitle">
+            <h2 id="cursorHelpTitle" class="kea-section-label">How to Play</h2>
+            <div class="kea-help-copy">
+                <p>This module explains common pointer interactions.</p>
+                <ul>
+                    <li>Switch between hover, click, drag, and resize modes.</li>
+                    <li>Move your pointer around the board and watch what changes.</li>
+                    <li>Drag the window in drag mode.</li>
+                    <li>Use the lower-right handle in resize mode.</li>
+                </ul>
+            </div>
+            <div class="kea-actions"><button class="kea-button kea-button--secondary" id="closeHelpButton" type="button">Close</button></div>
+        </div>
+    </div>
+    <script>
+        const modeButtons = document.getElementById("modeButtons");
+        const cursorBoard = document.getElementById("cursorBoard");
+        const cursorDot = document.getElementById("cursorDot");
+        const hoverTarget = document.getElementById("hoverTarget");
+        const revealTarget = document.getElementById("revealTarget");
+        const dragWindow = document.getElementById("dragWindow");
+        const resizeBox = document.getElementById("resizeBox");
+        const modeTitle = document.getElementById("modeTitle");
+        const modeCopy = document.getElementById("modeCopy");
+        const modeHud = document.getElementById("modeHud");
+        const hoverHud = document.getElementById("hoverHud");
+        const dragHud = document.getElementById("dragHud");
+        const resizeHud = document.getElementById("resizeHud");
+        const resetButton = document.getElementById("resetButton");
+        const helpButton = document.getElementById("helpButton");
+        const closeHelpButton = document.getElementById("closeHelpButton");
+        const helpOverlay = document.getElementById("helpOverlay");
+        const modes = {
+            hover: { label: "Hover", copy: "Move over something without pressing. Hover often reveals that an item can react." },
+            click: { label: "Click", copy: "Click selects or activates one item at a time." },
+            drag: { label: "Drag", copy: "Dragging moves an item while the pointer stays pressed." },
+            resize: { label: "Resize", copy: "Resize changes the size of an item instead of moving it." }
+        };
+        let currentMode = "hover";
+        let dragging = false;
+        let dragOffset = { x: 0, y: 0 };
+        let resizing = false;
+        function setMode(mode) {
+            currentMode = mode;
+            modeTitle.textContent = modes[mode].label;
+            modeCopy.textContent = modes[mode].copy;
+            modeHud.textContent = modes[mode].label;
+            modeButtons.querySelectorAll("button").forEach((button) => {
+                const active = button.dataset.mode === mode;
+                button.setAttribute("aria-pressed", String(active));
+                button.classList.toggle("is-active", active);
+            });
+        }
+        function buildModeButtons() {
+            Object.entries(modes).forEach(([key, value]) => {
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "kea-button kea-button--secondary";
+                button.textContent = value.label;
+                button.dataset.mode = key;
+                button.addEventListener("click", () => setMode(key));
+                modeButtons.appendChild(button);
+            });
+        }
+        function setCursorDot(event) {
+            const rect = cursorBoard.getBoundingClientRect();
+            cursorDot.style.left = `${event.clientX - rect.left}px`;
+            cursorDot.style.top = `${event.clientY - rect.top}px`;
+        }
+        cursorBoard.addEventListener("pointermove", (event) => {
+            setCursorDot(event);
+            if (dragging && currentMode === "drag") {
+                const rect = cursorBoard.getBoundingClientRect();
+                dragWindow.style.left = `${event.clientX - rect.left - dragOffset.x}px`;
+                dragWindow.style.top = `${event.clientY - rect.top - dragOffset.y}px`;
+                dragHud.textContent = "Dragging";
+            }
+            if (resizing && currentMode === "resize") {
+                const rect = cursorBoard.getBoundingClientRect();
+                const width = Math.max(90, event.clientX - rect.left - resizeBox.offsetLeft);
+                const height = Math.max(80, event.clientY - rect.top - resizeBox.offsetTop);
+                resizeBox.style.width = `${width}px`;
+                resizeBox.style.height = `${height}px`;
+                resizeHud.textContent = "Resizing";
+            }
+        });
+        hoverTarget.addEventListener("pointerenter", () => { if (currentMode === "hover") { hoverTarget.style.filter = "brightness(1.18)"; hoverHud.textContent = "Highlight"; } });
+        hoverTarget.addEventListener("pointerleave", () => { hoverTarget.style.filter = ""; hoverHud.textContent = "Idle"; });
+        revealTarget.addEventListener("pointerenter", () => { if (currentMode === "hover") revealTarget.textContent = "Hover State"; });
+        revealTarget.addEventListener("pointerleave", () => { revealTarget.textContent = "Hover Me"; });
+        revealTarget.addEventListener("click", () => { if (currentMode === "click") { revealTarget.textContent = "Clicked"; hoverHud.textContent = "Pressed"; } });
+        dragWindow.addEventListener("pointerdown", (event) => {
+            if (currentMode !== "drag") return;
+            dragging = true;
+            dragOffset.x = event.clientX - dragWindow.getBoundingClientRect().left;
+            dragOffset.y = event.clientY - dragWindow.getBoundingClientRect().top;
+            dragHud.textContent = "Grabbed";
+        });
+        resizeBox.addEventListener("pointerdown", () => {
+            if (currentMode !== "resize") return;
+            resizing = true;
+            resizeHud.textContent = "Grabbed";
+        });
+        window.addEventListener("pointerup", () => {
+            dragging = false;
+            resizing = false;
+            if (currentMode === "drag") dragHud.textContent = "Ready";
+            if (currentMode === "resize") resizeHud.textContent = "Ready";
+        });
+        resetButton.addEventListener("click", () => {
+            dragWindow.style.left = "18%";
+            dragWindow.style.top = "52%";
+            resizeBox.style.width = "26%";
+            resizeBox.style.height = "22%";
+            revealTarget.textContent = "Hover Me";
+            hoverHud.textContent = "Idle";
+            dragHud.textContent = "Ready";
+            resizeHud.textContent = "Ready";
+            setMode("hover");
+        });
+        helpButton.addEventListener("click", () => { helpOverlay.hidden = false; });
+        closeHelpButton.addEventListener("click", () => { helpOverlay.hidden = true; });
+        helpOverlay.addEventListener("click", (event) => { if (event.target === helpOverlay) helpOverlay.hidden = true; });
+        buildModeButtons();
+        setMode("hover");
+    </script>
+</body>
+</html>

@@ -1,111 +1,469 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>KEA Digi Library</title>
     <link rel="stylesheet" href="keadigi.css" />
-</head>
-<body class="kea-page">
+  </head>
+  <body class="kea-page">
     <div class="kea-shell">
-        <header class="kea-topbar">
-            <div class="kea-topbar__brand">
-                <p class="kea-eyebrow">KEA Digi Library</p>
-                <h1 class="kea-app-title">Student Applets</h1>
-                <p class="kea-app-subtitle">One place to open the current KEA Digi activities.</p>
+      <header class="kea-topbar">
+        <div class="kea-topbar__brand">
+          <p class="kea-eyebrow">KEA Digi Library</p>
+          <h1 class="kea-app-title">Student Applets</h1>
+          <p class="kea-app-subtitle">
+            One place to open the current KEA Digi activities.
+          </p>
+        </div>
+        <div class="kea-topbar__actions">
+          <span class="kea-chip">Static v1 dashboard</span>
+          <span class="kea-chip">18 live applets</span>
+        </div>
+      </header>
+
+      <main class="kea-content">
+        <section class="kea-dashboard">
+          <section class="kea-hero">
+            <h2>Choose an activity and start exploring.</h2>
+            <p>Quick visual tools for practice, play, and review.</p>
+          </section>
+
+          <section class="kea-dashboard-status kea-console-surface" aria-label="Library status">
+            <div class="kea-dashboard-status__item kea-hud__item kea-console-screen">
+              <span class="kea-hud__label">Library</span>
+              <span class="kea-hud__value">Online</span>
             </div>
-            <div class="kea-topbar__actions">
-                <span class="kea-chip">Static v1 dashboard</span>
-                <span class="kea-chip">6 live applets</span>
+            <div class="kea-dashboard-status__item kea-hud__item kea-console-screen">
+              <span class="kea-hud__label">Ready</span>
+              <span class="kea-hud__value" id="readyCountValue">0</span>
             </div>
-        </header>
+            <div class="kea-dashboard-status__item kea-hud__item kea-console-screen">
+              <span class="kea-hud__label">Concepts</span>
+              <span class="kea-hud__value" id="conceptCountValue">0</span>
+            </div>
+            <div class="kea-dashboard-status__item kea-hud__item kea-console-screen">
+              <span class="kea-hud__label">WIP</span>
+              <span class="kea-hud__value" id="wipCountValue">0</span>
+            </div>
+          </section>
 
-        <main class="kea-content">
-            <section class="kea-dashboard">
-                <section class="kea-hero kea-surface">
-                    <h2>Choose an activity and start exploring.</h2>
-                    <p>Quick visual tools for practice, play, and review.</p>
-                </section>
+          <section
+            class="kea-dashboard-section kea-console-surface"
+            aria-labelledby="library-apps"
+          >
+            <div class="kea-dashboard-section__header kea-console-well">
+              <p class="kea-dashboard-section__eyebrow">Launch Bay</p>
+              <h2 id="library-apps" class="kea-dashboard-section__title">
+                Ready to Explore
+              </h2>
+              <p class="kea-dashboard-section__copy">
+                Stable activities that are ready for students to open and use.
+              </p>
+            </div>
+            <div class="kea-card-grid" id="readyGrid">
+              <article class="kea-card kea-surface">
+                <div class="kea-card__meta">
+                  <span class="kea-chip">Pixels</span>
+                  <span class="kea-chip">Graphics</span>
+                </div>
+                <div class="kea-card__thumb" aria-hidden="true">
+                  <span class="kea-card__thumb-mark">PP</span>
+                </div>
+                <h3>Pixel Painter</h3>
+                <p>
+                  Paint a tiny picture one square at a time and compare the
+                  zoomed grid with the finished image.
+                </p>
+                <a class="kea-card__link" href="PixelPainter.html">Launch</a>
+              </article>
 
-                <section aria-labelledby="library-apps">
-                    <div class="kea-card-grid">
-                        <article class="kea-card kea-surface">
-                            <div class="kea-card__meta">
-                                <span class="kea-chip">Color</span>
-                                <span class="kea-chip">Observation</span>
-                            </div>
-                            <div class="kea-card__thumb" aria-hidden="true"><span class="kea-card__thumb-mark">RGB</span></div>
-                            <h3 id="library-apps">RGB Color Mixer</h3>
-                            <p>Mix red, green, and blue values to match a target color and improve visual color accuracy.</p>
-                            <a class="kea-card__link" href="ColorMatch.html">Launch</a>
-                        </article>
+              <article class="kea-card kea-surface">
+                <div class="kea-card__meta">
+                  <span class="kea-chip">Pixels</span>
+                  <span class="kea-chip">Concept</span>
+                  <span class="kea-chip kea-chip--wip">WIP</span>
+                </div>
+                <div class="kea-card__thumb" aria-hidden="true">
+                  <span class="kea-card__thumb-mark">IZ</span>
+                </div>
+                <h3>Image Zoom Lab</h3>
+                <p>
+                  Load an image, zoom in, and inspect how nearby colors work
+                  together to build the picture.
+                </p>
+                <a class="kea-card__link" href="ImageZoomLab.html">Launch</a>
+              </article>
 
-                        <article class="kea-card kea-surface">
-                            <div class="kea-card__meta">
-                                <span class="kea-chip">Color</span>
-                                <span class="kea-chip">Sorting</span>
-                                <span class="kea-chip kea-chip--wip">WIP</span>
-                            </div>
-                            <div class="kea-card__thumb" aria-hidden="true"><span class="kea-card__thumb-mark">CS</span></div>
-                            <h3>Color Sort Studio</h3>
-                            <p>Sort swatches into warm, cool, and neutral groups to build stronger color recognition.</p>
-                            <a class="kea-card__link" href="ColorSortStudio.html">Launch</a>
-                        </article>
+              <article class="kea-card kea-surface">
+                <div class="kea-card__meta">
+                  <span class="kea-chip">Layers</span>
+                  <span class="kea-chip">Concept</span>
+                  <span class="kea-chip kea-chip--wip">WIP</span>
+                </div>
+                <div class="kea-card__thumb" aria-hidden="true">
+                  <span class="kea-card__thumb-mark">LE</span>
+                </div>
+                <h3>Layer Explorer</h3>
+                <p>
+                  Reorder, hide, and fade stacked picture parts to inspect how
+                  layer order changes the final scene.
+                </p>
+                <a class="kea-card__link" href="LayerExplorer.html">Launch</a>
+              </article>
 
-                        <article class="kea-card kea-surface">
-                            <div class="kea-card__meta">
-                                <span class="kea-chip">Keyboard</span>
-                                <span class="kea-chip">Hardware</span>
-                            </div>
-                            <div class="kea-card__thumb" aria-hidden="true"><span class="kea-card__thumb-mark">KB</span></div>
-                            <h3>Interactive Keyboard</h3>
-                            <p>Explore a keyboard layout, reveal labels, and highlight different key groups to learn what each area does.</p>
-                            <a class="kea-card__link" href="Keyboard.html">Launch</a>
-                        </article>
+              <article class="kea-card kea-surface">
+                <div class="kea-card__meta">
+                  <span class="kea-chip">Frames</span>
+                  <span class="kea-chip">Concept</span>
+                  <span class="kea-chip kea-chip--wip">WIP</span>
+                </div>
+                <div class="kea-card__thumb" aria-hidden="true">
+                  <span class="kea-card__thumb-mark">FP</span>
+                </div>
+                <h3>Frame Player</h3>
+                <p>
+                  Scrub and play a frame sequence to see how still images turn
+                  into motion.
+                </p>
+                <a class="kea-card__link" href="FramePlayer.html">Launch</a>
+              </article>
 
-                        <article class="kea-card kea-surface">
-                            <div class="kea-card__meta">
-                                <span class="kea-chip">Icons</span>
-                                <span class="kea-chip">Interface</span>
-                                <span class="kea-chip kea-chip--wip">WIP</span>
-                            </div>
-                            <div class="kea-card__thumb" aria-hidden="true"><span class="kea-card__thumb-mark">ID</span></div>
-                            <h3>Icon Detective</h3>
-                            <p>Read a clue, match it to the right interface icon, and build a streak while learning common computer symbols.</p>
-                            <a class="kea-card__link" href="IconDetective.html">Launch</a>
-                        </article>
+              <article class="kea-card kea-surface">
+                <div class="kea-card__meta">
+                  <span class="kea-chip">Vector</span>
+                  <span class="kea-chip">Concept</span>
+                  <span class="kea-chip kea-chip--wip">WIP</span>
+                </div>
+                <div class="kea-card__thumb" aria-hidden="true">
+                  <span class="kea-card__thumb-mark">VP</span>
+                </div>
+                <h3>Vector Vs Pixel</h3>
+                <p>
+                  Compare a scalable vector drawing with a rasterized pixel
+                  version to see how each format behaves as you zoom.
+                </p>
+                <a class="kea-card__link" href="VectorVsPixel.html">Launch</a>
+              </article>
 
-                        <article class="kea-card kea-surface">
-                            <div class="kea-card__meta">
-                                <span class="kea-chip">Layers</span>
-                                <span class="kea-chip">Graphics</span>
-                                <span class="kea-chip kea-chip--wip">WIP</span>
-                            </div>
-                            <div class="kea-card__thumb" aria-hidden="true"><span class="kea-card__thumb-mark">LS</span></div>
-                            <h3>Layer Stack</h3>
-                            <p>Rebuild a target picture by bringing shapes and objects to the front in the right order.</p>
-                            <a class="kea-card__link" href="LayerStack.html">Launch</a>
-                        </article>
+              <article class="kea-card kea-surface">
+                <div class="kea-card__meta">
+                  <span class="kea-chip">RGB</span>
+                  <span class="kea-chip">Concept</span>
+                  <span class="kea-chip kea-chip--wip">WIP</span>
+                </div>
+                <div class="kea-card__thumb" aria-hidden="true">
+                  <span class="kea-card__thumb-mark">RL</span>
+                </div>
+                <h3>RGB Screen Lab</h3>
+                <p>
+                  Inspect enlarged red, green, and blue subpixels and see how
+                  they combine into the screen color you perceive.
+                </p>
+                <a class="kea-card__link" href="RGBScreenLab.html">Launch</a>
+              </article>
 
-                        <article class="kea-card kea-surface">
-                            <div class="kea-card__meta">
-                                <span class="kea-chip">Shapes</span>
-                                <span class="kea-chip">Matching</span>
-                            </div>
-                            <div class="kea-card__thumb" aria-hidden="true"><span class="kea-card__thumb-mark">TM</span></div>
-                            <h3>Tangram Match</h3>
-                            <p>Match draggable shapes to their targets while tracking time and building combo streaks.</p>
-                            <a class="kea-card__link" href="ShapeMatch.html">Launch</a>
-                        </article>
-                    </div>
-                </section>
+              <article class="kea-card kea-surface">
+                <div class="kea-card__meta">
+                  <span class="kea-chip">Files</span>
+                  <span class="kea-chip">Concept</span>
+                  <span class="kea-chip kea-chip--wip">WIP</span>
+                </div>
+                <div class="kea-card__thumb" aria-hidden="true">
+                  <span class="kea-card__thumb-mark">FF</span>
+                </div>
+                <h3>Files And Folders Explorer</h3>
+                <p>
+                  Change a file name, type, and folder to see how its path and
+                  organization change together.
+                </p>
+                <a class="kea-card__link" href="FilesAndFoldersExplorer.html">Launch</a>
+              </article>
 
-                <section class="kea-coming-soon kea-surface" aria-labelledby="coming-soon-title">
-                    <h2 id="coming-soon-title" class="kea-section-label">More Activities Coming</h2>
-                    <p>More student tools and activities can be added here later.</p>
-                </section>
-            </section>
-        </main>
+              <article class="kea-card kea-surface">
+                <div class="kea-card__meta">
+                  <span class="kea-chip">Alpha</span>
+                  <span class="kea-chip">Concept</span>
+                  <span class="kea-chip kea-chip--wip">WIP</span>
+                </div>
+                <div class="kea-card__thumb" aria-hidden="true">
+                  <span class="kea-card__thumb-mark">TL</span>
+                </div>
+                <h3>Transparency Lab</h3>
+                <p>
+                  Change opacity and compare isolated layers with the final
+                  blended overlap.
+                </p>
+                <a class="kea-card__link" href="TransparencyLab.html">Launch</a>
+              </article>
+
+              <article class="kea-card kea-surface">
+                <div class="kea-card__meta">
+                  <span class="kea-chip">Pointer</span>
+                  <span class="kea-chip">Concept</span>
+                  <span class="kea-chip kea-chip--wip">WIP</span>
+                </div>
+                <div class="kea-card__thumb" aria-hidden="true">
+                  <span class="kea-card__thumb-mark">CM</span>
+                </div>
+                <h3>Cursor Mechanics</h3>
+                <p>
+                  Inspect hover, click, drag, and resize behavior on a simple
+                  interface board.
+                </p>
+                <a class="kea-card__link" href="CursorMechanics.html">Launch</a>
+              </article>
+
+              <article class="kea-card kea-surface">
+                <div class="kea-card__meta">
+                  <span class="kea-chip">Undo</span>
+                  <span class="kea-chip">Concept</span>
+                  <span class="kea-chip kea-chip--wip">WIP</span>
+                </div>
+                <div class="kea-card__thumb" aria-hidden="true">
+                  <span class="kea-card__thumb-mark">UH</span>
+                </div>
+                <h3>Undo History</h3>
+                <p>
+                  Step backward and forward through a visual history to see how
+                  undo and redo restore earlier states.
+                </p>
+                <a class="kea-card__link" href="UndoHistory.html">Launch</a>
+              </article>
+
+              <article class="kea-card kea-surface">
+                <div class="kea-card__meta">
+                  <span class="kea-chip">Color</span>
+                  <span class="kea-chip">Observation</span>
+                </div>
+                <div class="kea-card__thumb" aria-hidden="true">
+                  <span class="kea-card__thumb-mark">RGB</span>
+                </div>
+                <h3>RGB Color Mixer</h3>
+                <p>
+                  Mix red, green, and blue values to match a target color and
+                  improve visual color accuracy.
+                </p>
+                <a class="kea-card__link" href="ColorMatch.html">Launch</a>
+              </article>
+
+              <article class="kea-card kea-surface">
+                <div class="kea-card__meta">
+                  <span class="kea-chip">Keyboard</span>
+                  <span class="kea-chip">Hardware</span>
+                </div>
+                <div class="kea-card__thumb" aria-hidden="true">
+                  <span class="kea-card__thumb-mark">KB</span>
+                </div>
+                <h3>Interactive Keyboard</h3>
+                <p>
+                  Explore a keyboard layout, reveal labels, and highlight
+                  different key groups to learn what each area does.
+                </p>
+                <a class="kea-card__link" href="Keyboard.html">Launch</a>
+              </article>
+
+              <article class="kea-card kea-surface">
+                <div class="kea-card__meta">
+                  <span class="kea-chip">Shapes</span>
+                  <span class="kea-chip">Matching</span>
+                </div>
+                <div class="kea-card__thumb" aria-hidden="true">
+                  <span class="kea-card__thumb-mark">TM</span>
+                </div>
+                <h3>Tangram Match</h3>
+                <p>
+                  Match draggable shapes to their targets while tracking time
+                  and building combo streaks.
+                </p>
+                <a class="kea-card__link" href="ShapeMatch.html">Launch</a>
+              </article>
+
+              <article class="kea-card kea-surface">
+                <div class="kea-card__meta">
+                  <span class="kea-chip">Files</span>
+                  <span class="kea-chip">Folders</span>
+                  <span class="kea-chip kea-chip--wip">WIP</span>
+                </div>
+                <div class="kea-card__thumb" aria-hidden="true">
+                  <span class="kea-card__thumb-mark">FC</span>
+                </div>
+                <h3>File Cabinet</h3>
+                <p>
+                  Sort files into the folders where they belong and practice
+                  basic computer organization.
+                </p>
+                <a class="kea-card__link" href="FileCabinet.html">Launch</a>
+              </article>
+            </div>
+          </section>
+
+          <section
+            class="kea-dashboard-section kea-console-surface"
+            aria-labelledby="concept-modules-title"
+            id="conceptModulesSection"
+          >
+            <div class="kea-dashboard-section__header kea-console-well">
+              <p class="kea-dashboard-section__eyebrow">Concept Suite</p>
+              <h2 id="concept-modules-title" class="kea-dashboard-section__title">
+                Concept Modules
+              </h2>
+              <p class="kea-dashboard-section__copy">
+                Interactive teaching tools that explain how something works through inspection, comparison, and direct change.
+              </p>
+            </div>
+            <div class="kea-card-grid" id="conceptGrid"></div>
+          </section>
+
+          <section
+            class="kea-dashboard-section kea-dashboard-section--caution kea-console-surface"
+            aria-labelledby="under-construction-title"
+            id="underConstructionSection"
+          >
+            <div class="kea-dashboard-section__header kea-console-well">
+              <p class="kea-dashboard-section__eyebrow">Workshop</p>
+              <h2 id="under-construction-title" class="kea-dashboard-section__title">
+                Under Construction
+              </h2>
+              <p class="kea-dashboard-section__copy">
+                These apps may require a little more ironing before they work
+                properly.
+              </p>
+            </div>
+            <div class="kea-card-grid" id="underConstructionGrid">
+              <article class="kea-card kea-surface">
+                <div class="kea-card__meta">
+                  <span class="kea-chip">Color</span>
+                  <span class="kea-chip">Sorting</span>
+                  <span class="kea-chip kea-chip--wip">WIP</span>
+                </div>
+                <div class="kea-card__thumb" aria-hidden="true">
+                  <span class="kea-card__thumb-mark">CS</span>
+                </div>
+                <h3>Color Sort Studio</h3>
+                <p>
+                  Sort swatches into warm, cool, and neutral groups to build
+                  stronger color recognition.
+                </p>
+                <a class="kea-card__link" href="ColorSortStudio.html">Launch</a>
+              </article>
+
+              <article class="kea-card kea-surface">
+                <div class="kea-card__meta">
+                  <span class="kea-chip">Icons</span>
+                  <span class="kea-chip">Interface</span>
+                  <span class="kea-chip kea-chip--wip">WIP</span>
+                </div>
+                <div class="kea-card__thumb" aria-hidden="true">
+                  <span class="kea-card__thumb-mark">ID</span>
+                </div>
+                <h3>Icon Detective</h3>
+                <p>
+                  Read a clue, match it to the right interface icon, and build a
+                  streak while learning common computer symbols.
+                </p>
+                <a class="kea-card__link" href="IconDetective.html">Launch</a>
+              </article>
+
+              <article class="kea-card kea-surface">
+                <div class="kea-card__meta">
+                  <span class="kea-chip">Tools</span>
+                  <span class="kea-chip">Graphics</span>
+                  <span class="kea-chip kea-chip--wip">WIP</span>
+                </div>
+                <div class="kea-card__thumb" aria-hidden="true">
+                  <span class="kea-card__thumb-mark">TO</span>
+                </div>
+                <h3>Tool Match</h3>
+                <p>
+                  Match common creative software tools to the job each one is
+                  used for.
+                </p>
+                <a class="kea-card__link" href="ToolMatch.html">Launch</a>
+              </article>
+
+              <article class="kea-card kea-surface">
+                <div class="kea-card__meta">
+                  <span class="kea-chip">Layers</span>
+                  <span class="kea-chip">Graphics</span>
+                  <span class="kea-chip kea-chip--wip">WIP</span>
+                </div>
+                <div class="kea-card__thumb" aria-hidden="true">
+                  <span class="kea-card__thumb-mark">LS</span>
+                </div>
+                <h3>Layer Stack</h3>
+                <p>
+                  Rebuild a target picture by bringing shapes and objects to the
+                  front in the right order.
+                </p>
+                <a class="kea-card__link" href="LayerStack.html">Launch</a>
+              </article>
+            </div>
+          </section>
+
+          <section
+            class="kea-dashboard-section kea-console-surface"
+            aria-labelledby="coming-soon-title"
+          >
+            <div class="kea-dashboard-section__header kea-console-well">
+              <p class="kea-dashboard-section__eyebrow">Queue</p>
+              <h2 id="coming-soon-title" class="kea-dashboard-section__title">
+                More Activities Coming
+              </h2>
+              <p class="kea-dashboard-section__copy">
+                More student tools and activities can be added here later.
+              </p>
+            </div>
+          </section>
+        </section>
+      </main>
     </div>
-</body>
+    <script>
+      const readyGrid = document.getElementById("readyGrid");
+      const conceptGrid = document.getElementById("conceptGrid");
+      const conceptModulesSection = document.getElementById("conceptModulesSection");
+      const underConstructionGrid = document.getElementById("underConstructionGrid");
+      const underConstructionSection = document.getElementById("underConstructionSection");
+      const readyCountValue = document.getElementById("readyCountValue");
+      const conceptCountValue = document.getElementById("conceptCountValue");
+      const wipCountValue = document.getElementById("wipCountValue");
+
+      function getCardSortKey(card) {
+        const chips = [...card.querySelectorAll(".kea-chip")]
+          .filter((chip) => !chip.classList.contains("kea-chip--wip"))
+          .map((chip) => chip.textContent.trim().toLowerCase());
+        const title = card.querySelector("h3")?.textContent.trim().toLowerCase() || "";
+        return `${chips.join(" ")} ${title}`.trim();
+      }
+
+      const cards = [...readyGrid.children, ...underConstructionGrid.children];
+      const readyCards = [];
+      const conceptCards = [];
+      const wipCards = [];
+
+      cards.forEach((card) => {
+        const isConcept = [...card.querySelectorAll(".kea-chip")]
+          .some((chip) => chip.textContent.trim().toLowerCase() === "concept");
+        const isWip = Boolean(card.querySelector(".kea-chip--wip"));
+        if (isConcept) {
+          conceptCards.push(card);
+        } else if (isWip) {
+          wipCards.push(card);
+        } else {
+          readyCards.push(card);
+        }
+      });
+
+      readyGrid.replaceChildren(...readyCards);
+      conceptCards.sort((a, b) => getCardSortKey(a).localeCompare(getCardSortKey(b)));
+      conceptGrid.replaceChildren(...conceptCards);
+      wipCards.sort((a, b) => getCardSortKey(a).localeCompare(getCardSortKey(b)));
+      underConstructionGrid.replaceChildren(...wipCards);
+      conceptModulesSection.hidden = conceptCards.length === 0;
+      underConstructionSection.hidden = wipCards.length === 0;
+      readyCountValue.textContent = String(readyCards.length);
+      conceptCountValue.textContent = String(conceptCards.length);
+      wipCountValue.textContent = String(wipCards.length);
+    </script>
+  </body>
 </html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RGB Screen Lab | KEA Digi</title>
+    <link rel="stylesheet" href="keadigi.css" />
+    <style>
+        html, body { height:100%; overflow:hidden; }
+        body.kea-page { overflow:hidden; }
+        .kea-shell { height:100dvh; min-height:100vh; overflow:hidden; }
+        .kea-topbar { flex:0 0 auto; padding:0.65rem 0.9rem; }
+        .rgb-page { display:grid; grid-template-rows:auto minmax(0,1fr); gap:0.7rem; min-height:0; padding:0.7rem; overflow:hidden; }
+        .rgb-layout { display:grid; grid-template-columns:minmax(0,1.28fr) minmax(260px,0.62fr); gap:0.7rem; min-height:0; }
+        .rgb-stage, .rgb-console { min-height:0; padding:0.75rem; display:grid; gap:0.65rem; overflow:hidden; }
+        .rgb-stage { grid-template-rows:auto minmax(0,1fr); }
+        .rgb-toolbar { display:flex; flex-wrap:wrap; gap:0.55rem; justify-content:space-between; align-items:center; }
+        .rgb-stage-grid { min-height:0; display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,0.8fr); gap:0.65rem; }
+        .rgb-main-shell, .rgb-pixel-shell { min-height:0; padding:0.2rem; display:grid; place-items:center; overflow:hidden; }
+        .rgb-main-preview { width:auto; height:100%; max-width:100%; max-height:100%; aspect-ratio:1; border-radius:1rem; background:#000; box-shadow: inset 0 0 0 4px rgba(255,255,255,0.06); }
+        .rgb-pixel-canvas { width:auto; height:100%; max-width:100%; max-height:100%; aspect-ratio:1; display:block; image-rendering:pixelated; image-rendering:crisp-edges; }
+        .rgb-console { grid-template-rows:auto minmax(0,1fr) auto; }
+        .rgb-slider-bank { display:grid; gap:0.5rem; }
+        .rgb-slider-row { display:grid; gap:0.28rem; }
+        .rgb-slider-head { display:flex; justify-content:space-between; gap:0.5rem; align-items:center; }
+        .rgb-slider-head label { font-family:var(--kea-font-display); font-size:0.74rem; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:rgba(255,248,238,0.82); }
+        .rgb-slider-head span { font-family:var(--kea-font-mono); color:var(--kea-console-screen-text); }
+        .rgb-slider-row input { width:100%; }
+        .rgb-readout-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.4rem; }
+        .rgb-mini { min-height:0; padding:0.6rem; display:grid; gap:0.25rem; align-content:start; }
+        .rgb-console .kea-segmented { width:100%; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); }
+        @media (max-width: 980px) { .rgb-layout, .rgb-stage-grid { grid-template-columns:1fr; } }
+        @media (max-width: 760px) { .rgb-readout-grid { grid-template-columns:1fr; } }
+    </style>
+</head>
+<body class="kea-page">
+    <div class="kea-shell">
+        <header class="kea-topbar kea-topbar--centered">
+            <a class="kea-button kea-button--secondary" href="index.html">&larr; Go back</a>
+            <div class="kea-topbar__brand kea-topbar__brand--center">
+                <div class="kea-title-row">
+                    <h1 class="kea-app-title">RGB Screen Lab</h1>
+                    <div class="kea-skill-chips" aria-label="Skills">
+                        <span class="kea-skill-chip">RGB</span>
+                        <span class="kea-skill-chip">Light</span>
+                    </div>
+                </div>
+                <p class="kea-app-subtitle" hidden>Explore how red, green, and blue light combine on a screen.</p>
+            </div>
+            <div class="kea-topbar__actions">
+                <button class="kea-button kea-button--secondary" id="helpButton" type="button">How to Play</button>
+            </div>
+        </header>
+        <main class="kea-content rgb-page kea-console-frame">
+            <section class="kea-hud kea-console-surface" aria-label="RGB Screen Lab status">
+                <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Red</span><span class="kea-hud__value" id="redHud">255</span></div>
+                <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Green</span><span class="kea-hud__value" id="greenHud">180</span></div>
+                <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Blue</span><span class="kea-hud__value" id="blueHud">72</span></div>
+                <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Hex</span><span class="kea-hud__value" id="hexHud">#FFB448</span></div>
+                <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Blend</span><span class="kea-hud__value" id="blendHud">Warm amber</span></div>
+            </section>
+            <section class="rgb-layout">
+                <section class="rgb-stage kea-console-surface">
+                    <div class="rgb-toolbar">
+                        <p class="kea-console-label">Screen Preview</p>
+                        <div class="kea-segmented" id="presetButtons" aria-label="RGB presets"></div>
+                    </div>
+                    <div class="rgb-stage-grid">
+                        <div class="rgb-main-shell kea-console-well">
+                            <div class="rgb-main-preview" id="rgbMainPreview"></div>
+                        </div>
+                        <div class="rgb-pixel-shell kea-console-well">
+                            <canvas class="rgb-pixel-canvas" id="rgbPixelCanvas" width="360" height="360"></canvas>
+                        </div>
+                    </div>
+                </section>
+                <aside class="rgb-console kea-side-panel kea-side-panel--console">
+                    <div class="rgb-slider-bank">
+                        <div class="rgb-slider-row">
+                            <div class="rgb-slider-head"><label for="redSlider">Red</label><span id="redValue">255</span></div>
+                            <input id="redSlider" type="range" min="0" max="255" step="1" value="255" />
+                        </div>
+                        <div class="rgb-slider-row">
+                            <div class="rgb-slider-head"><label for="greenSlider">Green</label><span id="greenValue">180</span></div>
+                            <input id="greenSlider" type="range" min="0" max="255" step="1" value="180" />
+                        </div>
+                        <div class="rgb-slider-row">
+                            <div class="rgb-slider-head"><label for="blueSlider">Blue</label><span id="blueValue">72</span></div>
+                            <input id="blueSlider" type="range" min="0" max="255" step="1" value="72" />
+                        </div>
+                    </div>
+                    <div class="kea-side-panel__body kea-side-panel__body--fill">
+                        <div class="rgb-readout-grid">
+                            <div class="rgb-mini kea-console-screen"><strong>Subpixels</strong><p>The right panel shows enlarged red, green, and blue lights inside a tiny screen area.</p></div>
+                            <div class="rgb-mini kea-console-screen"><strong>Blend</strong><p>The left preview shows what your eye sees when those lights combine.</p></div>
+                            <div class="rgb-mini kea-console-screen"><strong>Try This</strong><p>Turn one color to zero and see how the final color family changes.</p></div>
+                            <div class="rgb-mini kea-console-screen"><strong>Light</strong><p>Screen colors mix with light, so stronger channels usually make the result brighter.</p></div>
+                        </div>
+                    </div>
+                    <div class="kea-actions"><button class="kea-button kea-button--secondary" id="resetButton" type="button">Reset Mix</button></div>
+                </aside>
+            </section>
+        </main>
+    </div>
+    <div class="kea-help-overlay" id="helpOverlay" hidden>
+        <div class="kea-help-dialog" role="dialog" aria-modal="true" aria-labelledby="rgbHelpTitle">
+            <h2 id="rgbHelpTitle" class="kea-section-label">How to Play</h2>
+            <div class="kea-help-copy">
+                <p>This module shows how a screen creates color by mixing light.</p>
+                <ul>
+                    <li>Adjust the red, green, and blue sliders.</li>
+                    <li>Watch the subpixel panel to see how each light changes.</li>
+                    <li>Look at the blended screen preview to see the combined color.</li>
+                    <li>Try the presets to compare common screen colors.</li>
+                </ul>
+            </div>
+            <div class="kea-actions"><button class="kea-button kea-button--secondary" id="closeHelpButton" type="button">Close</button></div>
+        </div>
+    </div>
+    <script>
+        const mainPreview = document.getElementById("rgbMainPreview");
+        const pixelCanvas = document.getElementById("rgbPixelCanvas");
+        const pixelCtx = pixelCanvas.getContext("2d");
+        const redSlider = document.getElementById("redSlider");
+        const greenSlider = document.getElementById("greenSlider");
+        const blueSlider = document.getElementById("blueSlider");
+        const redValue = document.getElementById("redValue");
+        const greenValue = document.getElementById("greenValue");
+        const blueValue = document.getElementById("blueValue");
+        const redHud = document.getElementById("redHud");
+        const greenHud = document.getElementById("greenHud");
+        const blueHud = document.getElementById("blueHud");
+        const hexHud = document.getElementById("hexHud");
+        const blendHud = document.getElementById("blendHud");
+        const presetButtons = document.getElementById("presetButtons");
+        const resetButton = document.getElementById("resetButton");
+        const helpButton = document.getElementById("helpButton");
+        const closeHelpButton = document.getElementById("closeHelpButton");
+        const helpOverlay = document.getElementById("helpOverlay");
+        const presets = [
+            { label: "White", r:255, g:255, b:255 },
+            { label: "Amber", r:255, g:180, b:72 },
+            { label: "Magenta", r:255, g:64, b:200 },
+            { label: "Cyan", r:60, g:230, b:255 }
+        ];
+        function describeBlend(r, g, b) {
+            if (r > 220 && g > 220 && b > 220) return "Bright white";
+            if (r > 220 && g > 150 && b < 120) return "Warm amber";
+            if (r > 200 && b > 180 && g < 130) return "Magenta glow";
+            if (g > 180 && b > 180 && r < 130) return "Cyan glow";
+            if (r > 180 && g > 180 && b < 90) return "Yellow light";
+            return "Mixed light";
+        }
+        function toHex(r, g, b) { return `#${[r, g, b].map((value) => value.toString(16).padStart(2, "0")).join("").toUpperCase()}`; }
+        function drawSubpixels(r, g, b) {
+            pixelCtx.clearRect(0, 0, pixelCanvas.width, pixelCanvas.height);
+            pixelCtx.fillStyle = "#060606";
+            pixelCtx.fillRect(0, 0, pixelCanvas.width, pixelCanvas.height);
+            const startX = 28;
+            const startY = 30;
+            for (let row = 0; row < 3; row += 1) {
+                for (let col = 0; col < 3; col += 1) {
+                    const x = startX + (col * 100);
+                    const y = startY + (row * 100);
+                    pixelCtx.fillStyle = `rgba(255,0,0,${r / 255})`;
+                    pixelCtx.fillRect(x, y, 20, 60);
+                    pixelCtx.fillStyle = `rgba(0,255,0,${g / 255})`;
+                    pixelCtx.fillRect(x + 24, y, 20, 60);
+                    pixelCtx.fillStyle = `rgba(0,0,255,${b / 255})`;
+                    pixelCtx.fillRect(x + 48, y, 20, 60);
+                }
+            }
+        }
+        function render() {
+            const r = Number(redSlider.value);
+            const g = Number(greenSlider.value);
+            const b = Number(blueSlider.value);
+            redValue.textContent = String(r);
+            greenValue.textContent = String(g);
+            blueValue.textContent = String(b);
+            redHud.textContent = String(r);
+            greenHud.textContent = String(g);
+            blueHud.textContent = String(b);
+            hexHud.textContent = toHex(r, g, b);
+            blendHud.textContent = describeBlend(r, g, b);
+            mainPreview.style.background = `radial-gradient(circle at 35% 30%, rgba(255,255,255,0.28), transparent 30%), rgb(${r}, ${g}, ${b})`;
+            drawSubpixels(r, g, b);
+        }
+        function setPreset(preset) {
+            redSlider.value = String(preset.r);
+            greenSlider.value = String(preset.g);
+            blueSlider.value = String(preset.b);
+            render();
+        }
+        presets.forEach((preset) => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "kea-button kea-button--secondary";
+            button.textContent = preset.label;
+            button.addEventListener("click", () => setPreset(preset));
+            presetButtons.appendChild(button);
+        });
+        [redSlider, greenSlider, blueSlider].forEach((slider) => slider.addEventListener("input", render));
+        resetButton.addEventListener("click", () => setPreset(presets[1]));
+        helpButton.addEventListener("click", () => { helpOverlay.hidden = false; });
+        closeHelpButton.addEventListener("click", () => { helpOverlay.hidden = true; });
+        helpOverlay.addEventListener("click", (event) => { if (event.target === helpOverlay) helpOverlay.hidden = true; });
+        setPreset(presets[1]);
+    </script>
+</body>
+</html>

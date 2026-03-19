@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pixel Painter | KEA Digi</title>
+    <link rel="stylesheet" href="keadigi.css" />
+    <style>
+        :root {
+            --pixel-board-size: min(64vw, 520px);
+            --pixel-cell-gap: 0.22rem;
+            --pixel-swatch-size: 2.5rem;
+        }
+
+        .pixel-painter-page {
+            display: grid;
+            grid-template-rows: auto minmax(0, 1fr);
+            gap: var(--kea-space-3);
+            min-height: 0;
+            padding: 1rem;
+            overflow: hidden;
+        }
+
+        .pixel-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+            gap: var(--kea-space-3);
+            min-height: 0;
+        }
+
+        .pixel-board-panel,
+        .pixel-console {
+            min-height: 0;
+            padding: 1rem;
+            display: grid;
+            gap: var(--kea-space-3);
+        }
+
+        .pixel-board-panel {
+            grid-template-rows: auto minmax(0, 1fr);
+            align-content: start;
+        }
+
+        .pixel-console {
+            grid-template-rows: auto auto 1fr auto;
+        }
+
+        .pixel-toolbar {
+            display: grid;
+            gap: 0.8rem;
+        }
+
+        .pixel-toolbar-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.7rem;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .pixel-workbench {
+            min-height: 0;
+            display: grid;
+            grid-template-columns: 108px minmax(0, 1fr);
+            gap: 0.9rem;
+            align-items: stretch;
+        }
+
+        .pixel-palette-panel {
+            min-height: 0;
+            padding: 0.75rem;
+            display: grid;
+            grid-template-rows: minmax(0, 1fr) auto;
+            gap: 0.75rem;
+            align-content: start;
+        }
+
+        .pixel-picker-wrap {
+            display: grid;
+            gap: 0.35rem;
+            margin-top: auto;
+        }
+
+        .pixel-picker-label {
+            margin: 0;
+            font-size: var(--kea-text-small);
+            font-family: var(--kea-font-display);
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: rgba(255, 248, 238, 0.84);
+        }
+
+        .pixel-picker {
+            width: 100%;
+            height: var(--pixel-swatch-size);
+            padding: 0;
+            border: 3px solid var(--kea-border);
+            border-radius: 0.75rem;
+            background: transparent;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .pixel-picker::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+
+        .pixel-picker::-webkit-color-swatch {
+            border: 0;
+            border-radius: 0.45rem;
+        }
+
+        .pixel-picker::-moz-color-swatch {
+            border: 0;
+            border-radius: 0.45rem;
+        }
+
+        .pixel-palette {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.45rem;
+            align-content: start;
+        }
+
+        .pixel-color {
+            width: 100%;
+            min-height: var(--pixel-swatch-size);
+            height: var(--pixel-swatch-size);
+            border: 3px solid var(--kea-border);
+            border-radius: 0.75rem;
+            cursor: pointer;
+            box-shadow: inset 0 2px 0 rgba(255,255,255,0.22), inset 0 -2px 0 rgba(0,0,0,0.18);
+            transition:
+                transform var(--kea-motion-fast) var(--kea-ease-out),
+                border-color var(--kea-motion-fast) var(--kea-ease-out),
+                box-shadow var(--kea-motion-fast) var(--kea-ease-out);
+        }
+
+        .pixel-color:hover {
+            transform: translateY(-1px);
+            border-color: var(--kea-accent-strong);
+        }
+
+        .pixel-color.active {
+            transform: translateY(3px);
+            box-shadow: inset 0 3px 4px rgba(0,0,0,0.24), 0 2px 0 rgba(17,17,17,0.96);
+        }
+
+        .pixel-board-shell {
+            display: grid;
+            place-items: center;
+            min-height: 0;
+            padding: 0.9rem;
+            height: 100%;
+        }
+
+        .pixel-board {
+            width: min(100%, var(--pixel-board-size));
+            aspect-ratio: 1;
+            display: grid;
+            grid-template-columns: repeat(var(--pixel-columns), minmax(0, 1fr));
+            gap: var(--pixel-cell-gap);
+            padding: 0.65rem;
+            touch-action: none;
+            user-select: none;
+        }
+
+        .pixel-cell {
+            width: 100%;
+            aspect-ratio: 1;
+            border: 2px solid rgba(17, 17, 17, 0.16);
+            border-radius: 0.28rem;
+            background: rgba(255,255,255,0.88);
+            cursor: crosshair;
+            transition: transform var(--kea-motion-fast) var(--kea-ease-out), border-color var(--kea-motion-fast) var(--kea-ease-out);
+        }
+
+        .pixel-cell:hover {
+            border-color: rgba(20, 119, 189, 0.55);
+        }
+
+        .pixel-preview {
+            min-height: 0;
+            display: grid;
+            gap: var(--kea-space-3);
+        }
+
+        .pixel-preview-screen {
+            display: grid;
+            gap: 0.7rem;
+        }
+
+        .preview-shell {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .preview-stage {
+            width: min(100%, 220px);
+            aspect-ratio: 1;
+            margin-inline: auto;
+            padding: 0.6rem;
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+        }
+
+        .preview-canvas {
+            width: var(--preview-canvas-size, 100%);
+            height: var(--preview-canvas-size, 100%);
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            background: rgba(255,255,255,0.08);
+            border-radius: 0.4rem;
+            transition: width var(--kea-motion-medium) var(--kea-ease-out), height var(--kea-motion-medium) var(--kea-ease-out);
+        }
+
+        .preview-zoom-controls {
+            display: grid;
+            gap: 0.55rem;
+        }
+
+        .preview-zoom-controls .kea-button {
+            min-width: 3.4rem;
+        }
+
+        .zoom-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.75rem;
+        }
+
+        .zoom-card {
+            min-height: 5.8rem;
+            padding: 0.8rem;
+            display: grid;
+            gap: 0.35rem;
+            align-content: start;
+        }
+
+        .zoom-card strong {
+            display: block;
+            font-family: var(--kea-font-display);
+            font-size: 0.88rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .zoom-card p {
+            margin: 0;
+            font-size: var(--kea-text-small);
+            line-height: 1.35;
+        }
+
+        .pixel-size-group {
+            display: inline-flex;
+        }
+
+        .pixel-size-group .kea-button {
+            min-width: 4rem;
+        }
+
+        @media (max-width: 920px) {
+            .pixel-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .pixel-console {
+                grid-template-rows: auto auto auto;
+            }
+
+            .pixel-workbench {
+                grid-template-columns: 1fr;
+            }
+
+            .pixel-palette-panel {
+                grid-template-rows: auto auto;
+            }
+
+            .pixel-palette {
+                grid-template-columns: repeat(6, minmax(0, 1fr));
+            }
+
+            .preview-shell {
+                grid-template-columns: 1fr;
+            }
+
+            .preview-zoom-controls {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 640px) {
+            .pixel-palette {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+            }
+
+            .pixel-toolbar-row {
+                justify-content: flex-start;
+            }
+
+            .zoom-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="kea-page">
+    <div class="kea-shell">
+        <header class="kea-topbar kea-topbar--centered">
+            <a class="kea-button kea-button--secondary" href="index.html">&larr; Go back</a>
+            <div class="kea-topbar__brand kea-topbar__brand--center">
+                <div class="kea-title-row">
+                    <h1 class="kea-app-title">Pixel Painter</h1>
+                    <div class="kea-skill-chips" aria-label="Skills">
+                        <span class="kea-skill-chip">Pixels</span>
+                        <span class="kea-skill-chip">Graphics</span>
+                    </div>
+                </div>
+                <p class="kea-app-subtitle" hidden>Paint one pixel at a time and compare the zoomed grid with the finished image view.</p>
+            </div>
+            <div class="kea-topbar__actions">
+                <button class="kea-button kea-button--secondary" id="helpButton" type="button">How to Play</button>
+                <button class="kea-button" id="newCanvasButton" type="button">New Canvas</button>
+            </div>
+        </header>
+
+        <main class="kea-content pixel-painter-page kea-console-frame">
+            <section class="kea-hud kea-hud--4 kea-console-surface" aria-label="Pixel Painter status">
+                <div class="kea-hud__item kea-console-screen">
+                    <span class="kea-hud__label">Grid</span>
+                    <span class="kea-hud__value" id="gridValue">12 x 12</span>
+                </div>
+                <div class="kea-hud__item kea-console-screen">
+                    <span class="kea-hud__label">Color</span>
+                    <span class="kea-hud__value" id="colorValue">Red</span>
+                </div>
+                <div class="kea-hud__item kea-console-screen">
+                    <span class="kea-hud__label">Filled</span>
+                    <span class="kea-hud__value" id="filledValue">0</span>
+                </div>
+                <div class="kea-hud__item kea-console-screen">
+                    <span class="kea-hud__label">Zoom</span>
+                    <span class="kea-hud__value" id="viewValue">100%</span>
+                </div>
+            </section>
+
+            <section class="pixel-layout">
+                <section class="pixel-board-panel kea-console-surface">
+                    <div class="pixel-toolbar">
+                        <div class="pixel-toolbar-row">
+                            <p class="kea-console-label">Canvas</p>
+                            <div class="kea-segmented pixel-size-group" aria-label="Grid size">
+                                <button class="kea-button kea-button--secondary" data-size="8" type="button">8 x 8</button>
+                                <button class="kea-button active" data-size="12" type="button">12 x 12</button>
+                                <button class="kea-button kea-button--secondary" data-size="16" type="button">16 x 16</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pixel-workbench">
+                        <aside class="pixel-palette-panel kea-console-well">
+                            <div class="pixel-palette" id="paletteGrid" aria-label="Color palette"></div>
+                            <label class="pixel-picker-wrap" for="customColorInput">
+                                <input class="pixel-picker" id="customColorInput" type="color" value="#ff004d" aria-label="Custom color" />
+                            </label>
+                        </aside>
+
+                        <div class="pixel-board-shell kea-console-well">
+                            <div class="pixel-board" id="pixelBoard" aria-label="Pixel painting board"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <aside class="pixel-console kea-side-panel kea-side-panel--console">
+ 
+                    <div class="kea-side-panel__body kea-side-panel__body--fill">
+                        <div class="pixel-preview-screen kea-console-screen kea-screen-panel kea-terminal">
+                            <strong>Canvas View</strong>
+                            <div class="preview-shell">
+                                <div class="preview-stage kea-console-well">
+                                    <canvas class="preview-canvas" id="previewCanvas" width="16" height="16"></canvas>
+                                </div>
+                                <div class="preview-zoom-controls" aria-label="Preview zoom">
+                                    <button class="kea-button kea-button--secondary" id="zoomInButton" type="button">+</button>
+                                    <button class="kea-button kea-button--secondary" id="zoomResetButton" type="button">Reset</button>
+                                    <button class="kea-button kea-button--secondary" id="zoomOutButton" type="button">-</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="zoom-grid">
+                            <div class="zoom-card kea-console-screen">
+                                <strong>Zoomed</strong>
+                                <p>Use the zoom buttons to step closer or farther from the same painted pixel grid.</p>
+                            </div>
+                            <div class="zoom-card kea-console-screen">
+                                <strong>Preview</strong>
+                                <p>Changing the preview size helps show how the same image feels different at different distances.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="kea-actions">
+                        <button class="kea-button kea-button--secondary" id="clearButton" type="button">Clear</button>
+                        <button class="kea-button" id="exportButton" type="button">Export</button>
+                    </div>
+                </aside>
+            </section>
+        </main>
+    </div>
+
+    <div class="kea-help-overlay" id="helpOverlay" hidden>
+        <div class="kea-help-dialog" role="dialog" aria-modal="true" aria-labelledby="pixelHelpTitle">
+            <h2 id="pixelHelpTitle" class="kea-section-label">How to Play</h2>
+            <div class="kea-help-copy">
+                <p>Choose a color, then tap or drag across the grid to paint one pixel at a time.</p>
+                <ul>
+                    <li>Try different grid sizes to see how resolution changes the image.</li>
+                    <li>Use the zoom buttons to make the same image feel closer or farther away.</li>
+                    <li>Clear the canvas or start a fresh one any time.</li>
+                </ul>
+            </div>
+            <div class="kea-actions">
+                <button class="kea-button kea-button--secondary" id="closeHelpButton" type="button">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="kea-help-overlay" id="exportOverlay" hidden>
+        <div class="kea-help-dialog" role="dialog" aria-modal="true" aria-labelledby="exportTitle">
+            <h2 id="exportTitle" class="kea-section-label">Export PNG</h2>
+            <div class="kea-help-copy kea-modal-form">
+                <p>This will save a PNG copy of your pixel art.</p>
+                <div class="kea-field">
+                    <label class="kea-field__label" for="exportNameInput">File name</label>
+                    <input class="kea-input" id="exportNameInput" type="text" placeholder="my-pixel-art" />
+                </div>
+            </div>
+            <div class="kea-actions">
+                <button class="kea-button kea-button--secondary" id="cancelExportButton" type="button">Cancel</button>
+                <button class="kea-button" id="confirmExportButton" type="button" disabled>Save PNG</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const PALETTE = [
+            { name: "Red", hex: "#ff004d" },
+            { name: "Orange", hex: "#ffa300" },
+            { name: "Yellow", hex: "#ffec27" },
+            { name: "Green", hex: "#00e436" },
+            { name: "Blue", hex: "#29adff" },
+            { name: "Sky", hex: "#8ed8ff" },
+            { name: "Mint", hex: "#7de2b1" },
+            { name: "Purple", hex: "#7e2553" },
+            { name: "Pink", hex: "#ff77a8" },
+            { name: "Brown", hex: "#ab5236" },
+            { name: "Grey", hex: "#c2c3c7" },
+            { name: "Black", hex: "#1d1d21" },
+            { name: "Eraser", hex: "#ffffff" }
+        ];
+
+        const paletteGrid = document.getElementById("paletteGrid");
+        const customColorInput = document.getElementById("customColorInput");
+        const pixelBoard = document.getElementById("pixelBoard");
+        const previewCanvas = document.getElementById("previewCanvas");
+        const previewCtx = previewCanvas.getContext("2d");
+        const gridValue = document.getElementById("gridValue");
+        const colorValue = document.getElementById("colorValue");
+        const filledValue = document.getElementById("filledValue");
+        const viewValue = document.getElementById("viewValue");
+        const clearButton = document.getElementById("clearButton");
+        const exportButton = document.getElementById("exportButton");
+        const zoomInButton = document.getElementById("zoomInButton");
+        const zoomResetButton = document.getElementById("zoomResetButton");
+        const zoomOutButton = document.getElementById("zoomOutButton");
+        const newCanvasButton = document.getElementById("newCanvasButton");
+        const helpButton = document.getElementById("helpButton");
+        const closeHelpButton = document.getElementById("closeHelpButton");
+        const helpOverlay = document.getElementById("helpOverlay");
+        const exportOverlay = document.getElementById("exportOverlay");
+        const exportNameInput = document.getElementById("exportNameInput");
+        const confirmExportButton = document.getElementById("confirmExportButton");
+        const cancelExportButton = document.getElementById("cancelExportButton");
+
+        let gridSize = 12;
+        let activeColor = { ...PALETTE[0] };
+        let pixels = [];
+        let isPainting = false;
+        let previewZoom = 100;
+
+        function buildPixels(size) {
+            pixels = Array.from({ length: size * size }, () => "#ffffff");
+        }
+
+        function updateHud() {
+            gridValue.textContent = `${gridSize} x ${gridSize}`;
+            colorValue.textContent = activeColor.name;
+            filledValue.textContent = String(pixels.filter((pixel) => pixel !== "#ffffff").length);
+            viewValue.textContent = `${previewZoom}%`;
+        }
+
+        function renderPalette() {
+            paletteGrid.innerHTML = "";
+            PALETTE.forEach((color) => {
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "pixel-color";
+                if (activeColor.hex === color.hex && activeColor.name === color.name) button.classList.add("active");
+                button.style.background = color.hex === "#ffffff"
+                    ? "linear-gradient(180deg, #ffffff 0%, #e6e1d8 100%)"
+                    : color.hex;
+                button.setAttribute("aria-label", color.name);
+                button.title = color.name;
+                button.addEventListener("click", () => {
+                    activeColor = { ...color };
+                    customColorInput.value = color.hex;
+                    renderPalette();
+                    updateHud();
+                });
+                paletteGrid.appendChild(button);
+            });
+        }
+
+        function paintIndex(index) {
+            pixels[index] = activeColor.hex;
+            const cell = pixelBoard.children[index];
+            if (cell) cell.style.background = activeColor.hex;
+            drawPreview();
+            updateHud();
+        }
+
+        function renderBoard() {
+            pixelBoard.innerHTML = "";
+            pixelBoard.style.setProperty("--pixel-columns", String(gridSize));
+            pixels.forEach((color, index) => {
+                const cell = document.createElement("button");
+                cell.type = "button";
+                cell.className = "pixel-cell";
+                cell.style.background = color;
+                cell.addEventListener("pointerdown", (event) => {
+                    event.preventDefault();
+                    isPainting = true;
+                    paintIndex(index);
+                });
+                cell.addEventListener("pointerenter", () => {
+                    if (isPainting) paintIndex(index);
+                });
+                pixelBoard.appendChild(cell);
+            });
+        }
+
+        function drawPreview() {
+            previewCanvas.width = gridSize;
+            previewCanvas.height = gridSize;
+            pixels.forEach((color, index) => {
+                const x = index % gridSize;
+                const y = Math.floor(index / gridSize);
+                previewCtx.fillStyle = color;
+                previewCtx.fillRect(x, y, 1, 1);
+            });
+            previewCanvas.style.setProperty("--preview-canvas-size", `${previewZoom}%`);
+        }
+
+        function setPreviewZoom(nextZoom) {
+            previewZoom = Math.max(50, Math.min(250, nextZoom));
+            drawPreview();
+            updateHud();
+        }
+
+        function sanitizeFileName(value) {
+            return value
+                .trim()
+                .replace(/[<>:"/\\|?*\x00-\x1F]/g, "")
+                .replace(/\s+/g, "-");
+        }
+
+        function updateExportState() {
+            confirmExportButton.disabled = sanitizeFileName(exportNameInput.value).length === 0;
+        }
+
+        function exportCanvas() {
+            const fileName = sanitizeFileName(exportNameInput.value);
+            if (!fileName) return;
+            const link = document.createElement("a");
+            link.href = previewCanvas.toDataURL("image/png");
+            link.download = `${fileName}.png`;
+            link.click();
+            exportOverlay.hidden = true;
+        }
+
+        function resetCanvas(size = gridSize) {
+            gridSize = size;
+            buildPixels(gridSize);
+            renderBoard();
+            drawPreview();
+            updateHud();
+            document.querySelectorAll("[data-size]").forEach((button) => {
+                button.classList.toggle("active", Number(button.dataset.size) === gridSize);
+                button.classList.toggle("kea-button--secondary", Number(button.dataset.size) !== gridSize);
+            });
+        }
+
+        document.querySelectorAll("[data-size]").forEach((button) => {
+            button.addEventListener("click", () => resetCanvas(Number(button.dataset.size)));
+        });
+
+        clearButton.addEventListener("click", () => resetCanvas(gridSize));
+        newCanvasButton.addEventListener("click", () => resetCanvas(gridSize));
+        zoomInButton.addEventListener("click", () => setPreviewZoom(previewZoom + 25));
+        zoomResetButton.addEventListener("click", () => setPreviewZoom(100));
+        zoomOutButton.addEventListener("click", () => setPreviewZoom(previewZoom - 25));
+        exportButton.addEventListener("click", () => {
+            exportNameInput.value = "";
+            updateExportState();
+            exportOverlay.hidden = false;
+            exportNameInput.focus();
+        });
+
+        customColorInput.addEventListener("input", () => {
+            activeColor = { name: "Custom", hex: customColorInput.value };
+            renderPalette();
+            updateHud();
+        });
+
+        exportNameInput.addEventListener("input", updateExportState);
+        confirmExportButton.addEventListener("click", exportCanvas);
+        cancelExportButton.addEventListener("click", () => { exportOverlay.hidden = true; });
+
+        pixelBoard.addEventListener("pointerup", () => { isPainting = false; });
+        pixelBoard.addEventListener("pointerleave", () => { isPainting = false; });
+        window.addEventListener("pointerup", () => { isPainting = false; });
+
+        helpButton.addEventListener("click", () => { helpOverlay.hidden = false; });
+        closeHelpButton.addEventListener("click", () => { helpOverlay.hidden = true; });
+        helpOverlay.addEventListener("click", (event) => {
+            if (event.target === helpOverlay) helpOverlay.hidden = true;
+        });
+        exportOverlay.addEventListener("click", (event) => {
+            if (event.target === exportOverlay) exportOverlay.hidden = true;
+        });
+
+        buildPixels(gridSize);
+        customColorInput.value = activeColor.hex;
+        renderPalette();
+        renderBoard();
+        drawPreview();
+        updateHud();
+    </script>
+</body>
+</html>

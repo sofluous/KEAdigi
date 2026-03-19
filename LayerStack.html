@@ -8,49 +8,18 @@
     <style>
         .layer-stack-page {
             display: grid;
+            grid-template-rows: auto minmax(0, 1fr);
             gap: var(--kea-space-3);
+            min-height: 0;
             padding: 1rem;
-            border: 4px solid var(--kea-border);
-            border-radius: calc(var(--kea-radius-lg) + 0.2rem);
-            background:
-                linear-gradient(180deg, rgba(76, 78, 84, 0.95), rgba(34, 36, 41, 0.98)),
-                var(--kea-control-face-dark);
-            box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.12), inset 0 -4px 0 rgba(0, 0, 0, 0.28);
-        }
-
-        .layer-stack-hud {
-            display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 0.75rem;
-            padding: 1rem;
-        }
-
-        .stack-readout {
-            padding: 0.75rem 0.9rem;
-            text-align: center;
-        }
-
-        .stack-readout__label {
-            display: block;
-            margin-bottom: 0.35rem;
-            font-family: var(--kea-font-display);
-            font-size: 0.78rem;
-            font-weight: 800;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: #d7ffd8;
-        }
-
-        .stack-readout__value {
-            display: block;
-            font-size: clamp(1.15rem, 1.9vw, 1.55rem);
-            font-weight: 800;
+            overflow: hidden;
         }
 
         .layer-stack-grid {
             display: grid;
             grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.85fr);
             gap: var(--kea-space-3);
+            min-height: 0;
         }
 
         .stack-board,
@@ -59,6 +28,10 @@
             display: grid;
             gap: var(--kea-space-3);
             align-content: start;
+        }
+
+        .stack-console {
+            grid-template-rows: auto 1fr auto;
         }
 
         .scene-panels {
@@ -351,23 +324,6 @@
             background: linear-gradient(180deg, #fff0aa 0%, #ffa300 100%);
         }
 
-        .stack-terminal {
-            padding: 0.95rem 1rem;
-            min-height: 8rem;
-            display: grid;
-            gap: 0.5rem;
-            align-content: start;
-        }
-
-        .stack-terminal p {
-            margin: 0;
-        }
-
-        .stack-terminal strong {
-            display: block;
-            font-size: 1.05rem;
-        }
-
         .stack-order {
             display: grid;
             gap: 0.35rem;
@@ -386,10 +342,6 @@
         }
 
         @media (max-width: 680px) {
-            .layer-stack-hud {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-
             .layer-buttons {
                 grid-template-columns: 1fr;
             }
@@ -403,7 +355,7 @@
 <body class="kea-page">
     <div class="kea-shell">
         <header class="kea-topbar kea-topbar--centered">
-            <a class="kea-back-link" href="index.html">Back to KEA Digi</a>
+            <a class="kea-button kea-button--secondary" href="index.html">&larr; Go back</a>
             <div class="kea-topbar__brand kea-topbar__brand--center">
                 <div class="kea-title-row">
                     <h1 class="kea-app-title">Layer Stack</h1>
@@ -420,23 +372,23 @@
             </div>
         </header>
 
-        <main class="kea-content layer-stack-page">
-            <section class="layer-stack-hud kea-console-surface" aria-label="Layer Stack status">
-                <div class="stack-readout kea-console-screen">
-                    <span class="stack-readout__label">Scene</span>
-                    <span class="stack-readout__value" id="sceneValue">1</span>
+        <main class="kea-content layer-stack-page kea-console-frame">
+            <section class="kea-hud kea-hud--4 kea-console-surface" aria-label="Layer Stack status">
+                <div class="kea-hud__item kea-console-screen">
+                    <span class="kea-hud__label">Scene</span>
+                    <span class="kea-hud__value" id="sceneValue">1</span>
                 </div>
-                <div class="stack-readout kea-console-screen">
-                    <span class="stack-readout__label">Moves</span>
-                    <span class="stack-readout__value" id="movesValue">0</span>
+                <div class="kea-hud__item kea-console-screen">
+                    <span class="kea-hud__label">Moves</span>
+                    <span class="kea-hud__value" id="movesValue">0</span>
                 </div>
-                <div class="stack-readout kea-console-screen">
-                    <span class="stack-readout__label">Best</span>
-                    <span class="stack-readout__value" id="bestValue">0</span>
+                <div class="kea-hud__item kea-console-screen">
+                    <span class="kea-hud__label">Best</span>
+                    <span class="kea-hud__value" id="bestValue">0</span>
                 </div>
-                <div class="stack-readout kea-console-screen">
-                    <span class="stack-readout__label">Status</span>
-                    <span class="stack-readout__value" id="statusValue">Build</span>
+                <div class="kea-hud__item kea-console-screen">
+                    <span class="kea-hud__label">Status</span>
+                    <span class="kea-hud__value" id="statusValue">Build</span>
                 </div>
             </section>
 
@@ -459,16 +411,20 @@
                     </section>
                 </section>
 
-                <aside class="stack-console kea-console-surface">
-                    <p class="kea-console-label">How It Works</p>
-                    <p class="kea-muted">Objects can sit in front of each other or behind each other. Match the target by choosing which object should be on top.</p>
-                    <div class="stack-terminal kea-console-screen" id="feedbackScreen">
-                        <strong>Ready</strong>
-                        <p>Tap an object in the scene or use the front buttons to change the order.</p>
+                <aside class="stack-console kea-side-panel kea-side-panel--console">
+                    <div class="kea-side-panel__copy">
+                        <p class="kea-console-label">How It Works</p>
+                        <p class="kea-muted">Objects can sit in front of each other or behind each other. Match the target by choosing which object should be on top.</p>
                     </div>
-                    <div class="stack-terminal kea-console-screen">
-                        <strong>Current Order</strong>
-                        <div class="stack-order" id="orderList"></div>
+                    <div class="kea-side-panel__body kea-side-panel__body--fill">
+                        <div class="stack-terminal kea-console-screen kea-screen-panel kea-terminal" id="feedbackScreen">
+                            <strong>Ready</strong>
+                            <p>Tap an object in the scene or use the front buttons to change the order.</p>
+                        </div>
+                        <div class="stack-terminal kea-console-screen kea-screen-panel kea-terminal">
+                            <strong>Current Order</strong>
+                            <div class="stack-order" id="orderList"></div>
+                        </div>
                     </div>
                     <div class="stack-actions kea-actions">
                         <button class="kea-button kea-button--secondary" id="resetSceneButton" type="button">Reset Scene</button>
@@ -480,7 +436,7 @@
     </div>
 
     <div class="kea-help-overlay" id="helpOverlay" hidden>
-        <div class="kea-help-dialog kea-console-surface" role="dialog" aria-modal="true" aria-labelledby="layerHelpTitle">
+        <div class="kea-help-dialog" role="dialog" aria-modal="true" aria-labelledby="layerHelpTitle">
             <h2 id="layerHelpTitle" class="kea-section-label">How to Play</h2>
             <div class="kea-help-copy">
                 <p>Compare your scene with the target scene. Tap an object to bring it all the way to the front.</p>

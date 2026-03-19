@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Files And Folders Explorer | KEA Digi</title>
+    <link rel="stylesheet" href="keadigi.css" />
+    <style>
+        html, body { height:100%; overflow:hidden; }
+        body.kea-page { overflow:hidden; }
+        .kea-shell { height:100dvh; min-height:100vh; overflow:hidden; }
+        .kea-topbar { flex:0 0 auto; padding:0.65rem 0.9rem; }
+        .files-page { display:grid; grid-template-rows:auto minmax(0,1fr); gap:0.7rem; min-height:0; padding:0.7rem; overflow:hidden; }
+        .files-layout { display:grid; grid-template-columns:minmax(0,1.3fr) minmax(260px,0.62fr); gap:0.7rem; min-height:0; }
+        .files-stage, .files-console { min-height:0; padding:0.75rem; display:grid; gap:0.65rem; overflow:hidden; }
+        .files-stage { grid-template-rows:auto minmax(0,1fr) auto; }
+        .files-toolbar { display:flex; justify-content:space-between; gap:0.55rem; align-items:center; flex-wrap:wrap; }
+        .files-board { min-height:0; display:grid; grid-template-columns:minmax(0,0.95fr) minmax(0,1.05fr); gap:0.65rem; }
+        .files-shell { min-height:0; padding:0.2rem; overflow:hidden; }
+        .files-desktop, .files-folders { min-height:0; padding:0.6rem; display:grid; gap:0.55rem; align-content:start; }
+        .files-path { min-height:0; padding:0.6rem 0.75rem; display:grid; gap:0.25rem; }
+        .file-card { padding:0.75rem; display:grid; gap:0.45rem; align-content:start; }
+        .file-card__icon { width:4rem; height:4.75rem; border:4px solid var(--kea-border); border-radius:0.9rem; background:linear-gradient(180deg, rgba(255,255,255,0.95), rgba(232,229,220,0.98)); position:relative; }
+        .file-card__icon::after { content:""; position:absolute; top:0.35rem; right:0.35rem; width:1rem; height:1rem; border-top:4px solid var(--kea-border); border-right:4px solid var(--kea-border); background:#fff5d6; }
+        .file-card__name, .file-card__meta { margin:0; }
+        .file-card__name { font-family:var(--kea-font-display); font-size:0.9rem; font-weight:800; letter-spacing:0.04em; text-transform:uppercase; }
+        .file-card__meta { color:var(--kea-text-muted); }
+        .folder-grid { min-height:0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.5rem; }
+        .folder-card { padding:0.65rem; display:grid; gap:0.3rem; align-content:start; }
+        .folder-card.is-active { border-color:var(--kea-accent-strong); }
+        .folder-icon { width:3.25rem; height:2.35rem; border:4px solid var(--kea-border); border-radius:0.75rem; background:linear-gradient(180deg, #ffd978, #e0a529); position:relative; }
+        .folder-icon::before { content:""; position:absolute; top:-0.38rem; left:0.3rem; width:1.35rem; height:0.6rem; border:4px solid var(--kea-border); border-bottom:none; border-radius:0.45rem 0.45rem 0 0; background:#ffe6a0; }
+        .folder-name, .folder-copy { margin:0; }
+        .folder-name { font-family:var(--kea-font-display); font-size:0.78rem; font-weight:800; letter-spacing:0.05em; text-transform:uppercase; }
+        .folder-copy { font-size:0.74rem; color:var(--kea-text-muted); }
+        .files-console { grid-template-rows:auto auto minmax(0,1fr) auto; }
+        .files-form { display:grid; gap:0.5rem; }
+        .files-row { display:grid; gap:0.25rem; }
+        .files-row label { font-family:var(--kea-font-display); font-size:0.74rem; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:rgba(255,248,238,0.82); }
+        .files-row select, .files-row input { width:100%; }
+        .files-readout-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.4rem; }
+        .files-mini { min-height:0; padding:0.6rem; display:grid; gap:0.25rem; align-content:start; }
+        @media (max-width: 980px) { .files-layout, .files-board { grid-template-columns:1fr; } }
+        @media (max-width: 760px) { .folder-grid, .files-readout-grid { grid-template-columns:1fr; } }
+    </style>
+</head>
+<body class="kea-page">
+    <div class="kea-shell">
+        <header class="kea-topbar kea-topbar--centered">
+            <a class="kea-button kea-button--secondary" href="index.html">&larr; Go back</a>
+            <div class="kea-topbar__brand kea-topbar__brand--center">
+                <div class="kea-title-row">
+                    <h1 class="kea-app-title">Files And Folders Explorer</h1>
+                    <div class="kea-skill-chips" aria-label="Skills">
+                        <span class="kea-skill-chip">Files</span>
+                        <span class="kea-skill-chip">Folders</span>
+                    </div>
+                </div>
+                <p class="kea-app-subtitle" hidden>Inspect how file names, file types, and folder locations work together.</p>
+            </div>
+            <div class="kea-topbar__actions">
+                <button class="kea-button kea-button--secondary" id="helpButton" type="button">How to Play</button>
+            </div>
+        </header>
+        <main class="kea-content files-page kea-console-frame">
+            <section class="kea-hud kea-console-surface" aria-label="Files And Folders Explorer status">
+                <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">File</span><span class="kea-hud__value" id="fileHud">Poster</span></div>
+                <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Type</span><span class="kea-hud__value" id="typeHud">PNG</span></div>
+                <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Folder</span><span class="kea-hud__value" id="folderHud">Images</span></div>
+                <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Path</span><span class="kea-hud__value" id="pathHud">Images/Poster.png</span></div>
+            </section>
+            <section class="files-layout">
+                <section class="files-stage kea-console-surface">
+                    <div class="files-toolbar">
+                        <p class="kea-console-label">Storage View</p>
+                        <div class="kea-segmented" id="sampleButtons" aria-label="File examples"></div>
+                    </div>
+                    <div class="files-board">
+                        <div class="files-shell kea-console-well">
+                            <div class="files-desktop">
+                                <p class="kea-console-label">Current File</p>
+                                <article class="file-card kea-surface">
+                                    <div class="file-card__icon" id="fileIcon"></div>
+                                    <p class="file-card__name" id="fileNameDisplay">Poster.png</p>
+                                    <p class="file-card__meta" id="fileMetaDisplay">PNG image file</p>
+                                </article>
+                            </div>
+                        </div>
+                        <div class="files-shell kea-console-well">
+                            <div class="files-folders">
+                                <p class="kea-console-label">Folders</p>
+                                <div class="folder-grid" id="folderGrid"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="files-path kea-console-screen">
+                        <strong>Current Path</strong>
+                        <p id="pathDisplay">Images/Poster.png</p>
+                    </div>
+                </section>
+                <aside class="files-console kea-side-panel kea-side-panel--console">
+                    <div class="files-form">
+                        <div class="files-row">
+                            <label for="fileNameInput">File Name</label>
+                            <input class="kea-input" id="fileNameInput" type="text" value="Poster" maxlength="18" />
+                        </div>
+                        <div class="files-row">
+                            <label for="fileTypeSelect">File Type</label>
+                            <select class="kea-input" id="fileTypeSelect"></select>
+                        </div>
+                    </div>
+                    <div class="kea-side-panel__body kea-side-panel__body--fill">
+                        <div class="files-readout-grid">
+                            <div class="files-mini kea-console-screen"><strong>Name</strong><p>The file name helps you recognize the file.</p></div>
+                            <div class="files-mini kea-console-screen"><strong>Type</strong><p>The extension tells the computer what kind of file it is.</p></div>
+                            <div class="files-mini kea-console-screen"><strong>Folder</strong><p>Folders hold files and keep similar things together.</p></div>
+                            <div class="files-mini kea-console-screen"><strong>Path</strong><p>The path is the route to the file inside the folder system.</p></div>
+                        </div>
+                    </div>
+                    <div class="kea-actions"><button class="kea-button kea-button--secondary" id="resetButton" type="button">Reset Example</button></div>
+                </aside>
+            </section>
+        </main>
+    </div>
+    <div class="kea-help-overlay" id="helpOverlay" hidden>
+        <div class="kea-help-dialog" role="dialog" aria-modal="true" aria-labelledby="filesHelpTitle">
+            <h2 id="filesHelpTitle" class="kea-section-label">How to Play</h2>
+            <div class="kea-help-copy">
+                <p>This module shows how a computer describes where a file lives.</p>
+                <ul>
+                    <li>Choose a file example.</li>
+                    <li>Change the name or file type.</li>
+                    <li>Click a folder to move the file there.</li>
+                    <li>Watch how the path changes when the file name, type, or location changes.</li>
+                </ul>
+            </div>
+            <div class="kea-actions"><button class="kea-button kea-button--secondary" id="closeHelpButton" type="button">Close</button></div>
+        </div>
+    </div>
+    <script>
+        const sampleButtons = document.getElementById("sampleButtons");
+        const folderGrid = document.getElementById("folderGrid");
+        const fileNameInput = document.getElementById("fileNameInput");
+        const fileTypeSelect = document.getElementById("fileTypeSelect");
+        const fileNameDisplay = document.getElementById("fileNameDisplay");
+        const fileMetaDisplay = document.getElementById("fileMetaDisplay");
+        const fileIcon = document.getElementById("fileIcon");
+        const pathDisplay = document.getElementById("pathDisplay");
+        const fileHud = document.getElementById("fileHud");
+        const typeHud = document.getElementById("typeHud");
+        const folderHud = document.getElementById("folderHud");
+        const pathHud = document.getElementById("pathHud");
+        const resetButton = document.getElementById("resetButton");
+        const helpButton = document.getElementById("helpButton");
+        const closeHelpButton = document.getElementById("closeHelpButton");
+        const helpOverlay = document.getElementById("helpOverlay");
+        const folders = [
+            { id: "images", label: "Images", copy: "Pictures and graphics" },
+            { id: "writing", label: "Writing", copy: "Stories and notes" },
+            { id: "audio", label: "Audio", copy: "Songs and sounds" },
+            { id: "school", label: "School", copy: "Class projects" }
+        ];
+        const fileTypes = {
+            png: { label: "PNG", description: "Image file", color: "#8ed8ff" },
+            txt: { label: "TXT", description: "Text file", color: "#ffd978" },
+            mp3: { label: "MP3", description: "Audio file", color: "#ff9ac5" },
+            html: { label: "HTML", description: "Web page file", color: "#7df0b4" }
+        };
+        const samples = [
+            { name: "Poster", type: "png", folder: "images" },
+            { name: "Song", type: "mp3", folder: "audio" },
+            { name: "Journal", type: "txt", folder: "writing" },
+            { name: "Project", type: "html", folder: "school" }
+        ];
+        let currentSampleIndex = 0;
+        let state = { ...samples[0] };
+        function currentType() { return fileTypes[state.type]; }
+        function folderById(id) { return folders.find((folder) => folder.id === id); }
+        function renderFolderButtons() {
+            folderGrid.innerHTML = "";
+            folders.forEach((folder) => {
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = `folder-card kea-button kea-button--secondary${folder.id === state.folder ? " is-active" : ""}`;
+                button.innerHTML = `<div class="folder-icon"></div><p class="folder-name">${folder.label}</p><p class="folder-copy">${folder.copy}</p>`;
+                button.setAttribute("aria-pressed", String(folder.id === state.folder));
+                button.addEventListener("click", () => { state.folder = folder.id; render(); });
+                folderGrid.appendChild(button);
+            });
+        }
+        function renderSampleButtons() {
+            sampleButtons.innerHTML = "";
+            samples.forEach((sample, index) => {
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "kea-button kea-button--secondary";
+                button.textContent = sample.name;
+                button.addEventListener("click", () => {
+                    currentSampleIndex = index;
+                    state = { ...samples[index] };
+                    fileNameInput.value = state.name;
+                    fileTypeSelect.value = state.type;
+                    render();
+                });
+                sampleButtons.appendChild(button);
+            });
+        }
+        function renderTypeOptions() {
+            fileTypeSelect.innerHTML = "";
+            Object.entries(fileTypes).forEach(([key, value]) => {
+                const option = document.createElement("option");
+                option.value = key;
+                option.textContent = `${value.label} - ${value.description}`;
+                fileTypeSelect.appendChild(option);
+            });
+        }
+        function render() {
+            const folder = folderById(state.folder);
+            const type = currentType();
+            const fileName = `${state.name}.${state.type}`;
+            fileNameDisplay.textContent = fileName;
+            fileMetaDisplay.textContent = `${type.label} ${type.description.toLowerCase()}`;
+            fileIcon.style.background = `linear-gradient(180deg, rgba(255,255,255,0.95), ${type.color})`;
+            const path = `${folder.label}/${fileName}`;
+            pathDisplay.textContent = path;
+            fileHud.textContent = state.name;
+            typeHud.textContent = type.label;
+            folderHud.textContent = folder.label;
+            pathHud.textContent = path;
+            renderFolderButtons();
+        }
+        fileNameInput.addEventListener("input", () => {
+            state.name = fileNameInput.value.trim() || "Untitled";
+            render();
+        });
+        fileTypeSelect.addEventListener("input", () => {
+            state.type = fileTypeSelect.value;
+            render();
+        });
+        resetButton.addEventListener("click", () => {
+            state = { ...samples[currentSampleIndex] };
+            fileNameInput.value = state.name;
+            fileTypeSelect.value = state.type;
+            render();
+        });
+        helpButton.addEventListener("click", () => { helpOverlay.hidden = false; });
+        closeHelpButton.addEventListener("click", () => { helpOverlay.hidden = true; });
+        helpOverlay.addEventListener("click", (event) => { if (event.target === helpOverlay) helpOverlay.hidden = true; });
+        renderTypeOptions();
+        renderSampleButtons();
+        fileNameInput.value = state.name;
+        fileTypeSelect.value = state.type;
+        render();
+    </script>
+</body>
+</html>

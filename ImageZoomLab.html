@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Image Zoom Lab | KEA Digi</title>
+    <link rel="stylesheet" href="keadigi.css" />
+    <style>
+        html, body { height:100%; overflow:hidden; }
+        body.kea-page { overflow:hidden; }
+        .kea-shell { height:100dvh; min-height:100vh; overflow:hidden; }
+        .kea-topbar { flex:0 0 auto; padding:0.65rem 0.9rem; }
+        .zoom-lab-page { display:grid; grid-template-rows:auto minmax(0,1fr); gap:0.7rem; min-height:0; padding:0.7rem; overflow:hidden; }
+        .zoom-lab-layout { display:grid; grid-template-columns:minmax(0,1.45fr) minmax(280px,0.65fr); gap:0.75rem; min-height:0; }
+        .zoom-stage-panel, .zoom-console { min-height:0; padding:0.75rem; display:grid; gap:0.75rem; }
+        .zoom-stage-panel { grid-template-rows:auto minmax(0,1fr); }
+        .zoom-console { grid-template-rows:auto auto minmax(0,1fr) auto; overflow:hidden; }
+        .zoom-toolbar { display:flex; flex-wrap:wrap; gap:0.55rem; justify-content:space-between; align-items:center; }
+        .zoom-stage-shell { min-height:0; padding:0.15rem; display:grid; place-items:center; overflow:hidden; }
+        .zoom-viewport { width:auto; height:100%; max-width:100%; min-height:0; aspect-ratio:16 / 10; position:relative; overflow:hidden; touch-action:none; cursor:grab; }
+        .zoom-viewport.dragging { cursor:grabbing; }
+        .zoom-canvas { width:100%; height:100%; display:block; object-fit:contain; object-position:center; image-rendering:pixelated; image-rendering:crisp-edges; }
+        .zoom-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.55rem; }
+        .zoom-mini-screen { min-height:0; padding:0.7rem; display:grid; gap:0.4rem; align-content:start; }
+        .inspect-shell { min-height:0; display:grid; gap:0.65rem; }
+        .inspect-row { display:grid; grid-template-columns:minmax(0,1fr) 4rem; gap:0.55rem; align-items:center; }
+        .inspect-canvas-wrap { aspect-ratio:1; padding:0.35rem; display:grid; place-items:center; }
+        .inspect-canvas { width:100%; height:100%; display:block; image-rendering:pixelated; image-rendering:crisp-edges; border-radius:0.4rem; background:rgba(255,255,255,0.06); }
+        .inspect-swatch { width:100%; aspect-ratio:1; border:4px solid var(--kea-border); border-radius:0.9rem; box-shadow:inset 0 2px 0 rgba(255,255,255,0.24), inset 0 -2px 0 rgba(0,0,0,0.16); }
+        .zoom-upload { position:relative; overflow:hidden; }
+        .zoom-upload input { position:absolute; inset:0; opacity:0; cursor:pointer; }
+        .zoom-slider-stack, .zoom-slider-row { display:grid; gap:0.45rem; }
+        .zoom-slider-row { gap:0.25rem; }
+        .zoom-slider-row label { font-family:var(--kea-font-display); font-size:0.76rem; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:rgba(255,248,238,0.82); }
+        .zoom-slider-row input[type="range"] { width:100%; }
+        @media (max-width: 980px) { .zoom-lab-layout { grid-template-columns:1fr; } .zoom-console { grid-template-rows:auto auto auto auto; } }
+        @media (max-width: 760px) { .zoom-grid { grid-template-columns:1fr; } }
+    </style>
+</head>
+<body class="kea-page">
+    <div class="kea-shell">
+        <header class="kea-topbar kea-topbar--centered">
+            <a class="kea-button kea-button--secondary" href="index.html">&larr; Go back</a>
+            <div class="kea-topbar__brand kea-topbar__brand--center">
+                <div class="kea-title-row">
+                    <h1 class="kea-app-title">Image Zoom Lab</h1>
+                    <div class="kea-skill-chips" aria-label="Skills">
+                        <span class="kea-skill-chip">Pixels</span>
+                        <span class="kea-skill-chip">Inspection</span>
+                    </div>
+                </div>
+                <p class="kea-app-subtitle" hidden>Zoom in, pan around, and inspect how nearby colors work together to build the image.</p>
+            </div>
+            <div class="kea-topbar__actions">
+                <button class="kea-button kea-button--secondary" id="helpButton" type="button">How to Play</button>
+                <label class="kea-button zoom-upload">Load Image<input id="imageUploadInput" type="file" accept="image/*" /></label>
+            </div>
+        </header>
+        <main class="kea-content zoom-lab-page kea-console-frame">
+            <section class="kea-hud kea-hud--4 kea-console-surface" aria-label="Image Zoom Lab status">
+                <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Zoom</span><span class="kea-hud__value" id="zoomValue">400%</span></div>
+                <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Sample</span><span class="kea-hud__value" id="sampleValue">Center</span></div>
+                <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Pixel</span><span class="kea-hud__value" id="pixelValue">255, 214, 88</span></div>
+                <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Blend</span><span class="kea-hud__value" id="blendValue">Warm gold</span></div>
+            </section>
+            <section class="zoom-lab-layout">
+                <section class="zoom-stage-panel kea-console-surface">
+                    <div class="zoom-toolbar">
+                        <p class="kea-console-label">Viewport</p>
+                        <div class="kea-segmented" aria-label="Zoom controls">
+                            <button class="kea-button kea-button--secondary" id="zoomOutButton" type="button">-</button>
+                            <button class="kea-button kea-button--secondary" id="zoomResetButton" type="button">Reset</button>
+                            <button class="kea-button kea-button--secondary" id="zoomInButton" type="button">+</button>
+                        </div>
+                    </div>
+                    <div class="zoom-stage-shell kea-console-well">
+                        <div class="zoom-viewport" id="zoomViewport"><canvas class="zoom-canvas" id="zoomCanvas" width="960" height="600"></canvas></div>
+                    </div>
+                </section>
+                <aside class="zoom-console kea-side-panel kea-side-panel--console">
+                    <div class="kea-side-panel__body kea-side-panel__body--fill">
+                        <div class="inspect-shell">
+                            <div class="kea-console-screen kea-screen-panel kea-terminal">
+                                <strong>Pixel Neighborhood</strong>
+                                <div class="inspect-row">
+                                    <div class="inspect-canvas-wrap kea-console-well"><canvas class="inspect-canvas" id="inspectCanvas" width="144" height="144"></canvas></div>
+                                    <div class="inspect-swatch" id="inspectSwatch"></div>
+                                </div>
+                                <div class="zoom-slider-row">
+                                    <label for="inspectZoomSlider">Inspect Area</label>
+                                    <input id="inspectZoomSlider" type="range" min="5" max="17" step="2" value="9" />
+                                </div>
+                            </div>
+                            <div class="zoom-grid">
+                                <div class="zoom-mini-screen kea-console-screen"><strong>Difference</strong><p>Many tiny squares blend together when you move back.</p></div>
+                                <div class="zoom-mini-screen kea-console-screen"><strong>Inspection</strong><p>Zoom in to separate the picture into visible color cells.</p></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="kea-actions"><button class="kea-button kea-button--secondary" id="sampleButton" type="button">Load Sample</button></div>
+                </aside>
+            </section>
+        </main>
+    </div>
+    <div class="kea-help-overlay" id="helpOverlay" hidden>
+        <div class="kea-help-dialog" role="dialog" aria-modal="true" aria-labelledby="imageZoomHelpTitle">
+            <h2 id="imageZoomHelpTitle" class="kea-section-label">How to Play</h2>
+            <div class="kea-help-copy">
+                <p>This module is for inspection, not scoring. Try changing one thing at a time and watch what happens.</p>
+                <ul>
+                    <li>Load your own image or use the sample.</li>
+                    <li>Zoom in and out to see the same picture at different distances.</li>
+                    <li>Drag the image around the viewport to inspect different areas.</li>
+                    <li>Use the pixel neighborhood screen to see how nearby colors build the image illusion.</li>
+                </ul>
+            </div>
+            <div class="kea-actions"><button class="kea-button kea-button--secondary" id="closeHelpButton" type="button">Close</button></div>
+        </div>
+    </div>
+    <script>
+        const zoomCanvas = document.getElementById("zoomCanvas"), zoomCtx = zoomCanvas.getContext("2d");
+        const inspectCanvas = document.getElementById("inspectCanvas"), inspectCtx = inspectCanvas.getContext("2d");
+        const zoomViewport = document.getElementById("zoomViewport"), inspectZoomSlider = document.getElementById("inspectZoomSlider");
+        const zoomValue = document.getElementById("zoomValue"), sampleValue = document.getElementById("sampleValue");
+        const pixelValue = document.getElementById("pixelValue"), blendValue = document.getElementById("blendValue");
+        const inspectSwatch = document.getElementById("inspectSwatch");
+        const zoomInButton = document.getElementById("zoomInButton"), zoomOutButton = document.getElementById("zoomOutButton"), zoomResetButton = document.getElementById("zoomResetButton");
+        const sampleButton = document.getElementById("sampleButton"), imageUploadInput = document.getElementById("imageUploadInput");
+        const helpButton = document.getElementById("helpButton"), closeHelpButton = document.getElementById("closeHelpButton"), helpOverlay = document.getElementById("helpOverlay");
+        const sourceCanvas = document.createElement("canvas"), sourceCtx = sourceCanvas.getContext("2d");
+        let zoomPercent = 400, offsetX = 0, offsetY = 0, dragStartX = 0, dragStartY = 0, dragBaseX = 0, dragBaseY = 0, dragging = false;
+        let inspectSpan = 9;
+        let samplePoint = { x: 0, y: 0 };
+        function clamp(value, min, max) { return Math.min(max, Math.max(min, value)); }
+        function describeBlend(r, g, b) { if (r > 210 && g > 190 && b < 130) return "Warm gold"; if (r > 190 && g < 110 && b < 110) return "Strong red"; if (b > 180 && g > 160) return "Cool blue"; if (g > 170 && r < 170) return "Leafy green"; if (r > 180 && b > 170) return "Soft pink"; if (r > 200 && g > 200 && b > 200) return "Bright light"; return "Mixed color"; }
+        function buildSampleImage() {
+            sourceCanvas.width = 320; sourceCanvas.height = 200;
+            const gradient = sourceCtx.createLinearGradient(0, 0, 320, 200);
+            gradient.addColorStop(0, "#f9d85b"); gradient.addColorStop(0.55, "#ff7b59"); gradient.addColorStop(1, "#3266d6");
+            sourceCtx.fillStyle = gradient; sourceCtx.fillRect(0, 0, 320, 200);
+            sourceCtx.fillStyle = "rgba(255,255,255,0.65)"; sourceCtx.beginPath(); sourceCtx.arc(74, 64, 32, 0, Math.PI * 2); sourceCtx.fill();
+            sourceCtx.fillStyle = "rgba(30,24,45,0.45)"; sourceCtx.beginPath(); sourceCtx.moveTo(0,170); sourceCtx.lineTo(90,98); sourceCtx.lineTo(170,170); sourceCtx.closePath(); sourceCtx.fill();
+            sourceCtx.fillStyle = "rgba(16,18,29,0.55)"; sourceCtx.beginPath(); sourceCtx.moveTo(120,170); sourceCtx.lineTo(220,84); sourceCtx.lineTo(320,170); sourceCtx.closePath(); sourceCtx.fill();
+            sourceCtx.fillStyle = "rgba(18,74,46,0.9)";
+            for (let i = 0; i < 10; i += 1) { const x = 26 + (i * 28); sourceCtx.beginPath(); sourceCtx.moveTo(x,174); sourceCtx.lineTo(x + 10,132); sourceCtx.lineTo(x + 20,174); sourceCtx.closePath(); sourceCtx.fill(); }
+            sampleValue.textContent = "Sample"; resetView();
+        }
+        function loadImageFromFile(file) {
+            const reader = new FileReader();
+            reader.onload = () => { const img = new Image(); img.onload = () => { sourceCanvas.width = img.width; sourceCanvas.height = img.height; sourceCtx.clearRect(0,0,img.width,img.height); sourceCtx.drawImage(img,0,0); sampleValue.textContent = file.name; resetView(); }; img.src = reader.result; };
+            reader.readAsDataURL(file);
+        }
+        function zoomScale() { return zoomPercent / 100; }
+        function resetView() { zoomPercent = 400; offsetX = 0; offsetY = 0; samplePoint = { x: Math.floor(sourceCanvas.width / 2), y: Math.floor(sourceCanvas.height / 2) }; render(); }
+        function viewportMetrics() { return { width: zoomCanvas.width, height: zoomCanvas.height, scaledWidth: sourceCanvas.width * zoomScale(), scaledHeight: sourceCanvas.height * zoomScale() }; }
+        function clampOffsets() { const { width, height, scaledWidth, scaledHeight } = viewportMetrics(); const maxX = Math.max(0, (scaledWidth - width) / 2); const maxY = Math.max(0, (scaledHeight - height) / 2); offsetX = clamp(offsetX, -maxX, maxX); offsetY = clamp(offsetY, -maxY, maxY); }
+        function sourcePointFromClient(clientX, clientY) {
+            const rect = zoomCanvas.getBoundingClientRect(), localX = ((clientX - rect.left) / rect.width) * zoomCanvas.width, localY = ((clientY - rect.top) / rect.height) * zoomCanvas.height;
+            const { width, height, scaledWidth, scaledHeight } = viewportMetrics();
+            const drawX = (width - scaledWidth) / 2 - offsetX, drawY = (height - scaledHeight) / 2 - offsetY;
+            return { x: clamp(Math.floor((localX - drawX) / zoomScale()), 0, sourceCanvas.width - 1), y: clamp(Math.floor((localY - drawY) / zoomScale()), 0, sourceCanvas.height - 1) };
+        }
+        function updateInspection() {
+            const halfSpan = Math.floor(inspectSpan / 2);
+            const startX = clamp(samplePoint.x - halfSpan, 0, Math.max(0, sourceCanvas.width - inspectSpan));
+            const startY = clamp(samplePoint.y - halfSpan, 0, Math.max(0, sourceCanvas.height - inspectSpan));
+            inspectCtx.clearRect(0, 0, inspectCanvas.width, inspectCanvas.height);
+            inspectCtx.imageSmoothingEnabled = false;
+            inspectCtx.drawImage(sourceCanvas, startX, startY, inspectSpan, inspectSpan, 0, 0, inspectCanvas.width, inspectCanvas.height);
+            const sample = sourceCtx.getImageData(samplePoint.x, samplePoint.y, 1, 1);
+            const data = sample.data;
+            const r = data[0], g = data[1], b = data[2];
+            pixelValue.textContent = `${r}, ${g}, ${b}`; blendValue.textContent = describeBlend(r, g, b); inspectSwatch.style.background = `rgb(${r}, ${g}, ${b})`;
+        }
+        function render() {
+            clampOffsets();
+            const scale = zoomScale(), { width, height, scaledWidth, scaledHeight } = viewportMetrics();
+            zoomCtx.clearRect(0, 0, width, height); zoomCtx.fillStyle = "#0f1116"; zoomCtx.fillRect(0, 0, width, height); zoomCtx.imageSmoothingEnabled = false;
+            const drawX = (width - scaledWidth) / 2 - offsetX, drawY = (height - scaledHeight) / 2 - offsetY;
+            zoomCtx.drawImage(sourceCanvas, drawX, drawY, scaledWidth, scaledHeight);
+            const markerX = drawX + (samplePoint.x * scale), markerY = drawY + (samplePoint.y * scale);
+            zoomCtx.strokeStyle = "rgba(255,255,255,0.88)"; zoomCtx.lineWidth = 2; zoomCtx.strokeRect(markerX - 2, markerY - 2, scale + 4, scale + 4);
+            zoomValue.textContent = `${zoomPercent}%`; updateInspection();
+        }
+        function resizeCanvas() { const rect = zoomViewport.getBoundingClientRect(); zoomCanvas.width = Math.max(320, Math.floor(rect.width)); zoomCanvas.height = Math.max(220, Math.floor(rect.height)); render(); }
+        inspectZoomSlider.addEventListener("input", () => { inspectSpan = Number(inspectZoomSlider.value); render(); });
+        zoomInButton.addEventListener("click", () => { zoomPercent = clamp(zoomPercent + 100, 100, 1400); render(); });
+        zoomOutButton.addEventListener("click", () => { zoomPercent = clamp(zoomPercent - 100, 100, 1400); render(); });
+        zoomResetButton.addEventListener("click", resetView);
+        sampleButton.addEventListener("click", buildSampleImage);
+        imageUploadInput.addEventListener("change", () => { const file = imageUploadInput.files[0]; if (file) loadImageFromFile(file); });
+        zoomViewport.addEventListener("pointerdown", (event) => { dragging = true; dragStartX = event.clientX; dragStartY = event.clientY; dragBaseX = offsetX; dragBaseY = offsetY; zoomViewport.classList.add("dragging"); });
+        window.addEventListener("pointermove", (event) => { if (dragging) { offsetX = dragBaseX - (event.clientX - dragStartX); offsetY = dragBaseY - (event.clientY - dragStartY); render(); } });
+        window.addEventListener("pointerup", () => { dragging = false; zoomViewport.classList.remove("dragging"); });
+        zoomCanvas.addEventListener("pointermove", (event) => { samplePoint = sourcePointFromClient(event.clientX, event.clientY); render(); });
+        helpButton.addEventListener("click", () => { helpOverlay.hidden = false; });
+        closeHelpButton.addEventListener("click", () => { helpOverlay.hidden = true; });
+        helpOverlay.addEventListener("click", (event) => { if (event.target === helpOverlay) helpOverlay.hidden = true; });
+        buildSampleImage(); resizeCanvas(); window.addEventListener("resize", resizeCanvas);
+    </script>
+</body>
+</html>

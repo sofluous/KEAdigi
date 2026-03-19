@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>File Cabinet | KEA Digi</title>
+    <link rel="stylesheet" href="keadigi.css" />
+    <style>
+        :root {
+            --file-slot-height: 5rem;
+        }
+
+        .file-cabinet-page {
+            display: grid;
+            grid-template-rows: auto minmax(0, 1fr);
+            gap: var(--kea-space-3);
+            min-height: 0;
+            padding: 1rem;
+            overflow: hidden;
+        }
+
+        .file-cabinet-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
+            gap: var(--kea-space-3);
+            min-height: 0;
+        }
+
+        .file-board,
+        .file-console {
+            min-height: 0;
+            padding: 1rem;
+            display: grid;
+            gap: var(--kea-space-3);
+        }
+
+        .file-board {
+            grid-template-rows: auto auto minmax(0, 1fr);
+            align-content: start;
+        }
+
+        .file-prompt {
+            min-height: 7rem;
+        }
+
+        .file-tray-section,
+        .folder-section {
+            display: grid;
+            gap: 0.75rem;
+            min-height: 0;
+        }
+
+        .file-tray {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-rows: repeat(2, var(--file-slot-height));
+            gap: 0.7rem;
+            min-height: calc((var(--file-slot-height) * 2) + 0.7rem);
+        }
+
+        .file-slot {
+            min-height: var(--file-slot-height);
+            height: var(--file-slot-height);
+            display: grid;
+        }
+
+        .file-card,
+        .file-placeholder {
+            width: 100%;
+            height: 100%;
+            border: 4px solid var(--kea-border);
+            border-radius: 1rem;
+        }
+
+        .file-card {
+            padding: 0.75rem 0.8rem;
+            display: grid;
+            gap: 0.45rem;
+            justify-items: start;
+            align-content: start;
+            text-align: left;
+        }
+
+        .file-card.active {
+            border-color: var(--kea-accent-strong);
+        }
+
+        .file-card__tag {
+            display: inline-flex;
+            align-items: center;
+            min-height: 1.5rem;
+            padding: 0.15rem 0.45rem;
+            border: 2px solid var(--kea-border);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.82);
+            font-family: var(--kea-font-display);
+            font-size: 0.68rem;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .file-card__name,
+        .file-card__type {
+            margin: 0;
+        }
+
+        .file-card__name {
+            font-family: var(--kea-font-display);
+            font-size: 0.9rem;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--kea-border);
+            word-break: break-word;
+        }
+
+        .file-card__type {
+            font-size: 0.76rem;
+            line-height: 1.2;
+            color: var(--kea-text-muted);
+        }
+
+        .file-placeholder {
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04)),
+                rgba(0, 0, 0, 0.12);
+            border-style: dashed;
+            opacity: 0.44;
+        }
+
+        .folder-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.8rem;
+            min-height: 0;
+        }
+
+        .folder-card {
+            min-height: 0;
+            padding: 0.8rem;
+            display: grid;
+            grid-template-rows: auto 1fr;
+            gap: 0.7rem;
+        }
+
+        .folder-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+        }
+
+        .folder-name,
+        .folder-hint {
+            margin: 0;
+        }
+
+        .folder-name {
+            font-family: var(--kea-font-display);
+            font-size: 0.98rem;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: rgba(255, 248, 238, 0.95);
+        }
+
+        .folder-hint {
+            font-size: 0.74rem;
+            line-height: 1.25;
+            color: rgba(255, 248, 238, 0.8);
+        }
+
+        .folder-mark {
+            display: inline-grid;
+            place-items: center;
+            min-width: 2.75rem;
+            min-height: 2rem;
+            padding: 0.2rem 0.45rem;
+            border: 3px solid var(--kea-border);
+            border-radius: 0.8rem;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(226, 223, 213, 0.98));
+            color: var(--kea-border);
+            font-family: var(--kea-font-display);
+            font-size: 0.76rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .folder-slots {
+            display: grid;
+            grid-template-rows: repeat(2, var(--file-slot-height));
+            gap: 0.7rem;
+            min-height: 0;
+        }
+
+        .folder-slot {
+            min-height: var(--file-slot-height);
+            height: var(--file-slot-height);
+            display: grid;
+        }
+
+        .folder-drop {
+            width: 100%;
+            height: 100%;
+            padding: 0.55rem;
+            display: grid;
+            place-items: center;
+            border: 4px dashed rgba(255, 248, 238, 0.3);
+            border-radius: 0.95rem;
+            background: rgba(10, 11, 14, 0.24);
+            color: rgba(255, 248, 238, 0.55);
+            text-align: center;
+            cursor: pointer;
+            transition:
+                border-color var(--kea-motion-fast) var(--kea-ease-out),
+                background var(--kea-motion-fast) var(--kea-ease-out);
+        }
+
+        .folder-drop:hover,
+        .folder-drop:focus-visible {
+            border-color: rgba(141, 255, 156, 0.72);
+            background: rgba(20, 24, 29, 0.5);
+            outline: none;
+        }
+
+        .folder-drop--filled {
+            border-style: solid;
+            border-color: var(--kea-border);
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(245, 239, 227, 0.98)),
+                var(--kea-panel-strong);
+            color: var(--kea-text);
+            cursor: default;
+        }
+
+        .folder-drop--filled:hover,
+        .folder-drop--filled:focus-visible {
+            border-color: var(--kea-border);
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(245, 239, 227, 0.98)),
+                var(--kea-panel-strong);
+        }
+
+        .file-console {
+            grid-template-rows: 1fr auto;
+        }
+
+        .file-actions {
+            justify-content: flex-end;
+        }
+
+        @media (max-width: 980px) {
+            .file-cabinet-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .file-tray,
+            .folder-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .folder-card {
+                grid-template-rows: auto auto;
+            }
+        }
+    </style>
+</head>
+<body class="kea-page">
+    <div class="kea-shell">
+        <header class="kea-topbar kea-topbar--centered">
+            <a class="kea-button kea-button--secondary" href="index.html">&larr; Go back</a>
+            <div class="kea-topbar__brand kea-topbar__brand--center">
+                <div class="kea-title-row">
+                    <h1 class="kea-app-title">File Cabinet</h1>
+                    <div class="kea-skill-chips" aria-label="Skills">
+                        <span class="kea-skill-chip">Files</span>
+                        <span class="kea-skill-chip">Folders</span>
+                    </div>
+                </div>
+                <p class="kea-app-subtitle" hidden>Sort files into the folders where they belong and practice basic computer organization.</p>
+            </div>
+            <div class="kea-topbar__actions">
+                <button class="kea-button kea-button--secondary" id="helpButton" type="button">How to Play</button>
+                <button class="kea-button" id="newRoundButton" type="button">New Round</button>
+            </div>
+        </header>
+
+        <main class="kea-content file-cabinet-page kea-console-frame">
+            <section class="kea-hud kea-hud--4 kea-console-surface" aria-label="File Cabinet status">
+                <div class="kea-hud__item kea-console-screen">
+                    <span class="kea-hud__label">Round</span>
+                    <span class="kea-hud__value" id="roundValue">1 / 3</span>
+                </div>
+                <div class="kea-hud__item kea-console-screen">
+                    <span class="kea-hud__label">Sorted</span>
+                    <span class="kea-hud__value" id="sortedValue">0 / 6</span>
+                </div>
+                <div class="kea-hud__item kea-console-screen">
+                    <span class="kea-hud__label">Score</span>
+                    <span class="kea-hud__value" id="scoreValue">0</span>
+                </div>
+                <div class="kea-hud__item kea-console-screen">
+                    <span class="kea-hud__label">Streak</span>
+                    <span class="kea-hud__value" id="streakValue">0</span>
+                </div>
+            </section>
+
+            <section class="file-cabinet-grid">
+                <section class="file-board kea-console-surface">
+                    <div class="file-prompt kea-console-screen kea-screen-panel" id="promptScreen">
+                        <strong>Sort The Files</strong>
+                        <p>Place each file into the folder where it belongs.</p>
+                    </div>
+
+                    <section class="file-tray-section">
+                        <p class="kea-console-label">Tray</p>
+                        <div class="file-tray" id="fileTray"></div>
+                    </section>
+
+                    <section class="folder-section">
+                        <p class="kea-console-label">Folders</p>
+                        <div class="folder-grid" id="folderGrid"></div>
+                    </section>
+                </section>
+
+                <aside class="file-console kea-side-panel kea-side-panel--console">
+                    <div class="kea-side-panel__body kea-side-panel__body--fill">
+                        <div class="kea-console-screen kea-screen-panel kea-terminal" id="feedbackScreen">
+                            <strong>Ready</strong>
+                            <p>Select a file from the tray, then tap the folder where it belongs.</p>
+                        </div>
+                    </div>
+                    <div class="file-actions kea-actions">
+                        <button class="kea-button kea-button--secondary" id="clearRoundButton" type="button">Clear Round</button>
+                        <button class="kea-button" id="nextRoundButton" type="button" disabled>Next Round</button>
+                    </div>
+                </aside>
+            </section>
+        </main>
+    </div>
+
+    <div class="kea-help-overlay" id="helpOverlay" hidden>
+        <div class="kea-help-dialog" role="dialog" aria-modal="true" aria-labelledby="fileCabinetHelpTitle">
+            <h2 id="fileCabinetHelpTitle" class="kea-section-label">How to Play</h2>
+            <div class="kea-help-copy">
+                <p>Choose a file from the tray, then tap the folder where it should be stored.</p>
+                <ul>
+                    <li>Look at the file name and extension for clues.</li>
+                    <li>Pictures belong with pictures, writing belongs with documents, and sounds belong with audio folders.</li>
+                    <li>When every file is sorted, move on to the next round.</li>
+                </ul>
+            </div>
+            <div class="kea-actions">
+                <button class="kea-button kea-button--secondary" id="closeHelpButton" type="button">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="decks/fileCabinetDeck.js"></script>
+    <script>
+        const deck = window.KEADigiDecks.fileCabinet;
+        const roundValue = document.getElementById("roundValue");
+        const sortedValue = document.getElementById("sortedValue");
+        const scoreValue = document.getElementById("scoreValue");
+        const streakValue = document.getElementById("streakValue");
+        const promptScreen = document.getElementById("promptScreen");
+        const fileTray = document.getElementById("fileTray");
+        const folderGrid = document.getElementById("folderGrid");
+        const feedbackScreen = document.getElementById("feedbackScreen");
+        const newRoundButton = document.getElementById("newRoundButton");
+        const clearRoundButton = document.getElementById("clearRoundButton");
+        const nextRoundButton = document.getElementById("nextRoundButton");
+        const helpButton = document.getElementById("helpButton");
+        const closeHelpButton = document.getElementById("closeHelpButton");
+        const helpOverlay = document.getElementById("helpOverlay");
+
+        let roundIndex = 0;
+        let score = 0;
+        let streak = 0;
+        let selectedFileId = null;
+        let placedById = {};
+
+        function currentRound() {
+            return deck.rounds[roundIndex];
+        }
+
+        function setFeedback(title, body) {
+            feedbackScreen.innerHTML = `<strong>${title}</strong><p>${body}</p>`;
+        }
+
+        function updateHud() {
+            const round = currentRound();
+            roundValue.textContent = `${roundIndex + 1} / ${deck.rounds.length}`;
+            sortedValue.textContent = `${Object.keys(placedById).length} / ${round.files.length}`;
+            scoreValue.textContent = String(score);
+            streakValue.textContent = String(streak);
+        }
+
+        function fileCardMarkup(file) {
+            const tag = file.name.split(".").pop().toUpperCase();
+            return `
+                <span class="file-card__tag">${tag}</span>
+                <p class="file-card__name">${file.name}</p>
+                <p class="file-card__type">${file.type}</p>
+            `;
+        }
+
+        function renderTray() {
+            const round = currentRound();
+            fileTray.innerHTML = "";
+
+            round.files.forEach((file) => {
+                const slot = document.createElement("div");
+                slot.className = "file-slot";
+
+                if (placedById[file.id]) {
+                    slot.innerHTML = '<div class="file-placeholder" aria-hidden="true"></div>';
+                } else {
+                    const button = document.createElement("button");
+                    button.type = "button";
+                    button.className = "kea-button kea-button--secondary file-card";
+                    if (selectedFileId === file.id) button.classList.add("active");
+                    button.innerHTML = fileCardMarkup(file);
+                    button.addEventListener("click", () => {
+                        selectedFileId = file.id;
+                        setFeedback("File Selected", `Place ${file.name} into the folder where it belongs.`);
+                        renderTray();
+                    });
+                    slot.appendChild(button);
+                }
+
+                fileTray.appendChild(slot);
+            });
+        }
+
+        function placeFile(folderId) {
+            if (!selectedFileId) {
+                setFeedback("Select A File", "Pick a file from the tray before choosing a folder.");
+                return;
+            }
+
+            const round = currentRound();
+            const file = round.files.find((item) => item.id === selectedFileId);
+            const folder = round.folders.find((item) => item.id === folderId);
+
+            if (!file || !folder) return;
+
+            if (file.folderId === folderId) {
+                placedById[file.id] = folderId;
+                score += 1;
+                streak += 1;
+                setFeedback("Sorted", `${file.detail} ${file.name} belongs in ${folder.label}.`);
+                selectedFileId = null;
+            } else {
+                streak = 0;
+                setFeedback("Try Again", `${file.name} does not belong in ${folder.label}. ${file.detail}`);
+            }
+
+            renderRoundState();
+        }
+
+        function renderFolders() {
+            const round = currentRound();
+            folderGrid.innerHTML = "";
+
+            round.folders.forEach((folder) => {
+                const card = document.createElement("section");
+                card.className = "folder-card kea-console-well";
+
+                const head = document.createElement("div");
+                head.className = "folder-head";
+                head.innerHTML = `
+                    <div>
+                        <p class="folder-name">${folder.label}</p>
+                        <p class="folder-hint">${folder.hint}</p>
+                    </div>
+                    <span class="folder-mark">${folder.mark}</span>
+                `;
+
+                const slots = document.createElement("div");
+                slots.className = "folder-slots";
+
+                const placedFiles = round.files.filter((file) => placedById[file.id] === folder.id);
+                const slotCount = Math.max(2, placedFiles.length || 0);
+
+                for (let index = 0; index < slotCount; index += 1) {
+                    const slot = document.createElement("div");
+                    slot.className = "folder-slot";
+
+                    const placedFile = placedFiles[index];
+                    const dropTarget = document.createElement("button");
+                    dropTarget.type = "button";
+                    dropTarget.className = "folder-drop";
+                    dropTarget.addEventListener("click", () => placeFile(folder.id));
+
+                    if (placedFile) {
+                        dropTarget.classList.add("folder-drop--filled");
+                        dropTarget.innerHTML = fileCardMarkup(placedFile);
+                        dropTarget.disabled = true;
+                    } else {
+                        dropTarget.textContent = folder.label;
+                    }
+
+                    slot.appendChild(dropTarget);
+                    slots.appendChild(slot);
+                }
+
+                card.append(head, slots);
+                folderGrid.appendChild(card);
+            });
+        }
+
+        function renderRoundState() {
+            const round = currentRound();
+            promptScreen.innerHTML = `<strong>${round.promptTitle}</strong><p>${round.promptText}</p>`;
+            renderTray();
+            renderFolders();
+            updateHud();
+            nextRoundButton.disabled = Object.keys(placedById).length !== round.files.length;
+        }
+
+        function loadRound(index, resetScore) {
+            roundIndex = index;
+            placedById = {};
+            selectedFileId = null;
+            if (resetScore) {
+                score = 0;
+                streak = 0;
+            }
+            setFeedback("Ready", "Select a file from the tray, then tap the folder where it belongs.");
+            renderRoundState();
+        }
+
+        nextRoundButton.addEventListener("click", () => {
+            const nextIndex = (roundIndex + 1) % deck.rounds.length;
+            loadRound(nextIndex, false);
+        });
+
+        newRoundButton.addEventListener("click", () => {
+            const nextIndex = (roundIndex + 1) % deck.rounds.length;
+            loadRound(nextIndex, false);
+        });
+
+        clearRoundButton.addEventListener("click", () => {
+            placedById = {};
+            selectedFileId = null;
+            streak = 0;
+            setFeedback("Round Cleared", "The tray is ready again. Pick a file and try sorting it.");
+            renderRoundState();
+        });
+
+        helpButton.addEventListener("click", () => { helpOverlay.hidden = false; });
+        closeHelpButton.addEventListener("click", () => { helpOverlay.hidden = true; });
+        helpOverlay.addEventListener("click", (event) => {
+            if (event.target === helpOverlay) helpOverlay.hidden = true;
+        });
+
+        loadRound(0, true);
+    </script>
+</body>
+</html>

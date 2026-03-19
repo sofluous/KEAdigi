@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vector Vs Pixel | KEA Digi</title>
+    <link rel="stylesheet" href="keadigi.css" />
+    <style>
+        html, body { height:100%; overflow:hidden; }
+        body.kea-page { overflow:hidden; }
+        .kea-shell { height:100dvh; min-height:100vh; overflow:hidden; }
+        .kea-topbar { flex:0 0 auto; padding:0.65rem 0.9rem; }
+        .vector-page { display:grid; grid-template-rows:auto minmax(0,1fr); gap:0.7rem; min-height:0; padding:0.7rem; overflow:hidden; }
+        .vector-layout { display:grid; grid-template-columns:minmax(0,1.34fr) minmax(250px,0.62fr); gap:0.7rem; min-height:0; }
+        .vector-stage, .vector-console { min-height:0; padding:0.75rem; display:grid; gap:0.65rem; overflow:hidden; }
+        .vector-stage { grid-template-rows:auto minmax(0,1fr); }
+        .vector-stage-grid { min-height:0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.65rem; }
+        .vector-panel { min-height:0; display:grid; grid-template-rows:auto minmax(0,1fr) auto; gap:0.45rem; }
+        .vector-shell { min-height:0; padding:0.2rem; display:grid; place-items:center; overflow:hidden; }
+        .vector-display, .vector-svg { width:auto; height:100%; max-width:100%; max-height:100%; aspect-ratio:1; display:block; }
+        .vector-shell canvas { image-rendering:pixelated; image-rendering:crisp-edges; }
+        .vector-toolbar { display:flex; flex-wrap:wrap; gap:0.55rem; justify-content:space-between; align-items:center; }
+        .vector-toolbar-group { display:flex; gap:0.55rem; align-items:center; flex-wrap:wrap; }
+        .vector-console { grid-template-rows:auto auto minmax(0,1fr) auto; }
+        .vector-screen-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.4rem; }
+        .vector-mini { min-height:0; padding:0.6rem; display:grid; gap:0.25rem; align-content:start; }
+        .vector-slider-row { display:grid; gap:0.25rem; }
+        .vector-slider-row label { font-family:var(--kea-font-display); font-size:0.76rem; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:rgba(255,248,238,0.82); }
+        .vector-slider-row input { width:100%; }
+        .vector-console .kea-segmented.sample-set { width:100%; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); }
+        @media (max-width: 980px) { .vector-layout { grid-template-columns:1fr; } }
+        @media (max-width: 760px) { .vector-stage-grid, .vector-screen-grid { grid-template-columns:1fr; } }
+    </style>
+</head>
+<body class="kea-page">
+    <div class="kea-shell">
+        <header class="kea-topbar kea-topbar--centered">
+            <a class="kea-button kea-button--secondary" href="index.html">&larr; Go back</a>
+            <div class="kea-topbar__brand kea-topbar__brand--center">
+                <div class="kea-title-row">
+                    <h1 class="kea-app-title">Vector Vs Pixel</h1>
+                    <div class="kea-skill-chips" aria-label="Skills">
+                        <span class="kea-skill-chip">Vector</span>
+                        <span class="kea-skill-chip">Pixels</span>
+                    </div>
+                </div>
+                <p class="kea-app-subtitle" hidden>Compare a scalable vector drawing with a rasterized pixel version of the same picture.</p>
+            </div>
+            <div class="kea-topbar__actions">
+                <button class="kea-button kea-button--secondary" id="helpButton" type="button">How to Play</button>
+            </div>
+        </header>
+        <main class="kea-content vector-page kea-console-frame">
+            <section class="kea-hud kea-console-surface" aria-label="Vector Vs Pixel status">
+                <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Sample</span><span class="kea-hud__value" id="sampleValue">Rocket</span></div>
+                <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Zoom</span><span class="kea-hud__value" id="zoomValue">400%</span></div>
+                <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Raster Grid</span><span class="kea-hud__value" id="gridValue">24 px</span></div>
+                <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Vector</span><span class="kea-hud__value">Scales cleanly</span></div>
+                <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Pixel</span><span class="kea-hud__value">Shows cells</span></div>
+            </section>
+            <section class="vector-layout">
+                <section class="vector-stage kea-console-surface">
+                    <div class="vector-toolbar">
+                        <p class="kea-console-label">Compare</p>
+                        <div class="vector-toolbar-group">
+                            <div class="kea-segmented sample-set" id="sampleButtons" aria-label="Sample art"></div>
+                            <div class="kea-segmented" aria-label="Zoom controls">
+                                <button class="kea-button kea-button--secondary" id="zoomOutButton" type="button">-</button>
+                                <button class="kea-button kea-button--secondary" id="zoomResetButton" type="button">Reset</button>
+                                <button class="kea-button kea-button--secondary" id="zoomInButton" type="button">+</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="vector-stage-grid">
+                        <section class="vector-panel">
+                            <p class="kea-console-label">Vector View</p>
+                            <div class="vector-shell kea-console-well">
+                                <svg class="vector-svg" id="vectorStage" viewBox="0 0 100 100" aria-label="Vector drawing"></svg>
+                            </div>
+                            <div class="kea-console-screen kea-screen-panel"><strong>Shape Math</strong><p>Vector art is stored as points, curves, and fills that can scale smoothly.</p></div>
+                        </section>
+                        <section class="vector-panel">
+                            <p class="kea-console-label">Pixel View</p>
+                            <div class="vector-shell kea-console-well">
+                                <canvas class="vector-display" id="pixelStage" width="480" height="480" aria-label="Pixel drawing"></canvas>
+                            </div>
+                            <div class="kea-console-screen kea-screen-panel"><strong>Cell Grid</strong><p>Raster images use a fixed number of colored cells, so zoom reveals the grid.</p></div>
+                        </section>
+                    </div>
+                </section>
+                <aside class="vector-console kea-side-panel kea-side-panel--console">
+                    <div class="vector-slider-row">
+                        <label for="gridSlider">Raster Grid Size</label>
+                        <input id="gridSlider" type="range" min="12" max="48" step="12" value="24" />
+                    </div>
+                    <div class="vector-slider-row">
+                        <label for="zoomSlider">Compare Zoom</label>
+                        <input id="zoomSlider" type="range" min="100" max="800" step="100" value="400" />
+                    </div>
+                    <div class="kea-side-panel__body kea-side-panel__body--fill">
+                        <div class="vector-screen-grid">
+                            <div class="vector-mini kea-console-screen"><strong>Vector</strong><p>Curves stay smooth because the drawing is recalculated at every size.</p></div>
+                            <div class="vector-mini kea-console-screen"><strong>Pixel</strong><p>The same picture gets blocky because the color cells do not multiply.</p></div>
+                            <div class="vector-mini kea-console-screen"><strong>Use Case</strong><p>Logos and icons are often vector. Photos and screenshots are usually pixel images.</p></div>
+                            <div class="vector-mini kea-console-screen"><strong>Try This</strong><p>Switch samples and compare the edges as the raster grid gets coarser.</p></div>
+                        </div>
+                    </div>
+                    <div class="kea-actions"><button class="kea-button kea-button--secondary" id="sampleCycleButton" type="button">Next Sample</button></div>
+                </aside>
+            </section>
+        </main>
+    </div>
+    <div class="kea-help-overlay" id="helpOverlay" hidden>
+        <div class="kea-help-dialog" role="dialog" aria-modal="true" aria-labelledby="vectorHelpTitle">
+            <h2 id="vectorHelpTitle" class="kea-section-label">How to Play</h2>
+            <div class="kea-help-copy">
+                <p>This module compares two ways a computer can store the same picture.</p>
+                <ul>
+                    <li>Choose a sample drawing.</li>
+                    <li>Zoom in to compare the smooth vector edge with the pixel grid.</li>
+                    <li>Change the raster grid size to see how resolution changes the pixel version.</li>
+                    <li>Notice that the vector drawing stays smooth while the pixel view shows blocks.</li>
+                </ul>
+            </div>
+            <div class="kea-actions"><button class="kea-button kea-button--secondary" id="closeHelpButton" type="button">Close</button></div>
+        </div>
+    </div>
+    <script>
+        const vectorStage = document.getElementById("vectorStage");
+        const pixelStage = document.getElementById("pixelStage");
+        const pixelCtx = pixelStage.getContext("2d");
+        const sampleButtons = document.getElementById("sampleButtons");
+        const sampleCycleButton = document.getElementById("sampleCycleButton");
+        const zoomSlider = document.getElementById("zoomSlider");
+        const gridSlider = document.getElementById("gridSlider");
+        const zoomInButton = document.getElementById("zoomInButton");
+        const zoomOutButton = document.getElementById("zoomOutButton");
+        const zoomResetButton = document.getElementById("zoomResetButton");
+        const sampleValue = document.getElementById("sampleValue");
+        const zoomValue = document.getElementById("zoomValue");
+        const gridValue = document.getElementById("gridValue");
+        const helpButton = document.getElementById("helpButton");
+        const closeHelpButton = document.getElementById("closeHelpButton");
+        const helpOverlay = document.getElementById("helpOverlay");
+        const offscreen = document.createElement("canvas");
+        const offCtx = offscreen.getContext("2d");
+        const samples = {
+            rocket: { label: "Rocket", svg: '<rect x="0" y="0" width="100" height="100" rx="18" fill="#17202a"/><g transform="translate(50 50)"><path d="M0 -34 C18 -30 22 -8 14 14 L0 30 L-14 14 C-22 -8 -18 -30 0 -34Z" fill="#ff5959"/><circle cx="0" cy="-5" r="8" fill="#8ed8ff"/><path d="M-14 14 L-28 26 L-18 2 Z" fill="#f6d36c"/><path d="M14 14 L28 26 L18 2 Z" fill="#f6d36c"/><path d="M-6 30 L-14 42 L-4 36 Z" fill="#ffffff"/><path d="M6 30 L14 42 L4 36 Z" fill="#ffffff"/></g>' },
+            flower: { label: "Flower", svg: '<rect x="0" y="0" width="100" height="100" rx="18" fill="#16301f"/><rect x="47" y="42" width="6" height="38" rx="3" fill="#4bd66f"/><circle cx="50" cy="36" r="10" fill="#ffd15c"/><circle cx="50" cy="18" r="12" fill="#ff6fae"/><circle cx="67" cy="28" r="12" fill="#ff6fae"/><circle cx="62" cy="48" r="12" fill="#ff6fae"/><circle cx="38" cy="48" r="12" fill="#ff6fae"/><circle cx="33" cy="28" r="12" fill="#ff6fae"/>' },
+            face: { label: "Face", svg: '<rect x="0" y="0" width="100" height="100" rx="18" fill="#1e2c4a"/><circle cx="50" cy="50" r="28" fill="#ffd9a3"/><circle cx="39" cy="44" r="4.5" fill="#1c1c1c"/><circle cx="61" cy="44" r="4.5" fill="#1c1c1c"/><path d="M38 61 Q50 71 62 61" stroke="#c75b52" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M42 34 Q50 28 58 34" stroke="#603813" stroke-width="4" fill="none" stroke-linecap="round"/>' }
+        };
+        const sampleKeys = Object.keys(samples);
+        let currentSampleIndex = 0;
+        let zoomPercent = 400;
+        let gridSize = 24;
+        function currentSample() { return samples[sampleKeys[currentSampleIndex]]; }
+        function buildSVGMarkup() {
+            return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">${currentSample().svg}</svg>`;
+        }
+        function updateButtons() {
+            sampleButtons.innerHTML = "";
+            sampleKeys.forEach((key, index) => {
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "kea-button kea-button--secondary";
+                button.textContent = samples[key].label;
+                button.setAttribute("aria-pressed", String(index === currentSampleIndex));
+                if (index === currentSampleIndex) button.classList.add("is-active");
+                button.addEventListener("click", () => { currentSampleIndex = index; updateButtons(); render(); });
+                sampleButtons.appendChild(button);
+            });
+        }
+        function renderVector() {
+            vectorStage.innerHTML = currentSample().svg;
+            vectorStage.style.transform = `scale(${zoomPercent / 400})`;
+            vectorStage.style.transformOrigin = "center";
+        }
+        function renderPixel() {
+            const size = gridSize;
+            offscreen.width = size;
+            offscreen.height = size;
+            const image = new Image();
+            image.onload = () => {
+                offCtx.clearRect(0, 0, size, size);
+                offCtx.drawImage(image, 0, 0, size, size);
+                pixelCtx.clearRect(0, 0, pixelStage.width, pixelStage.height);
+                pixelCtx.fillStyle = "#101319";
+                pixelCtx.fillRect(0, 0, pixelStage.width, pixelStage.height);
+                pixelCtx.imageSmoothingEnabled = false;
+                const drawSize = pixelStage.width * (zoomPercent / 400);
+                const drawX = (pixelStage.width - drawSize) / 2;
+                const drawY = (pixelStage.height - drawSize) / 2;
+                pixelCtx.drawImage(offscreen, drawX, drawY, drawSize, drawSize);
+            };
+            image.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(buildSVGMarkup())}`;
+        }
+        function render() {
+            sampleValue.textContent = currentSample().label;
+            zoomValue.textContent = `${zoomPercent}%`;
+            gridValue.textContent = `${gridSize} px`;
+            renderVector();
+            renderPixel();
+        }
+        zoomSlider.addEventListener("input", () => { zoomPercent = Number(zoomSlider.value); render(); });
+        gridSlider.addEventListener("input", () => { gridSize = Number(gridSlider.value); render(); });
+        zoomInButton.addEventListener("click", () => { zoomPercent = Math.min(800, zoomPercent + 100); zoomSlider.value = String(zoomPercent); render(); });
+        zoomOutButton.addEventListener("click", () => { zoomPercent = Math.max(100, zoomPercent - 100); zoomSlider.value = String(zoomPercent); render(); });
+        zoomResetButton.addEventListener("click", () => { zoomPercent = 400; zoomSlider.value = "400"; render(); });
+        sampleCycleButton.addEventListener("click", () => { currentSampleIndex = (currentSampleIndex + 1) % sampleKeys.length; updateButtons(); render(); });
+        helpButton.addEventListener("click", () => { helpOverlay.hidden = false; });
+        closeHelpButton.addEventListener("click", () => { helpOverlay.hidden = true; });
+        helpOverlay.addEventListener("click", (event) => { if (event.target === helpOverlay) helpOverlay.hidden = true; });
+        updateButtons();
+        render();
+    </script>
+</body>
+</html>

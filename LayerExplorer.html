@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Layer Explorer | KEA Digi</title>
+    <link rel="stylesheet" href="keadigi.css" />
+    <style>
+        html, body { height:100%; overflow:hidden; }
+        body.kea-page { overflow:hidden; }
+        .kea-shell { height:100dvh; min-height:100vh; overflow:hidden; }
+        .kea-topbar { flex:0 0 auto; padding:0.65rem 0.9rem; }
+        .layer-page { display:grid; grid-template-rows:auto minmax(0,1fr); gap:0.7rem; min-height:0; padding:0.7rem; overflow:hidden; }
+        .layer-layout { display:grid; grid-template-columns:minmax(238px,0.74fr) minmax(0,1.26fr); gap:0.7rem; min-height:0; }
+        .layer-console, .layer-preview-panel { min-height:0; padding:0.7rem; display:grid; gap:0.65rem; overflow:hidden; }
+        .layer-console { grid-template-rows:auto minmax(0,1fr); }
+        .layer-list { min-height:0; display:grid; gap:0.4rem; align-content:start; overflow:auto; padding-right:0.1rem; }
+        .layer-item { padding:0.5rem; display:grid; gap:0.35rem; }
+        .layer-item__head { display:grid; grid-template-columns:auto minmax(0,1fr) auto auto; gap:0.6rem; align-items:center; }
+        .layer-badge { width:1.8rem; height:1.8rem; border:3px solid var(--kea-border); border-radius:0.6rem; box-shadow:inset 0 2px 0 rgba(255,255,255,0.32), inset 0 -2px 0 rgba(0,0,0,0.2); }
+        .layer-name, .layer-caption { margin:0; }
+        .layer-name { font-family:var(--kea-font-display); font-size:0.8rem; font-weight:800; letter-spacing:0.04em; text-transform:uppercase; color:rgba(255,248,238,0.95); }
+        .layer-caption { font-size:0.68rem; color:rgba(255,248,238,0.74); }
+        .layer-controls { display:grid; grid-template-columns:auto minmax(0,1fr); gap:0.4rem; align-items:center; }
+        .layer-controls label { font-family:var(--kea-font-display); font-size:0.68rem; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:rgba(255,248,238,0.84); }
+        .layer-controls input[type="range"] { width:100%; }
+        .layer-preview-panel { grid-template-rows:minmax(0,1fr) auto; }
+        .layer-preview-shell { min-height:0; padding:0.2rem; display:grid; place-items:center; overflow:hidden; }
+        .layer-canvas { width:auto; height:auto; display:block; border-radius:1rem; background:rgba(255,255,255,0.05); }
+        .layer-note-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.35rem; }
+        .layer-note { min-height:0; padding:0.45rem 0.55rem; display:grid; gap:0.2rem; align-content:start; }
+        @media (max-width: 980px) { .layer-layout { grid-template-columns:1fr; } }
+        @media (max-width: 760px) { .layer-note-grid { grid-template-columns:1fr; } }
+    </style>
+</head>
+<body class="kea-page">
+    <div class="kea-shell">
+        <header class="kea-topbar kea-topbar--centered">
+            <a class="kea-button kea-button--secondary" href="index.html">&larr; Go back</a>
+            <div class="kea-topbar__brand kea-topbar__brand--center">
+                <div class="kea-title-row">
+                    <h1 class="kea-app-title">Layer Explorer</h1>
+                    <div class="kea-skill-chips" aria-label="Skills">
+                        <span class="kea-skill-chip">Layers</span>
+                        <span class="kea-skill-chip">Order</span>
+                    </div>
+                </div>
+                <p class="kea-app-subtitle" hidden>Reorder, hide, and fade layers to see how one picture is built from stacked parts.</p>
+            </div>
+            <div class="kea-topbar__actions">
+                <button class="kea-button kea-button--secondary" id="helpButton" type="button">How to Play</button>
+                <button class="kea-button" id="resetLayersButton" type="button">Reset Stack</button>
+            </div>
+        </header>
+        <main class="kea-content layer-page kea-console-frame">
+            <section class="kea-hud kea-hud--4 kea-console-surface" aria-label="Layer Explorer status">
+                <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Layers</span><span class="kea-hud__value" id="layerCountValue">4</span></div>
+                <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Visible</span><span class="kea-hud__value" id="visibleCountValue">4</span></div>
+                <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Top Layer</span><span class="kea-hud__value" id="topLayerValue">Foreground</span></div>
+                <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Focus</span><span class="kea-hud__value" id="focusValue">Order matters</span></div>
+            </section>
+            <section class="layer-layout">
+                <aside class="layer-console kea-side-panel kea-side-panel--console">
+                    <div class="kea-side-panel__copy">
+                        <p class="kea-console-label">Stack Controls</p>
+                        <p class="kea-muted">Move layers up and down, hide them, or fade them to see how the full picture changes.</p>
+                    </div>
+                    <div class="layer-list" id="layerList"></div>
+                </aside>
+                <section class="layer-preview-panel kea-console-surface">
+                    <div class="layer-preview-shell kea-console-well"><canvas class="layer-canvas" id="layerCanvas" width="800" height="600"></canvas></div>
+                    <div class="layer-note-grid">
+                        <div class="layer-note kea-console-screen"><strong>Reorder</strong><p>Moving a layer higher makes it appear in front of the layers below it.</p></div>
+                        <div class="layer-note kea-console-screen"><strong>Opacity</strong><p>Lower opacity lets lower layers show through, which changes the final image.</p></div>
+                    </div>
+                </section>
+            </section>
+        </main>
+    </div>
+    <div class="kea-help-overlay" id="helpOverlay" hidden>
+        <div class="kea-help-dialog" role="dialog" aria-modal="true" aria-labelledby="layerHelpTitle">
+            <h2 id="layerHelpTitle" class="kea-section-label">How to Play</h2>
+            <div class="kea-help-copy">
+                <p>This module shows how a finished picture can be built from stacked parts.</p>
+                <ul>
+                    <li>Move a layer up or down in the list.</li>
+                    <li>Hide a layer to see what disappears.</li>
+                    <li>Fade a layer with the opacity slider.</li>
+                    <li>Watch how the top layer and visible count change.</li>
+                </ul>
+            </div>
+            <div class="kea-actions"><button class="kea-button kea-button--secondary" id="closeHelpButton" type="button">Close</button></div>
+        </div>
+    </div>
+    <script>
+        const layerCanvas = document.getElementById("layerCanvas"), ctx = layerCanvas.getContext("2d");
+        const layerPreviewShell = layerCanvas.parentElement;
+        const layerList = document.getElementById("layerList"), layerCountValue = document.getElementById("layerCountValue");
+        const visibleCountValue = document.getElementById("visibleCountValue"), topLayerValue = document.getElementById("topLayerValue"), focusValue = document.getElementById("focusValue");
+        const resetLayersButton = document.getElementById("resetLayersButton"), helpButton = document.getElementById("helpButton"), closeHelpButton = document.getElementById("closeHelpButton"), helpOverlay = document.getElementById("helpOverlay");
+        const baseLayers = [
+            { id:"sky", name:"Sky", color:"#8ed8ff", opacity:100, visible:true },
+            { id:"mountains", name:"Mountains", color:"#6d5f88", opacity:100, visible:true },
+            { id:"trees", name:"Trees", color:"#167247", opacity:100, visible:true },
+            { id:"foreground", name:"Foreground", color:"#ffb347", opacity:100, visible:true }
+        ];
+        let layers = baseLayers.map((layer) => ({ ...layer }));
+        function drawLayer(layer) {
+            ctx.save(); ctx.globalAlpha = layer.opacity / 100;
+            if (layer.id === "sky") { const gradient = ctx.createLinearGradient(0,0,0,600); gradient.addColorStop(0,"#8ed8ff"); gradient.addColorStop(1,"#f6d36c"); ctx.fillStyle = gradient; ctx.fillRect(0,0,800,600); ctx.fillStyle = "rgba(255,255,255,0.7)"; ctx.beginPath(); ctx.arc(110,90,46,0,Math.PI*2); ctx.fill(); }
+            if (layer.id === "mountains") { ctx.fillStyle = "#5b4d74"; ctx.beginPath(); ctx.moveTo(0,430); ctx.lineTo(170,180); ctx.lineTo(330,430); ctx.closePath(); ctx.fill(); ctx.beginPath(); ctx.moveTo(230,430); ctx.lineTo(460,150); ctx.lineTo(690,430); ctx.closePath(); ctx.fill(); ctx.beginPath(); ctx.moveTo(520,430); ctx.lineTo(720,220); ctx.lineTo(800,430); ctx.closePath(); ctx.fill(); }
+            if (layer.id === "trees") { ctx.fillStyle = "#155733"; for (let i = 0; i < 10; i += 1) { const x = 40 + (i * 72); ctx.beginPath(); ctx.moveTo(x,470); ctx.lineTo(x + 28,320); ctx.lineTo(x + 56,470); ctx.closePath(); ctx.fill(); } }
+            if (layer.id === "foreground") { ctx.fillStyle = "#ffb347"; ctx.fillRect(0,470,800,130); ctx.fillStyle = "#a8512b"; ctx.fillRect(540,370,36,120); ctx.fillStyle = "#f25d4c"; ctx.beginPath(); ctx.arc(558,342,46,0,Math.PI*2); ctx.fill(); }
+            ctx.restore();
+        }
+        function renderScene() { ctx.clearRect(0,0,800,600); layers.forEach((layer) => { if (layer.visible) drawLayer(layer); }); }
+        function fitLayerCanvas() {
+            const rect = layerPreviewShell.getBoundingClientRect();
+            const availableWidth = Math.max(0, rect.width - 8);
+            const availableHeight = Math.max(0, rect.height - 8);
+            const aspectRatio = 4 / 3;
+            let width = availableWidth;
+            let height = width / aspectRatio;
+            if (height > availableHeight) {
+                height = availableHeight;
+                width = height * aspectRatio;
+            }
+            layerCanvas.style.width = `${Math.floor(width)}px`;
+            layerCanvas.style.height = `${Math.floor(height)}px`;
+        }
+        function updateHud() { const visibleLayers = layers.filter((layer) => layer.visible); layerCountValue.textContent = String(layers.length); visibleCountValue.textContent = String(visibleLayers.length); topLayerValue.textContent = visibleLayers.at(-1)?.name || "None"; focusValue.textContent = visibleLayers.length === layers.length ? "Order matters" : "Hidden parts"; }
+        function moveLayer(index, direction) { const target = index + direction; if (target < 0 || target >= layers.length) return; [layers[index], layers[target]] = [layers[target], layers[index]]; renderAll(); }
+        function renderLayerList() {
+            layerList.innerHTML = "";
+            layers.forEach((layer, index) => {
+                const item = document.createElement("section");
+                item.className = "layer-item kea-console-well";
+                item.innerHTML = `<div class="layer-item__head"><span class="layer-badge" style="background:${layer.color};"></span><div><p class="layer-name">${layer.name}</p><p class="layer-caption">${index === layers.length - 1 ? "Currently on top" : "Below another layer"}</p></div></div><div class="layer-controls"><label>Opacity</label><input type="range" min="0" max="100" value="${layer.opacity}" data-role="opacity" /></div><div class="kea-segmented"><button class="kea-button kea-button--secondary" type="button" data-role="toggle">${layer.visible ? "Hide" : "Show"}</button><button class="kea-button kea-button--secondary" type="button" data-role="up">Up</button><button class="kea-button kea-button--secondary" type="button" data-role="down">Down</button></div>`;
+                item.querySelector('[data-role="opacity"]').addEventListener("input", (event) => { layer.opacity = Number(event.target.value); renderAll(); });
+                item.querySelector('[data-role="toggle"]').addEventListener("click", () => { layer.visible = !layer.visible; renderAll(); });
+                item.querySelector('[data-role="up"]').addEventListener("click", () => moveLayer(index, 1));
+                item.querySelector('[data-role="down"]').addEventListener("click", () => moveLayer(index, -1));
+                layerList.appendChild(item);
+            });
+        }
+        function renderAll() { renderScene(); renderLayerList(); updateHud(); }
+        resetLayersButton.addEventListener("click", () => { layers = baseLayers.map((layer) => ({ ...layer })); renderAll(); });
+        helpButton.addEventListener("click", () => { helpOverlay.hidden = false; });
+        closeHelpButton.addEventListener("click", () => { helpOverlay.hidden = true; });
+        helpOverlay.addEventListener("click", (event) => { if (event.target === helpOverlay) helpOverlay.hidden = true; });
+        renderAll();
+        fitLayerCanvas();
+        window.addEventListener("resize", fitLayerCanvas);
+    </script>
+</body>
+</html>
