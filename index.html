@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="app-version" content="0.1" />
     <title>KEA Digi Library</title>
     <link rel="stylesheet" href="keadigi.css" />
   </head>
@@ -29,20 +30,31 @@
             <p>Quick visual tools for practice, play, and review.</p>
           </section>
 
-          <section class="kea-dashboard-status kea-console-surface" aria-label="Library status">
-            <div class="kea-dashboard-status__item kea-hud__item kea-console-screen">
+          <section
+            class="kea-dashboard-status kea-console-surface"
+            aria-label="Library status"
+          >
+            <div
+              class="kea-dashboard-status__item kea-hud__item kea-console-screen"
+            >
               <span class="kea-hud__label">Library</span>
               <span class="kea-hud__value">Online</span>
             </div>
-            <div class="kea-dashboard-status__item kea-hud__item kea-console-screen">
+            <div
+              class="kea-dashboard-status__item kea-hud__item kea-console-screen"
+            >
               <span class="kea-hud__label">Ready</span>
               <span class="kea-hud__value" id="readyCountValue">0</span>
             </div>
-            <div class="kea-dashboard-status__item kea-hud__item kea-console-screen">
+            <div
+              class="kea-dashboard-status__item kea-hud__item kea-console-screen"
+            >
               <span class="kea-hud__label">Concepts</span>
               <span class="kea-hud__value" id="conceptCountValue">0</span>
             </div>
-            <div class="kea-dashboard-status__item kea-hud__item kea-console-screen">
+            <div
+              class="kea-dashboard-status__item kea-hud__item kea-console-screen"
+            >
               <span class="kea-hud__label">WIP</span>
               <span class="kea-hud__value" id="wipCountValue">0</span>
             </div>
@@ -67,12 +79,31 @@
                   <span class="kea-chip">Pixels</span>
                   <span class="kea-chip">Graphics</span>
                 </div>
-                <div class="kea-card__thumb kea-card__thumb--vector" aria-hidden="true">
+                <div
+                  class="kea-card__thumb kea-card__thumb--vector"
+                  aria-hidden="true"
+                >
                   <svg viewBox="0 0 120 80" aria-hidden="true">
-                    <rect class="kea-thumb-fill" x="14" y="14" width="52" height="52" rx="6"></rect>
-                    <path d="M27 14v52M40 14v52M53 14v52M14 27h52M14 40h52M14 53h52"></path>
+                    <rect
+                      class="kea-thumb-fill"
+                      x="14"
+                      y="14"
+                      width="52"
+                      height="52"
+                      rx="6"
+                    ></rect>
+                    <path
+                      d="M27 14v52M40 14v52M53 14v52M14 27h52M14 40h52M14 53h52"
+                    ></path>
                     <rect x="80" y="18" width="24" height="24" rx="4"></rect>
-                    <rect class="kea-thumb-fill" x="80" y="18" width="24" height="24" rx="4"></rect>
+                    <rect
+                      class="kea-thumb-fill"
+                      x="80"
+                      y="18"
+                      width="24"
+                      height="24"
+                      rx="4"
+                    ></rect>
                     <path class="kea-thumb-accent" d="M80 54h24"></path>
                   </svg>
                 </div>
@@ -90,9 +121,19 @@
                   <span class="kea-chip">Concept</span>
                   <span class="kea-chip kea-chip--wip">WIP</span>
                 </div>
-                <div class="kea-card__thumb kea-card__thumb--vector" aria-hidden="true">
+                <div
+                  class="kea-card__thumb kea-card__thumb--vector"
+                  aria-hidden="true"
+                >
                   <svg viewBox="0 0 120 80" aria-hidden="true">
-                    <rect class="kea-thumb-fill" x="16" y="16" width="54" height="40" rx="6"></rect>
+                    <rect
+                      class="kea-thumb-fill"
+                      x="16"
+                      y="16"
+                      width="54"
+                      height="40"
+                      rx="6"
+                    ></rect>
                     <path d="M16 48l12-10 12 8 10-14 20 16"></path>
                     <circle cx="40" cy="28" r="5"></circle>
                     <circle cx="82" cy="50" r="16"></circle>
@@ -131,16 +172,55 @@
                   <span class="kea-chip">Concept</span>
                   <span class="kea-chip kea-chip--wip">WIP</span>
                 </div>
-                <div class="kea-card__thumb kea-card__thumb--vector" aria-hidden="true">
+                <div
+                  class="kea-card__thumb kea-card__thumb--vector"
+                  aria-hidden="true"
+                >
                   <svg viewBox="0 0 120 80" aria-hidden="true">
                     <rect x="16" y="14" width="54" height="34" rx="6"></rect>
-                    <circle class="kea-thumb-fill" cx="34" cy="40" r="8"></circle>
-                    <circle class="kea-thumb-fill" cx="50" cy="28" r="8"></circle>
-                    <circle class="kea-thumb-fill" cx="66" cy="40" r="8"></circle>
+                    <circle
+                      class="kea-thumb-fill"
+                      cx="34"
+                      cy="40"
+                      r="8"
+                    ></circle>
+                    <circle
+                      class="kea-thumb-fill"
+                      cx="50"
+                      cy="28"
+                      r="8"
+                    ></circle>
+                    <circle
+                      class="kea-thumb-fill"
+                      cx="66"
+                      cy="40"
+                      r="8"
+                    ></circle>
                     <path d="M16 60h88"></path>
-                    <rect class="kea-thumb-fill" x="22" y="56" width="10" height="10" rx="2"></rect>
-                    <rect class="kea-thumb-fill" x="38" y="56" width="10" height="10" rx="2"></rect>
-                    <rect class="kea-thumb-fill" x="54" y="56" width="10" height="10" rx="2"></rect>
+                    <rect
+                      class="kea-thumb-fill"
+                      x="22"
+                      y="56"
+                      width="10"
+                      height="10"
+                      rx="2"
+                    ></rect>
+                    <rect
+                      class="kea-thumb-fill"
+                      x="38"
+                      y="56"
+                      width="10"
+                      height="10"
+                      rx="2"
+                    ></rect>
+                    <rect
+                      class="kea-thumb-fill"
+                      x="54"
+                      y="56"
+                      width="10"
+                      height="10"
+                      rx="2"
+                    ></rect>
                     <path class="kea-thumb-accent" d="M88 28l12 8-12 8z"></path>
                   </svg>
                 </div>
@@ -200,7 +280,9 @@
                   Change a file name, type, and folder to see how its path and
                   organization change together.
                 </p>
-                <a class="kea-card__link" href="FilesAndFoldersExplorer.html">Launch</a>
+                <a class="kea-card__link" href="FilesAndFoldersExplorer.html"
+                  >Launch</a
+                >
               </article>
 
               <article class="kea-card kea-surface">
@@ -259,11 +341,29 @@
                   <span class="kea-chip">Color</span>
                   <span class="kea-chip">Observation</span>
                 </div>
-                <div class="kea-card__thumb kea-card__thumb--vector" aria-hidden="true">
+                <div
+                  class="kea-card__thumb kea-card__thumb--vector"
+                  aria-hidden="true"
+                >
                   <svg viewBox="0 0 120 80" aria-hidden="true">
-                    <circle class="kea-thumb-fill" cx="40" cy="40" r="18"></circle>
-                    <circle class="kea-thumb-fill" cx="58" cy="40" r="18"></circle>
-                    <circle class="kea-thumb-fill" cx="49" cy="24" r="18"></circle>
+                    <circle
+                      class="kea-thumb-fill"
+                      cx="40"
+                      cy="40"
+                      r="18"
+                    ></circle>
+                    <circle
+                      class="kea-thumb-fill"
+                      cx="58"
+                      cy="40"
+                      r="18"
+                    ></circle>
+                    <circle
+                      class="kea-thumb-fill"
+                      cx="49"
+                      cy="24"
+                      r="18"
+                    ></circle>
                     <path class="kea-thumb-accent" d="M84 20v40"></path>
                     <path d="M96 20v40"></path>
                     <path d="M108 20v40"></path>
@@ -282,18 +382,84 @@
                   <span class="kea-chip">Keyboard</span>
                   <span class="kea-chip">Hardware</span>
                 </div>
-                <div class="kea-card__thumb kea-card__thumb--vector" aria-hidden="true">
+                <div
+                  class="kea-card__thumb kea-card__thumb--vector"
+                  aria-hidden="true"
+                >
                   <svg viewBox="0 0 120 80" aria-hidden="true">
                     <rect x="10" y="18" width="100" height="44" rx="8"></rect>
-                    <rect class="kea-thumb-fill" x="18" y="26" width="14" height="10" rx="2"></rect>
-                    <rect class="kea-thumb-fill" x="36" y="26" width="14" height="10" rx="2"></rect>
-                    <rect class="kea-thumb-fill" x="54" y="26" width="14" height="10" rx="2"></rect>
-                    <rect class="kea-thumb-fill" x="72" y="26" width="14" height="10" rx="2"></rect>
-                    <rect class="kea-thumb-fill" x="90" y="26" width="12" height="10" rx="2"></rect>
-                    <rect class="kea-thumb-fill" x="18" y="40" width="16" height="10" rx="2"></rect>
-                    <rect class="kea-thumb-fill" x="38" y="40" width="16" height="10" rx="2"></rect>
-                    <rect class="kea-thumb-fill" x="58" y="40" width="16" height="10" rx="2"></rect>
-                    <rect class="kea-thumb-fill" x="78" y="40" width="24" height="10" rx="2"></rect>
+                    <rect
+                      class="kea-thumb-fill"
+                      x="18"
+                      y="26"
+                      width="14"
+                      height="10"
+                      rx="2"
+                    ></rect>
+                    <rect
+                      class="kea-thumb-fill"
+                      x="36"
+                      y="26"
+                      width="14"
+                      height="10"
+                      rx="2"
+                    ></rect>
+                    <rect
+                      class="kea-thumb-fill"
+                      x="54"
+                      y="26"
+                      width="14"
+                      height="10"
+                      rx="2"
+                    ></rect>
+                    <rect
+                      class="kea-thumb-fill"
+                      x="72"
+                      y="26"
+                      width="14"
+                      height="10"
+                      rx="2"
+                    ></rect>
+                    <rect
+                      class="kea-thumb-fill"
+                      x="90"
+                      y="26"
+                      width="12"
+                      height="10"
+                      rx="2"
+                    ></rect>
+                    <rect
+                      class="kea-thumb-fill"
+                      x="18"
+                      y="40"
+                      width="16"
+                      height="10"
+                      rx="2"
+                    ></rect>
+                    <rect
+                      class="kea-thumb-fill"
+                      x="38"
+                      y="40"
+                      width="16"
+                      height="10"
+                      rx="2"
+                    ></rect>
+                    <rect
+                      class="kea-thumb-fill"
+                      x="58"
+                      y="40"
+                      width="16"
+                      height="10"
+                      rx="2"
+                    ></rect>
+                    <rect
+                      class="kea-thumb-fill"
+                      x="78"
+                      y="40"
+                      width="24"
+                      height="10"
+                      rx="2"
+                    ></rect>
                   </svg>
                 </div>
                 <h3>Interactive Keyboard</h3>
@@ -326,12 +492,36 @@
                   <span class="kea-chip">Folders</span>
                   <span class="kea-chip kea-chip--wip">WIP</span>
                 </div>
-                <div class="kea-card__thumb kea-card__thumb--vector" aria-hidden="true">
+                <div
+                  class="kea-card__thumb kea-card__thumb--vector"
+                  aria-hidden="true"
+                >
                   <svg viewBox="0 0 120 80" aria-hidden="true">
                     <path d="M16 28h34l8 8h46v24H16z"></path>
-                    <rect class="kea-thumb-fill" x="24" y="42" width="18" height="12" rx="2"></rect>
-                    <rect class="kea-thumb-fill" x="48" y="42" width="18" height="12" rx="2"></rect>
-                    <rect class="kea-thumb-fill" x="72" y="42" width="18" height="12" rx="2"></rect>
+                    <rect
+                      class="kea-thumb-fill"
+                      x="24"
+                      y="42"
+                      width="18"
+                      height="12"
+                      rx="2"
+                    ></rect>
+                    <rect
+                      class="kea-thumb-fill"
+                      x="48"
+                      y="42"
+                      width="18"
+                      height="12"
+                      rx="2"
+                    ></rect>
+                    <rect
+                      class="kea-thumb-fill"
+                      x="72"
+                      y="42"
+                      width="18"
+                      height="12"
+                      rx="2"
+                    ></rect>
                     <path class="kea-thumb-accent" d="M86 20h18v18"></path>
                   </svg>
                 </div>
@@ -352,11 +542,15 @@
           >
             <div class="kea-dashboard-section__header kea-console-well">
               <p class="kea-dashboard-section__eyebrow">Concept Suite</p>
-              <h2 id="concept-modules-title" class="kea-dashboard-section__title">
+              <h2
+                id="concept-modules-title"
+                class="kea-dashboard-section__title"
+              >
                 Concept Modules
               </h2>
               <p class="kea-dashboard-section__copy">
-                Interactive teaching tools that explain how something works through inspection, comparison, and direct change.
+                Interactive teaching tools that explain how something works
+                through inspection, comparison, and direct change.
               </p>
             </div>
             <div class="kea-card-grid" id="conceptGrid"></div>
@@ -369,7 +563,10 @@
           >
             <div class="kea-dashboard-section__header kea-console-well">
               <p class="kea-dashboard-section__eyebrow">Workshop</p>
-              <h2 id="under-construction-title" class="kea-dashboard-section__title">
+              <h2
+                id="under-construction-title"
+                class="kea-dashboard-section__title"
+              >
                 Under Construction
               </h2>
               <p class="kea-dashboard-section__copy">
@@ -401,12 +598,20 @@
                   <span class="kea-chip">Interface</span>
                   <span class="kea-chip kea-chip--wip">WIP</span>
                 </div>
-                <div class="kea-card__thumb kea-card__thumb--vector" aria-hidden="true">
+                <div
+                  class="kea-card__thumb kea-card__thumb--vector"
+                  aria-hidden="true"
+                >
                   <svg viewBox="0 0 120 80" aria-hidden="true">
                     <circle cx="34" cy="40" r="14"></circle>
-                    <path d="M34 26v6M34 48v6M20 40h6M42 40h6M24 30l4 4M40 46l4 4M24 50l4-4M40 34l4-4"></path>
+                    <path
+                      d="M34 26v6M34 48v6M20 40h6M42 40h6M24 30l4 4M40 46l4 4M24 50l4-4M40 34l4-4"
+                    ></path>
                     <rect x="62" y="18" width="38" height="44" rx="8"></rect>
-                    <path class="kea-thumb-accent" d="M74 32h14M74 40h14M74 48h10"></path>
+                    <path
+                      class="kea-thumb-accent"
+                      d="M74 32h14M74 40h14M74 48h10"
+                    ></path>
                   </svg>
                 </div>
                 <h3>Icon Detective</h3>
@@ -423,12 +628,20 @@
                   <span class="kea-chip">Graphics</span>
                   <span class="kea-chip kea-chip--wip">WIP</span>
                 </div>
-                <div class="kea-card__thumb kea-card__thumb--vector" aria-hidden="true">
+                <div
+                  class="kea-card__thumb kea-card__thumb--vector"
+                  aria-hidden="true"
+                >
                   <svg viewBox="0 0 120 80" aria-hidden="true">
                     <path d="M26 58l30-30 10 10-30 30H22V54z"></path>
                     <path class="kea-thumb-accent" d="M74 18l18 18"></path>
                     <rect x="74" y="38" width="24" height="16" rx="4"></rect>
-                    <circle class="kea-thumb-fill" cx="86" cy="46" r="4"></circle>
+                    <circle
+                      class="kea-thumb-fill"
+                      cx="86"
+                      cy="46"
+                      r="4"
+                    ></circle>
                   </svg>
                 </div>
                 <h3>Tool Match</h3>
@@ -478,9 +691,15 @@
     <script>
       const readyGrid = document.getElementById("readyGrid");
       const conceptGrid = document.getElementById("conceptGrid");
-      const conceptModulesSection = document.getElementById("conceptModulesSection");
-      const underConstructionGrid = document.getElementById("underConstructionGrid");
-      const underConstructionSection = document.getElementById("underConstructionSection");
+      const conceptModulesSection = document.getElementById(
+        "conceptModulesSection",
+      );
+      const underConstructionGrid = document.getElementById(
+        "underConstructionGrid",
+      );
+      const underConstructionSection = document.getElementById(
+        "underConstructionSection",
+      );
       const readyCountValue = document.getElementById("readyCountValue");
       const conceptCountValue = document.getElementById("conceptCountValue");
       const wipCountValue = document.getElementById("wipCountValue");
@@ -489,7 +708,8 @@
         const chips = [...card.querySelectorAll(".kea-chip")]
           .filter((chip) => !chip.classList.contains("kea-chip--wip"))
           .map((chip) => chip.textContent.trim().toLowerCase());
-        const title = card.querySelector("h3")?.textContent.trim().toLowerCase() || "";
+        const title =
+          card.querySelector("h3")?.textContent.trim().toLowerCase() || "";
         return `${chips.join(" ")} ${title}`.trim();
       }
 
@@ -499,8 +719,9 @@
       const wipCards = [];
 
       cards.forEach((card) => {
-        const isConcept = [...card.querySelectorAll(".kea-chip")]
-          .some((chip) => chip.textContent.trim().toLowerCase() === "concept");
+        const isConcept = [...card.querySelectorAll(".kea-chip")].some(
+          (chip) => chip.textContent.trim().toLowerCase() === "concept",
+        );
         const isWip = Boolean(card.querySelector(".kea-chip--wip"));
         if (isConcept) {
           conceptCards.push(card);
@@ -512,9 +733,13 @@
       });
 
       readyGrid.replaceChildren(...readyCards);
-      conceptCards.sort((a, b) => getCardSortKey(a).localeCompare(getCardSortKey(b)));
+      conceptCards.sort((a, b) =>
+        getCardSortKey(a).localeCompare(getCardSortKey(b)),
+      );
       conceptGrid.replaceChildren(...conceptCards);
-      wipCards.sort((a, b) => getCardSortKey(a).localeCompare(getCardSortKey(b)));
+      wipCards.sort((a, b) =>
+        getCardSortKey(a).localeCompare(getCardSortKey(b)),
+      );
       underConstructionGrid.replaceChildren(...wipCards);
       conceptModulesSection.hidden = conceptCards.length === 0;
       underConstructionSection.hidden = wipCards.length === 0;
