@@ -11,7 +11,11 @@
   }
 
   function setFeedback(screen, title, body) {
-    screen.innerHTML = `<strong>${title}</strong><p>${body}</p>`;
+    const heading = document.createElement("strong");
+    const message = document.createElement("p");
+    heading.textContent = title;
+    message.textContent = body;
+    screen.replaceChildren(heading, message);
   }
 
   function resolveChoices(deck, item) {
@@ -22,20 +26,35 @@
       ? item.choiceIds
       : [item.answerId, ...(item.distractorIds || [])];
 
-    return ids.map((id) => deck.choicesById[id]).filter(Boolean);
+    return ids.map((id) => Object.hasOwn(deck.choicesById, id) ? deck.choicesById[id] : null);
+  }
+
+  function validateDeck(deck) {
+    if (!deck?.id || !Array.isArray(deck.items) || !deck.items.length) {
+      throw new Error("This set needs an ID and at least one clue.");
+    }
+    const itemIds = new Set();
+    for (const item of deck.items) {
+      if (!item?.id || itemIds.has(item.id) || !item.prompt?.trim()) {
+        throw new Error("Each clue needs a unique ID and prompt.");
+      }
+      itemIds.add(item.id);
+      const choices = resolveChoices(deck, item);
+      const choiceIds = new Set(choices.map((choice) => choice?.id));
+      if (choices.length < 2 || choiceIds.size !== choices.length ||
+          !choices.every((choice) => choice?.id && choice.label?.trim()) ||
+          !choiceIds.has(item.answerId)) {
+        throw new Error(`Clue ${item.id} needs distinct, labeled choices including its answer.`);
+      }
+    }
   }
 
   activities.createMultipleChoiceActivity = function createMultipleChoiceActivity(config) {
-    const { deck, elements } = config;
+    const { elements } = config;
+    let deck = config.deck;
 
-    if (!deck || !Array.isArray(deck.items) || !elements) {
-      throw new Error("KEA Digi multiple-choice activity requires a deck and bound elements.");
-    }
+    validateDeck(deck);
 
-    const readyTitle = config.readyTitle || deck.readyTitle || "Ready";
-    const readyBody = config.readyBody || deck.readyBody || "Choose the answer that matches the clue.";
-    const correctTitle = config.correctTitle || deck.correctTitle || "Correct";
-    const wrongTitle = config.wrongTitle || deck.wrongTitle || "Not this one";
     const renderChoice = config.renderChoice || ((choice) => choice.label);
     const getChoiceLabel = config.getChoiceLabel || ((choice) => choice.label || choice.id);
     const getPromptText = config.getPromptText || ((item) => item.prompt);
@@ -66,7 +85,9 @@
 
       updateHud();
       elements.promptText.textContent = getPromptText(currentItem);
-      setFeedback(elements.feedbackScreen, readyTitle, readyBody);
+      setFeedback(elements.feedbackScreen,
+        config.readyTitle || deck.readyTitle || "Ready",
+        config.readyBody || deck.readyBody || "Choose the answer that matches the clue.");
       elements.nextButton.disabled = true;
       elements.choicesContainer.innerHTML = "";
 
@@ -88,6 +109,7 @@
 
       answered = true;
       const isCorrect = choice.id === currentItem.answerId;
+      const shouldMoveFocus = document.activeElement === button;
       const buttons = elements.choicesContainer.querySelectorAll("button");
 
       buttons.forEach((itemButton) => {
@@ -101,20 +123,22 @@
         score += 1;
         streak += 1;
         button.classList.add("correct");
-        setFeedback(elements.feedbackScreen, correctTitle, getFeedbackBody(currentItem, true, choice));
+        setFeedback(elements.feedbackScreen, config.correctTitle || deck.correctTitle || "Correct", getFeedbackBody(currentItem, true, choice));
       } else {
         streak = 0;
         button.classList.add("wrong");
-        setFeedback(elements.feedbackScreen, wrongTitle, getFeedbackBody(currentItem, false, choice));
+        setFeedback(elements.feedbackScreen, config.wrongTitle || deck.wrongTitle || "Not this one", getFeedbackBody(currentItem, false, choice));
       }
 
       updateHud();
       elements.nextButton.disabled = false;
+      if (shouldMoveFocus) elements.nextButton.focus();
     }
 
     function nextRound() {
       round += 1;
       drawRound();
+      if (elements.promptText.hasAttribute("tabindex")) elements.promptText.focus();
     }
 
     function resetGame() {
@@ -132,7 +156,12 @@
 
     return {
       nextRound,
-      resetGame
+      resetGame,
+      setDeck(nextDeck) {
+        validateDeck(nextDeck);
+        deck = nextDeck;
+        resetGame();
+      }
     };
   };
 

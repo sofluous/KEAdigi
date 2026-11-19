@@ -7,699 +7,248 @@
     <title>KEA Digi Library</title>
     <link rel="stylesheet" href="keadigi.css" />
   </head>
-  <body class="kea-page">
+  <body class="kea-page kea-library-page">
     <div class="kea-shell">
-      <header class="kea-topbar">
-        <div class="kea-topbar__brand">
-          <p class="kea-eyebrow">KEA Digi Library</p>
-          <h1 class="kea-app-title">Student Applets</h1>
-          <p class="kea-app-subtitle">
-            Touch-ready learning tools for students and class display.
-          </p>
-        </div>
-        <div class="kea-topbar__actions">
-          <span class="kea-chip">18 live applets</span>
-        </div>
+      <header class="kea-library-rail">
+        <h1 class="kea-library-title">KEA Digi Hub</h1>
+        <nav aria-label="Module categories" class="kea-category-nav">
+          <a class="kea-button" href="#concept">Concepts</a>
+          <a class="kea-button" href="#tool">Tools</a>
+          <a class="kea-button" href="#practice">Practice</a>
+          <a class="kea-button" href="#game">Games</a>
+          <a class="kea-button" href="#activity">Guided Activities</a>
+        </nav>
+        <a class="kea-button kea-button--secondary kea-component-link" href="components.html">Components</a>
       </header>
-
-      <main class="kea-content">
-        <section class="kea-dashboard">
-          <section class="kea-launch-strip kea-console-surface" aria-label="Quick launch">
-            <div class="kea-launch-strip__copy">
-              <p class="kea-launch-strip__eyebrow">Quick launch</p>
-              <h2>Choose a tool.</h2>
-              <p>Open a featured activity or browse the trays below.</p>
-            </div>
-            <div class="kea-launch-strip__actions">
-              <a class="kea-button" href="Keyboard.html">Keyboard</a>
-              <a class="kea-button" href="PixelPainter.html">Pixel Painter</a>
-              <a class="kea-button" href="ColorMatch.html">RGB Mixer</a>
-            </div>
-          </section>
-
-          <section
-            class="kea-dashboard-section kea-console-surface"
-            aria-labelledby="create-title"
-            id="createSection"
-          >
+      <main class="kea-content kea-library-content">
+        <div class="kea-dashboard">
+          <section class="kea-dashboard-section kea-console-surface" id="concept" aria-labelledby="concept-title">
             <div class="kea-dashboard-section__header kea-console-well">
-              <p class="kea-dashboard-section__eyebrow">Create</p>
-              <h2 id="create-title" class="kea-dashboard-section__title">
-                Creative Tools
-              </h2>
+              <h2 id="concept-title" class="kea-dashboard-section__title">Concepts</h2>
             </div>
-            <div class="kea-card-grid" id="createGrid"></div>
-          </section>
-
-          <section
-            class="kea-dashboard-section kea-console-surface"
-            aria-labelledby="practice-title"
-            id="practiceSection"
-          >
-            <div class="kea-dashboard-section__header kea-console-well">
-              <p class="kea-dashboard-section__eyebrow">Practice</p>
-              <h2 id="practice-title" class="kea-dashboard-section__title">
-                Practice Activities
-              </h2>
-            </div>
-            <div class="kea-card-grid" id="practiceGrid">
-              <article class="kea-card kea-surface" data-dashboard-group="create">
+            <div class="kea-card-grid">
+              <a class="kea-card kea-surface" data-module-type="concept" data-topics="Pixels" data-readiness="ready" href="ImageZoomLab.html" aria-label="Launch Image Zoom Lab">
                 <div class="kea-card__meta">
                   <span class="kea-chip">Pixels</span>
-                  <span class="kea-chip">Graphics</span>
                 </div>
-                <div
-                  class="kea-card__thumb kea-card__thumb--vector"
-                  aria-hidden="true"
-                >
-                  <svg viewBox="0 0 120 80" aria-hidden="true">
-                    <rect
-                      class="kea-thumb-fill"
-                      x="14"
-                      y="14"
-                      width="52"
-                      height="52"
-                      rx="6"
-                    ></rect>
-                    <path
-                      d="M27 14v52M40 14v52M53 14v52M14 27h52M14 40h52M14 53h52"
-                    ></path>
-                    <rect x="80" y="18" width="24" height="24" rx="4"></rect>
-                    <rect
-                      class="kea-thumb-fill"
-                      x="80"
-                      y="18"
-                      width="24"
-                      height="24"
-                      rx="4"
-                    ></rect>
-                    <path class="kea-thumb-accent" d="M80 54h24"></path>
-                  </svg>
-                </div>
-                <h3>Pixel Painter</h3>
-                <p>Paint with pixels and compare the grid to the picture.</p>
-                <a class="kea-card__link" href="PixelPainter.html">Launch</a>
-              </article>
-
-              <article class="kea-card kea-surface">
-                <div class="kea-card__meta">
-                  <span class="kea-chip">Pixels</span>
-                  <span class="kea-chip">Concept</span>
-                  <span class="kea-chip kea-chip--wip">WIP</span>
-                </div>
-                <div
-                  class="kea-card__thumb kea-card__thumb--vector"
-                  aria-hidden="true"
-                >
-                  <svg viewBox="0 0 120 80" aria-hidden="true">
-                    <rect
-                      class="kea-thumb-fill"
-                      x="16"
-                      y="16"
-                      width="54"
-                      height="40"
-                      rx="6"
-                    ></rect>
-                    <path d="M16 48l12-10 12 8 10-14 20 16"></path>
-                    <circle cx="40" cy="28" r="5"></circle>
-                    <circle cx="82" cy="50" r="16"></circle>
-                    <path class="kea-thumb-accent" d="M94 62l12 12"></path>
-                    <path d="M82 42v16M74 50h16"></path>
-                  </svg>
+                <div class="kea-card__thumb">
+                  <img src="assets/module-art/image-zoom-lab.jpg" width="384" height="384" alt="" loading="lazy" decoding="async" />
                 </div>
                 <h3>Image Zoom Lab</h3>
                 <p>Zoom into an image and inspect the pixels inside it.</p>
-                <a class="kea-card__link" href="ImageZoomLab.html">Launch</a>
-              </article>
-
-              <article class="kea-card kea-surface">
+              </a>
+              <a class="kea-card kea-surface" data-module-type="concept" data-topics="Layers" data-readiness="ready" href="LayerExplorer.html" aria-label="Launch Layer Explorer">
                 <div class="kea-card__meta">
                   <span class="kea-chip">Layers</span>
-                  <span class="kea-chip">Concept</span>
-                  <span class="kea-chip kea-chip--wip">WIP</span>
                 </div>
-                <div class="kea-card__thumb" aria-hidden="true">
-                  <span class="kea-card__thumb-mark">LE</span>
+                <div class="kea-card__thumb">
+                  <img src="assets/module-art/layer-explorer.jpg" width="384" height="384" alt="" loading="lazy" decoding="async" />
                 </div>
                 <h3>Layer Explorer</h3>
                 <p>Reorder and fade layers to see how scenes are built.</p>
-                <a class="kea-card__link" href="LayerExplorer.html">Launch</a>
-              </article>
-
-              <article class="kea-card kea-surface">
+              </a>
+              <a class="kea-card kea-surface" data-module-type="concept" data-topics="Frames" data-readiness="ready" href="FramePlayer.html" aria-label="Launch Frame Player">
                 <div class="kea-card__meta">
                   <span class="kea-chip">Frames</span>
-                  <span class="kea-chip">Concept</span>
-                  <span class="kea-chip kea-chip--wip">WIP</span>
                 </div>
-                <div
-                  class="kea-card__thumb kea-card__thumb--vector"
-                  aria-hidden="true"
-                >
-                  <svg viewBox="0 0 120 80" aria-hidden="true">
-                    <rect x="16" y="14" width="54" height="34" rx="6"></rect>
-                    <circle
-                      class="kea-thumb-fill"
-                      cx="34"
-                      cy="40"
-                      r="8"
-                    ></circle>
-                    <circle
-                      class="kea-thumb-fill"
-                      cx="50"
-                      cy="28"
-                      r="8"
-                    ></circle>
-                    <circle
-                      class="kea-thumb-fill"
-                      cx="66"
-                      cy="40"
-                      r="8"
-                    ></circle>
-                    <path d="M16 60h88"></path>
-                    <rect
-                      class="kea-thumb-fill"
-                      x="22"
-                      y="56"
-                      width="10"
-                      height="10"
-                      rx="2"
-                    ></rect>
-                    <rect
-                      class="kea-thumb-fill"
-                      x="38"
-                      y="56"
-                      width="10"
-                      height="10"
-                      rx="2"
-                    ></rect>
-                    <rect
-                      class="kea-thumb-fill"
-                      x="54"
-                      y="56"
-                      width="10"
-                      height="10"
-                      rx="2"
-                    ></rect>
-                    <path class="kea-thumb-accent" d="M88 28l12 8-12 8z"></path>
-                  </svg>
+                <div class="kea-card__thumb">
+                  <img src="assets/module-art/frame-player.jpg" width="384" height="384" alt="" loading="lazy" decoding="async" />
                 </div>
                 <h3>Frame Player</h3>
                 <p>Compare frames and playback to see how motion appears.</p>
-                <a class="kea-card__link" href="FramePlayer.html">Launch</a>
-              </article>
-
-              <article class="kea-card kea-surface">
+              </a>
+              <a class="kea-card kea-surface" data-module-type="concept" data-topics="Vector" data-readiness="ready" href="VectorVsPixel.html" aria-label="Launch Vector Vs Pixel">
                 <div class="kea-card__meta">
                   <span class="kea-chip">Vector</span>
-                  <span class="kea-chip">Concept</span>
-                  <span class="kea-chip kea-chip--wip">WIP</span>
                 </div>
-                <div class="kea-card__thumb" aria-hidden="true">
-                  <span class="kea-card__thumb-mark">VP</span>
+                <div class="kea-card__thumb">
+                  <img src="assets/module-art/vector-vs-pixel.jpg" width="384" height="384" alt="" loading="lazy" decoding="async" />
                 </div>
                 <h3>Vector Vs Pixel</h3>
                 <p>Zoom in to compare clean vectors with visible pixels.</p>
-                <a class="kea-card__link" href="VectorVsPixel.html">Launch</a>
-              </article>
-
-              <article class="kea-card kea-surface">
+              </a>
+              <a class="kea-card kea-surface" data-module-type="concept" data-topics="RGB" data-readiness="ready" href="RGBScreenLab.html" aria-label="Launch RGB Screen Lab">
                 <div class="kea-card__meta">
                   <span class="kea-chip">RGB</span>
-                  <span class="kea-chip">Concept</span>
-                  <span class="kea-chip kea-chip--wip">WIP</span>
                 </div>
-                <div class="kea-card__thumb" aria-hidden="true">
-                  <span class="kea-card__thumb-mark">RL</span>
+                <div class="kea-card__thumb">
+                  <img src="assets/module-art/rgb-screen-lab.jpg" width="384" height="384" alt="" loading="lazy" decoding="async" />
                 </div>
                 <h3>RGB Screen Lab</h3>
                 <p>Inspect RGB subpixels and how screens mix light.</p>
-                <a class="kea-card__link" href="RGBScreenLab.html">Launch</a>
-              </article>
-
-              <article class="kea-card kea-surface">
+              </a>
+              <a class="kea-card kea-surface" data-module-type="concept" data-topics="Files" data-readiness="ready" href="FilesAndFoldersExplorer.html" aria-label="Launch Files And Folders Explorer">
                 <div class="kea-card__meta">
                   <span class="kea-chip">Files</span>
-                  <span class="kea-chip">Concept</span>
-                  <span class="kea-chip kea-chip--wip">WIP</span>
                 </div>
-                <div class="kea-card__thumb" aria-hidden="true">
-                  <span class="kea-card__thumb-mark">FF</span>
+                <div class="kea-card__thumb">
+                  <img src="assets/module-art/files-and-folders.jpg" width="384" height="384" alt="" loading="lazy" decoding="async" />
                 </div>
                 <h3>Files And Folders Explorer</h3>
                 <p>Rename and move a file to watch its path change.</p>
-                <a class="kea-card__link" href="FilesAndFoldersExplorer.html"
-                  >Launch</a
-                >
-              </article>
-
-              <article class="kea-card kea-surface">
+              </a>
+              <a class="kea-card kea-surface" data-module-type="concept" data-topics="Alpha" data-readiness="ready" href="TransparencyLab.html" aria-label="Launch Transparency Lab">
                 <div class="kea-card__meta">
                   <span class="kea-chip">Alpha</span>
-                  <span class="kea-chip">Concept</span>
-                  <span class="kea-chip kea-chip--wip">WIP</span>
                 </div>
-                <div class="kea-card__thumb" aria-hidden="true">
-                  <span class="kea-card__thumb-mark">TL</span>
+                <div class="kea-card__thumb">
+                  <img src="assets/module-art/transparency-lab.jpg" width="384" height="384" alt="" loading="lazy" decoding="async" />
                 </div>
                 <h3>Transparency Lab</h3>
                 <p>Change opacity and compare layers with the blended result.</p>
-                <a class="kea-card__link" href="TransparencyLab.html">Launch</a>
-              </article>
-
-              <article class="kea-card kea-surface">
+              </a>
+              <a class="kea-card kea-surface" data-module-type="concept" data-topics="Pointer" data-readiness="ready" href="CursorMechanics.html" aria-label="Launch Cursor Mechanics">
                 <div class="kea-card__meta">
                   <span class="kea-chip">Pointer</span>
-                  <span class="kea-chip">Concept</span>
-                  <span class="kea-chip kea-chip--wip">WIP</span>
                 </div>
-                <div class="kea-card__thumb" aria-hidden="true">
-                  <span class="kea-card__thumb-mark">CM</span>
+                <div class="kea-card__thumb">
+                  <img src="assets/module-art/cursor-mechanics.jpg" width="384" height="384" alt="" loading="lazy" decoding="async" />
                 </div>
                 <h3>Cursor Mechanics</h3>
                 <p>Inspect hover, click, drag, and resize states.</p>
-                <a class="kea-card__link" href="CursorMechanics.html">Launch</a>
-              </article>
-
-              <article class="kea-card kea-surface">
+              </a>
+              <a class="kea-card kea-surface" data-module-type="concept" data-topics="Undo" data-readiness="ready" href="UndoHistory.html" aria-label="Launch Undo History">
                 <div class="kea-card__meta">
                   <span class="kea-chip">Undo</span>
-                  <span class="kea-chip">Concept</span>
-                  <span class="kea-chip kea-chip--wip">WIP</span>
                 </div>
-                <div class="kea-card__thumb" aria-hidden="true">
-                  <span class="kea-card__thumb-mark">UH</span>
+                <div class="kea-card__thumb">
+                  <img src="assets/module-art/undo-history.jpg" width="384" height="384" alt="" loading="lazy" decoding="async" />
                 </div>
                 <h3>Undo History</h3>
                 <p>Step through changes to see undo and redo in action.</p>
-                <a class="kea-card__link" href="UndoHistory.html">Launch</a>
-              </article>
+              </a>
+            </div>
+          </section>
 
-              <article class="kea-card kea-surface" data-dashboard-group="create">
+          <section class="kea-dashboard-section kea-console-surface" id="tool" aria-labelledby="tool-title">
+            <div class="kea-dashboard-section__header kea-console-well">
+              <h2 id="tool-title" class="kea-dashboard-section__title">Tools</h2>
+            </div>
+            <div class="kea-card-grid">
+              <a class="kea-card kea-surface" data-module-type="tool" data-topics="Pixels, Graphics" data-readiness="ready" href="PixelPainter.html" aria-label="Launch Pixel Painter">
                 <div class="kea-card__meta">
-                  <span class="kea-chip">Color</span>
-                  <span class="kea-chip">Observation</span>
+                  <span class="kea-chip">Pixels</span>
                 </div>
-                <div
-                  class="kea-card__thumb kea-card__thumb--vector"
-                  aria-hidden="true"
-                >
-                  <svg viewBox="0 0 120 80" aria-hidden="true">
-                    <circle
-                      class="kea-thumb-fill"
-                      cx="40"
-                      cy="40"
-                      r="18"
-                    ></circle>
-                    <circle
-                      class="kea-thumb-fill"
-                      cx="58"
-                      cy="40"
-                      r="18"
-                    ></circle>
-                    <circle
-                      class="kea-thumb-fill"
-                      cx="49"
-                      cy="24"
-                      r="18"
-                    ></circle>
-                    <path class="kea-thumb-accent" d="M84 20v40"></path>
-                    <path d="M96 20v40"></path>
-                    <path d="M108 20v40"></path>
-                  </svg>
+                <div class="kea-card__thumb">
+                  <img src="assets/module-art/pixel-painter.jpg" width="384" height="384" alt="" loading="lazy" decoding="async" />
                 </div>
-                <h3>RGB Color Mixer</h3>
-                <p>Mix red, green, and blue to match a target.</p>
-                <a class="kea-card__link" href="ColorMatch.html">Launch</a>
-              </article>
-
-              <article class="kea-card kea-surface">
+                <h3>Pixel Painter</h3>
+                <p>Paint with pixels and compare the grid to the picture.</p>
+              </a>
+              <a class="kea-card kea-surface" data-module-type="tool" data-topics="Keyboard, Hardware" data-readiness="ready" href="Keyboard.html" aria-label="Launch Interactive Keyboard">
                 <div class="kea-card__meta">
                   <span class="kea-chip">Keyboard</span>
-                  <span class="kea-chip">Hardware</span>
                 </div>
-                <div
-                  class="kea-card__thumb kea-card__thumb--vector"
-                  aria-hidden="true"
-                >
-                  <svg viewBox="0 0 120 80" aria-hidden="true">
-                    <rect x="10" y="18" width="100" height="44" rx="8"></rect>
-                    <rect
-                      class="kea-thumb-fill"
-                      x="18"
-                      y="26"
-                      width="14"
-                      height="10"
-                      rx="2"
-                    ></rect>
-                    <rect
-                      class="kea-thumb-fill"
-                      x="36"
-                      y="26"
-                      width="14"
-                      height="10"
-                      rx="2"
-                    ></rect>
-                    <rect
-                      class="kea-thumb-fill"
-                      x="54"
-                      y="26"
-                      width="14"
-                      height="10"
-                      rx="2"
-                    ></rect>
-                    <rect
-                      class="kea-thumb-fill"
-                      x="72"
-                      y="26"
-                      width="14"
-                      height="10"
-                      rx="2"
-                    ></rect>
-                    <rect
-                      class="kea-thumb-fill"
-                      x="90"
-                      y="26"
-                      width="12"
-                      height="10"
-                      rx="2"
-                    ></rect>
-                    <rect
-                      class="kea-thumb-fill"
-                      x="18"
-                      y="40"
-                      width="16"
-                      height="10"
-                      rx="2"
-                    ></rect>
-                    <rect
-                      class="kea-thumb-fill"
-                      x="38"
-                      y="40"
-                      width="16"
-                      height="10"
-                      rx="2"
-                    ></rect>
-                    <rect
-                      class="kea-thumb-fill"
-                      x="58"
-                      y="40"
-                      width="16"
-                      height="10"
-                      rx="2"
-                    ></rect>
-                    <rect
-                      class="kea-thumb-fill"
-                      x="78"
-                      y="40"
-                      width="24"
-                      height="10"
-                      rx="2"
-                    ></rect>
-                  </svg>
+                <div class="kea-card__thumb">
+                  <img src="assets/module-art/keyboard.jpg" width="384" height="384" alt="" loading="lazy" decoding="async" />
                 </div>
                 <h3>Interactive Keyboard</h3>
                 <p>Explore key groups and see what each area does.</p>
-                <a class="kea-card__link" href="Keyboard.html">Launch</a>
-              </article>
-
-              <article class="kea-card kea-surface">
-                <div class="kea-card__meta">
-                  <span class="kea-chip">Shapes</span>
-                  <span class="kea-chip">Matching</span>
-                </div>
-                <div class="kea-card__thumb" aria-hidden="true">
-                  <span class="kea-card__thumb-mark">TM</span>
-                </div>
-                <h3>Tangram Match</h3>
-                <p>Match shapes fast and build a combo streak.</p>
-                <a class="kea-card__link" href="ShapeMatch.html">Launch</a>
-              </article>
-
-              <article class="kea-card kea-surface">
-                <div class="kea-card__meta">
-                  <span class="kea-chip">Files</span>
-                  <span class="kea-chip">Folders</span>
-                  <span class="kea-chip kea-chip--wip">WIP</span>
-                </div>
-                <div
-                  class="kea-card__thumb kea-card__thumb--vector"
-                  aria-hidden="true"
-                >
-                  <svg viewBox="0 0 120 80" aria-hidden="true">
-                    <path d="M16 28h34l8 8h46v24H16z"></path>
-                    <rect
-                      class="kea-thumb-fill"
-                      x="24"
-                      y="42"
-                      width="18"
-                      height="12"
-                      rx="2"
-                    ></rect>
-                    <rect
-                      class="kea-thumb-fill"
-                      x="48"
-                      y="42"
-                      width="18"
-                      height="12"
-                      rx="2"
-                    ></rect>
-                    <rect
-                      class="kea-thumb-fill"
-                      x="72"
-                      y="42"
-                      width="18"
-                      height="12"
-                      rx="2"
-                    ></rect>
-                    <path class="kea-thumb-accent" d="M86 20h18v18"></path>
-                  </svg>
-                </div>
-                <h3>File Cabinet</h3>
-                <p>Sort files into folders and practice organization.</p>
-                <a class="kea-card__link" href="FileCabinet.html">Launch</a>
-              </article>
+              </a>
             </div>
           </section>
 
-          <section
-            class="kea-dashboard-section kea-console-surface"
-            aria-labelledby="concept-modules-title"
-            id="conceptModulesSection"
-          >
+          <section class="kea-dashboard-section kea-console-surface" id="practice" aria-labelledby="practice-title">
             <div class="kea-dashboard-section__header kea-console-well">
-              <p class="kea-dashboard-section__eyebrow">Understand</p>
-              <h2
-                id="concept-modules-title"
-                class="kea-dashboard-section__title"
-              >
-                Concept Modules
-              </h2>
+              <h2 id="practice-title" class="kea-dashboard-section__title">Practice</h2>
             </div>
-            <div class="kea-card-grid" id="conceptGrid"></div>
-          </section>
-
-          <section
-            class="kea-dashboard-section kea-dashboard-section--caution kea-console-surface"
-            aria-labelledby="under-construction-title"
-            id="underConstructionSection"
-          >
-            <div class="kea-dashboard-section__header kea-console-well">
-              <p class="kea-dashboard-section__eyebrow">Workshop</p>
-              <h2
-                id="under-construction-title"
-                class="kea-dashboard-section__title"
-              >
-                Under Construction
-              </h2>
-            </div>
-            <div class="kea-card-grid" id="underConstructionGrid">
-              <article class="kea-card kea-surface">
+            <div class="kea-card-grid">
+              <a class="kea-card kea-surface" data-module-type="practice" data-topics="Color, Observation" data-readiness="ready" href="ColorMatch.html" aria-label="Launch RGB Color Mixer">
                 <div class="kea-card__meta">
                   <span class="kea-chip">Color</span>
-                  <span class="kea-chip">Sorting</span>
-                  <span class="kea-chip kea-chip--wip">WIP</span>
                 </div>
-                <div class="kea-card__thumb" aria-hidden="true">
-                  <span class="kea-card__thumb-mark">CS</span>
+                <div class="kea-card__thumb">
+                  <img src="assets/module-art/rgb-color-mixer.jpg" width="384" height="384" alt="" loading="lazy" decoding="async" />
                 </div>
-                <h3>Color Sort Studio</h3>
-                <p>Sort swatches into warm, cool, and neutral groups.</p>
-                <a class="kea-card__link" href="ColorSortStudio.html">Launch</a>
-              </article>
-
-              <article class="kea-card kea-surface">
+                <h3>RGB Color Mixer</h3>
+                <p>Mix red, green, and blue to match a target.</p>
+              </a>
+              <a class="kea-card kea-surface" data-module-type="practice" data-topics="Icons, Interface" data-readiness="preview" href="IconDetective.html" aria-label="Launch Icon Detective">
                 <div class="kea-card__meta">
                   <span class="kea-chip">Icons</span>
-                  <span class="kea-chip">Interface</span>
-                  <span class="kea-chip kea-chip--wip">WIP</span>
+                  <span class="kea-chip kea-chip--wip">Preview</span>
                 </div>
-                <div
-                  class="kea-card__thumb kea-card__thumb--vector"
-                  aria-hidden="true"
-                >
-                  <svg viewBox="0 0 120 80" aria-hidden="true">
-                    <circle cx="34" cy="40" r="14"></circle>
-                    <path
-                      d="M34 26v6M34 48v6M20 40h6M42 40h6M24 30l4 4M40 46l4 4M24 50l4-4M40 34l4-4"
-                    ></path>
-                    <rect x="62" y="18" width="38" height="44" rx="8"></rect>
-                    <path
-                      class="kea-thumb-accent"
-                      d="M74 32h14M74 40h14M74 48h10"
-                    ></path>
-                  </svg>
+                <div class="kea-card__thumb">
+                  <img src="assets/module-art/icon-detective.jpg" width="384" height="384" alt="" loading="lazy" decoding="async" />
                 </div>
                 <h3>Icon Detective</h3>
                 <p>Match common interface icons to simple clues.</p>
-                <a class="kea-card__link" href="IconDetective.html">Launch</a>
-              </article>
-
-              <article class="kea-card kea-surface">
+              </a>
+              <a class="kea-card kea-surface" data-module-type="practice" data-topics="Tools, Graphics" data-readiness="preview" href="ToolMatch.html" aria-label="Launch Tool Match">
                 <div class="kea-card__meta">
                   <span class="kea-chip">Tools</span>
-                  <span class="kea-chip">Graphics</span>
-                  <span class="kea-chip kea-chip--wip">WIP</span>
+                  <span class="kea-chip kea-chip--wip">Preview</span>
                 </div>
-                <div
-                  class="kea-card__thumb kea-card__thumb--vector"
-                  aria-hidden="true"
-                >
-                  <svg viewBox="0 0 120 80" aria-hidden="true">
-                    <path d="M26 58l30-30 10 10-30 30H22V54z"></path>
-                    <path class="kea-thumb-accent" d="M74 18l18 18"></path>
-                    <rect x="74" y="38" width="24" height="16" rx="4"></rect>
-                    <circle
-                      class="kea-thumb-fill"
-                      cx="86"
-                      cy="46"
-                      r="4"
-                    ></circle>
-                  </svg>
+                <div class="kea-card__thumb">
+                  <img src="assets/module-art/tool-match.jpg" width="384" height="384" alt="" loading="lazy" decoding="async" />
                 </div>
                 <h3>Tool Match</h3>
                 <p>Match creative tools to the job each one does.</p>
-                <a class="kea-card__link" href="ToolMatch.html">Launch</a>
-              </article>
-
-              <article class="kea-card kea-surface">
+              </a>
+              <a class="kea-card kea-surface" data-module-type="practice" data-topics="Files, Folders" data-readiness="preview" href="FileCabinet.html" aria-label="Launch File Cabinet">
                 <div class="kea-card__meta">
-                  <span class="kea-chip">Layers</span>
-                  <span class="kea-chip">Graphics</span>
-                  <span class="kea-chip kea-chip--wip">WIP</span>
+                  <span class="kea-chip">Files</span>
+                  <span class="kea-chip kea-chip--wip">Preview</span>
                 </div>
-                <div class="kea-card__thumb" aria-hidden="true">
-                  <span class="kea-card__thumb-mark">LS</span>
+                <div class="kea-card__thumb">
+                  <img src="assets/module-art/file-cabinet.jpg" width="384" height="384" alt="" loading="lazy" decoding="async" />
                 </div>
-                <h3>Layer Stack</h3>
-                <p>Bring items forward to rebuild the target scene.</p>
-                <a class="kea-card__link" href="LayerStack.html">Launch</a>
-              </article>
+                <h3>File Cabinet</h3>
+                <p>Sort files into folders and practice organization.</p>
+              </a>
+              <a class="kea-card kea-surface" data-module-type="practice" data-topics="Color, Sorting" data-readiness="preview" href="ColorSortStudio.html" aria-label="Launch Color Sort Studio">
+                <div class="kea-card__meta">
+                  <span class="kea-chip">Color</span>
+                  <span class="kea-chip kea-chip--wip">Preview</span>
+                </div>
+                <div class="kea-card__thumb">
+                  <img src="assets/module-art/color-sort-studio.jpg" width="384" height="384" alt="" loading="lazy" decoding="async" />
+                </div>
+                <h3>Color Sort Studio</h3>
+                <p>Sort swatches into warm, cool, and neutral groups.</p>
+              </a>
             </div>
           </section>
 
-          <p class="kea-dashboard-note">
-            More activities and teacher tools will be added as the library grows.
-          </p>
-        </section>
+          <section class="kea-dashboard-section kea-console-surface" id="game" aria-labelledby="game-title">
+            <div class="kea-dashboard-section__header kea-console-well">
+              <h2 id="game-title" class="kea-dashboard-section__title">Games</h2>
+            </div>
+            <div class="kea-card-grid">
+              <a class="kea-card kea-surface" data-module-type="game" data-topics="Shapes, Matching" data-readiness="ready" href="ShapeMatch.html" aria-label="Launch Tangram Match">
+                <div class="kea-card__meta">
+                  <span class="kea-chip">Shapes</span>
+                </div>
+                <div class="kea-card__thumb">
+                  <img src="assets/module-art/tangram-match.jpg" width="384" height="384" alt="" loading="lazy" decoding="async" />
+                </div>
+                <h3>Tangram Match</h3>
+                <p>Match shapes fast and build a combo streak.</p>
+              </a>
+            </div>
+          </section>
+
+          <section class="kea-dashboard-section kea-console-surface" id="activity" aria-labelledby="activity-title">
+            <div class="kea-dashboard-section__header kea-console-well">
+              <h2 id="activity-title" class="kea-dashboard-section__title">Guided Activities</h2>
+            </div>
+            <div class="kea-card-grid">
+              <a class="kea-card kea-surface" data-module-type="activity" data-topics="Layers, Graphics" data-readiness="preview" href="LayerStack.html" aria-label="Launch Layer Stack">
+                <div class="kea-card__meta">
+                  <span class="kea-chip">Layers</span>
+                  <span class="kea-chip kea-chip--wip">Preview</span>
+                </div>
+                <div class="kea-card__thumb">
+                  <img src="assets/module-art/layer-stack.jpg" width="384" height="384" alt="" loading="lazy" decoding="async" />
+                </div>
+                <h3>Layer Stack</h3>
+                <p>Bring items forward to rebuild the target scene.</p>
+              </a>
+            </div>
+          </section>
+        </div>
       </main>
     </div>
-    <script>
-      const createGrid = document.getElementById("createGrid");
-      const practiceGrid = document.getElementById("practiceGrid");
-      const createSection = document.getElementById("createSection");
-      const practiceSection = document.getElementById("practiceSection");
-      const conceptGrid = document.getElementById("conceptGrid");
-      const conceptModulesSection = document.getElementById(
-        "conceptModulesSection",
-      );
-      const underConstructionGrid = document.getElementById(
-        "underConstructionGrid",
-      );
-      const underConstructionSection = document.getElementById(
-        "underConstructionSection",
-      );
-      const dashboardNote = document.querySelector(".kea-dashboard-note");
-
-      function getCardSortKey(card) {
-        const chips = [...card.querySelectorAll(".kea-chip")]
-          .filter((chip) => !chip.classList.contains("kea-chip--wip"))
-          .map((chip) => chip.textContent.trim().toLowerCase());
-        const title =
-          card.querySelector("h3")?.textContent.trim().toLowerCase() || "";
-        return `${chips.join(" ")} ${title}`.trim();
-      }
-
-      function simplifyCardMeta(card, sectionKey) {
-        const meta = card.querySelector(".kea-card__meta");
-        if (!meta) return;
-
-        const chips = [...meta.querySelectorAll(".kea-chip")];
-        const wipChip = chips.find((chip) =>
-          chip.classList.contains("kea-chip--wip"),
-        );
-        const firstTopicChip = chips.find(
-          (chip) => !chip.classList.contains("kea-chip--wip"),
-        );
-
-        meta.replaceChildren();
-
-        if (sectionKey === "workshop") {
-          if (firstTopicChip) meta.appendChild(firstTopicChip);
-          if (wipChip) meta.appendChild(wipChip);
-        } else if (firstTopicChip) {
-          meta.appendChild(firstTopicChip);
-        }
-
-        meta.hidden = meta.children.length === 0;
-      }
-
-      const cards = [...practiceGrid.children, ...underConstructionGrid.children];
-      const createCards = [];
-      const practiceCards = [];
-      const conceptCards = [];
-      const wipCards = [];
-
-      cards.forEach((card) => {
-        const explicitGroup = (card.dataset.dashboardGroup || "").toLowerCase();
-        const isConcept = [...card.querySelectorAll(".kea-chip")].some(
-          (chip) => chip.textContent.trim().toLowerCase() === "concept",
-        );
-        const isWip = Boolean(card.querySelector(".kea-chip--wip"));
-        if (isConcept) {
-          conceptCards.push(card);
-        } else if (isWip) {
-          wipCards.push(card);
-        } else if (explicitGroup === "create") {
-          createCards.push(card);
-        } else {
-          practiceCards.push(card);
-        }
-      });
-
-      createGrid.replaceChildren(...createCards);
-      practiceGrid.replaceChildren(...practiceCards);
-      conceptCards.sort((a, b) =>
-        getCardSortKey(a).localeCompare(getCardSortKey(b)),
-      );
-      conceptGrid.replaceChildren(...conceptCards);
-      wipCards.sort((a, b) =>
-        getCardSortKey(a).localeCompare(getCardSortKey(b)),
-      );
-      underConstructionGrid.replaceChildren(...wipCards);
-      createSection.hidden = createCards.length === 0;
-      practiceSection.hidden = practiceCards.length === 0;
-      conceptModulesSection.hidden = conceptCards.length === 0;
-      underConstructionSection.hidden = wipCards.length === 0;
-
-      createCards.forEach((card) => simplifyCardMeta(card, "create"));
-      practiceCards.forEach((card) => simplifyCardMeta(card, "practice"));
-      conceptCards.forEach((card) => simplifyCardMeta(card, "understand"));
-      wipCards.forEach((card) => simplifyCardMeta(card, "workshop"));
-
-      if (dashboardNote) {
-        dashboardNote.hidden = false;
-      }
-    </script>
+    <script src="scripts/keadigi-shell.js"></script>
   </body>
 </html>

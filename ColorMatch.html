@@ -129,30 +129,6 @@
             gap: 0.75rem;
         }
 
-        .result-actions {
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        .reset-link {
-            background: none;
-            border: none;
-            color: rgba(255, 248, 238, 0.88);
-            font-family: var(--kea-font-display);
-            font-weight: 800;
-            font-size: 0.86rem;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-            cursor: pointer;
-            padding: 0;
-            text-shadow: none;
-        }
-
-        .reset-link:disabled {
-            opacity: 0.45;
-            cursor: not-allowed;
-        }
-
         #stats {
             display: grid;
             gap: 0.75rem;
@@ -277,7 +253,7 @@
         }
     </style>
 </head>
-<body class="kea-page">
+<body class="kea-page kea-module-page">
     <div class="kea-shell color-match-shell">
         <header class="kea-topbar kea-topbar--centered">
             <a class="kea-button kea-button--secondary" href="index.html">&larr; Go back</a>
@@ -320,8 +296,11 @@
                     </div>
 
                     <article class="results-card">
-                        <div class="results-header">
-                            <h2 class="console-label">Results</h2>
+                        <div class="kea-board-toolbar">
+                            <div class="results-header">
+                                <h2 class="console-label">Results</h2>
+                            </div>
+                            <button id="resetButton" class="kea-button kea-button--secondary kea-board-reset" type="button" onclick="resetAll()" disabled aria-label="Clear mixer and results" title="Clear mixer and results"></button>
                         </div>
                         <div class="result-screen">
                             <div id="resultText"></div>
@@ -330,9 +309,6 @@
                                 <p>Average Speed: <span id="avgSpeed">0</span> sec</p>
                                 <p>Top Accuracy: <span id="bestAccuracy">0%</span></p>
                             </div>
-                        </div>
-                        <div class="result-actions">
-                            <button id="resetButton" class="reset-link" type="button" onclick="resetAll()" disabled>Clear</button>
                         </div>
                     </article>
                 </section>
@@ -565,5 +541,7 @@
             updateButtonStates();
         };
     </script>
+    <script src="scripts/keadigi-shell.js"></script>
+    <script src="scripts/keadigi-dialogs.js"></script>
 </body>
 </html>

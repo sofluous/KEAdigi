@@ -13,14 +13,14 @@
         .files-page { display:grid; grid-template-rows:auto minmax(0,1fr); gap:0.7rem; min-height:0; padding:0.7rem; overflow:hidden; }
         .files-layout { display:grid; grid-template-columns:minmax(0,1.3fr) minmax(260px,0.62fr); gap:0.7rem; min-height:0; }
         .files-stage, .files-console { min-height:0; padding:0.75rem; display:grid; gap:0.65rem; overflow:hidden; }
-        .files-stage { grid-template-rows:auto minmax(0,1fr) auto; }
-        .files-toolbar { display:flex; justify-content:space-between; gap:0.55rem; align-items:center; flex-wrap:wrap; }
+        .files-stage { grid-template-rows:auto auto minmax(12rem,1fr) auto; }
         .files-board { min-height:0; display:grid; grid-template-columns:minmax(0,0.95fr) minmax(0,1.05fr); gap:0.65rem; }
         .files-shell { min-height:0; padding:0.2rem; overflow:hidden; }
         .files-desktop, .files-folders { min-height:0; padding:0.6rem; display:grid; gap:0.55rem; align-content:start; }
         .files-path { min-height:0; padding:0.6rem 0.75rem; display:grid; gap:0.25rem; }
         .file-card { padding:0.75rem; display:grid; gap:0.45rem; align-content:start; }
         .file-card__icon { width:4rem; height:4.75rem; border:4px solid var(--kea-border); border-radius:0.9rem; background:linear-gradient(180deg, rgba(255,255,255,0.95), rgba(232,229,220,0.98)); position:relative; }
+        .file-card__icon { display:grid; place-items:end center; padding-bottom:0.4rem; color:var(--kea-text); font:800 0.75rem var(--kea-font-display); }
         .file-card__icon::after { content:""; position:absolute; top:0.35rem; right:0.35rem; width:1rem; height:1rem; border-top:4px solid var(--kea-border); border-right:4px solid var(--kea-border); background:#fff5d6; }
         .file-card__name, .file-card__meta { margin:0; }
         .file-card__name { font-family:var(--kea-font-display); font-size:0.9rem; font-weight:800; letter-spacing:0.04em; text-transform:uppercase; }
@@ -44,7 +44,7 @@
         @media (max-width: 760px) { .folder-grid, .files-readout-grid { grid-template-columns:1fr; } }
     </style>
 </head>
-<body class="kea-page">
+<body class="kea-page kea-module-page">
     <div class="kea-shell">
         <header class="kea-topbar kea-topbar--centered">
             <a class="kea-button kea-button--secondary" href="index.html">&larr; Go back</a>
@@ -62,25 +62,38 @@
                 <button class="kea-button kea-button--secondary" id="helpButton" type="button">How to Play</button>
             </div>
         </header>
-        <main class="kea-content files-page kea-console-frame">
+        <main class="kea-content kea-lab-page files-page kea-console-frame">
             <section class="kea-hud kea-console-surface" aria-label="Files And Folders Explorer status">
                 <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">File</span><span class="kea-hud__value" id="fileHud">Poster</span></div>
                 <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Type</span><span class="kea-hud__value" id="typeHud">PNG</span></div>
                 <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Folder</span><span class="kea-hud__value" id="folderHud">Images</span></div>
                 <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Path</span><span class="kea-hud__value" id="pathHud">Images/Poster.png</span></div>
             </section>
-            <section class="files-layout">
-                <section class="files-stage kea-console-surface">
-                    <div class="files-toolbar">
-                        <p class="kea-console-label">Storage View</p>
-                        <div class="kea-segmented" id="sampleButtons" aria-label="File examples"></div>
+            <section class="files-layout kea-lab-layout">
+                <section class="files-stage kea-lab-stage kea-console-surface">
+                    <div class="kea-board-toolbar">
+                        <div class="kea-toolbar--spread">
+                            <p class="kea-console-label">File Organizer</p>
+                            <div class="kea-segmented" id="sampleButtons" aria-label="File examples"></div>
+                        </div>
+                        <button class="kea-button kea-button--secondary kea-board-reset" id="resetButton" type="button" aria-label="Reset example" title="Reset example"></button>
+                    </div>
+                    <div class="kea-board-controls">
+                        <div class="files-row">
+                            <label for="fileNameInput">File Name</label>
+                            <input class="kea-input" id="fileNameInput" type="text" value="Poster" maxlength="18" />
+                        </div>
+                        <div class="files-row">
+                            <label for="fileTypeSelect">File Type</label>
+                            <select class="kea-input" id="fileTypeSelect"></select>
+                        </div>
                     </div>
                     <div class="files-board">
                         <div class="files-shell kea-console-well">
                             <div class="files-desktop">
                                 <p class="kea-console-label">Current File</p>
                                 <article class="file-card kea-surface">
-                                    <div class="file-card__icon" id="fileIcon"></div>
+                                    <div class="file-card__icon" id="fileIcon" aria-hidden="true">PNG</div>
                                     <p class="file-card__name" id="fileNameDisplay">Poster.png</p>
                                     <p class="file-card__meta" id="fileMetaDisplay">PNG image file</p>
                                 </article>
@@ -95,19 +108,14 @@
                     </div>
                     <div class="files-path kea-console-screen">
                         <strong>Current Path</strong>
-                        <p id="pathDisplay">Images/Poster.png</p>
+                        <p id="pathDisplay" data-selectable>Images/Poster.png</p>
                     </div>
                 </section>
                 <aside class="files-console kea-side-panel kea-side-panel--console">
-                    <div class="files-form">
-                        <div class="files-row">
-                            <label for="fileNameInput">File Name</label>
-                            <input class="kea-input" id="fileNameInput" type="text" value="Poster" maxlength="18" />
-                        </div>
-                        <div class="files-row">
-                            <label for="fileTypeSelect">File Type</label>
-                            <select class="kea-input" id="fileTypeSelect"></select>
-                        </div>
+                    <div class="kea-console-screen kea-screen-panel">
+                        <strong>Give a file a home</strong>
+                        <p id="fileTask"></p>
+                        <p id="fileTaskFeedback" role="status"></p>
                     </div>
                     <div class="kea-side-panel__body kea-side-panel__body--fill">
                         <div class="files-readout-grid">
@@ -117,7 +125,6 @@
                             <div class="files-mini kea-console-screen"><strong>Path</strong><p>The path is the route to the file inside the folder system.</p></div>
                         </div>
                     </div>
-                    <div class="kea-actions"><button class="kea-button kea-button--secondary" id="resetButton" type="button">Reset Example</button></div>
                 </aside>
             </section>
         </main>
@@ -155,6 +162,7 @@
         const closeHelpButton = document.getElementById("closeHelpButton");
         const helpOverlay = document.getElementById("helpOverlay");
         const folders = [
+            { id: "inbox", label: "Inbox", copy: "Files to organize" },
             { id: "images", label: "Images", copy: "Pictures and graphics" },
             { id: "writing", label: "Writing", copy: "Stories and notes" },
             { id: "audio", label: "Audio", copy: "Songs and sounds" },
@@ -173,7 +181,7 @@
             { name: "Project", type: "html", folder: "school" }
         ];
         let currentSampleIndex = 0;
-        let state = { ...samples[0] };
+        let state = { ...samples[0], folder: "inbox" };
         function currentType() { return fileTypes[state.type]; }
         function folderById(id) { return folders.find((folder) => folder.id === id); }
         function renderFolderButtons() {
@@ -181,9 +189,9 @@
             folders.forEach((folder) => {
                 const button = document.createElement("button");
                 button.type = "button";
-                button.className = `folder-card kea-button kea-button--secondary${folder.id === state.folder ? " is-active" : ""}`;
-                button.innerHTML = `<div class="folder-icon"></div><p class="folder-name">${folder.label}</p><p class="folder-copy">${folder.copy}</p>`;
-                button.setAttribute("aria-pressed", String(folder.id === state.folder));
+                button.className = "folder-card kea-button kea-button--secondary";
+                button.dataset.folder = folder.id;
+                button.innerHTML = `<span class="folder-icon" aria-hidden="true"></span><span class="folder-name">${folder.label}</span><span class="folder-copy">${folder.copy}</span>`;
                 button.addEventListener("click", () => { state.folder = folder.id; render(); });
                 folderGrid.appendChild(button);
             });
@@ -197,7 +205,7 @@
                 button.textContent = sample.name;
                 button.addEventListener("click", () => {
                     currentSampleIndex = index;
-                    state = { ...samples[index] };
+                    state = { ...samples[index], folder: "inbox" };
                     fileNameInput.value = state.name;
                     fileTypeSelect.value = state.type;
                     render();
@@ -215,11 +223,23 @@
             });
         }
         function render() {
+            const example = samples[currentSampleIndex];
+            const destination = folderById(example.folder);
+            const meaningfulName = state.name !== "Untitled" && state.name.toLowerCase() !== example.name.toLowerCase();
+            document.getElementById("fileTask").textContent = `Rename the ${example.name} example without changing its ${fileTypes[example.type].label} format. Move it from Inbox to ${destination.label} so you can find it later.`;
+            const feedback = !meaningfulName ? "Try a name that helps you tell what is inside."
+                : state.type !== example.type ? "Choose the original format. Renaming a file extension does not convert it."
+                : state.folder !== example.folder ? `Move it to ${destination.label}.`
+                : "Organized! Use the path below the folders to explain how you would find this file again.";
+            const feedbackNode = document.getElementById("fileTaskFeedback");
+            if (feedbackNode.textContent !== feedback) feedbackNode.textContent = feedback;
+
             const folder = folderById(state.folder);
             const type = currentType();
             const fileName = `${state.name}.${state.type}`;
             fileNameDisplay.textContent = fileName;
             fileMetaDisplay.textContent = `${type.label} ${type.description.toLowerCase()}`;
+            fileIcon.textContent = type.label;
             fileIcon.style.background = `linear-gradient(180deg, rgba(255,255,255,0.95), ${type.color})`;
             const path = `${folder.label}/${fileName}`;
             pathDisplay.textContent = path;
@@ -227,7 +247,11 @@
             typeHud.textContent = type.label;
             folderHud.textContent = folder.label;
             pathHud.textContent = path;
-            renderFolderButtons();
+            for (const button of folderGrid.children) {
+                const active = button.dataset.folder === state.folder;
+                button.classList.toggle("is-active", active);
+                button.setAttribute("aria-pressed", String(active));
+            }
         }
         fileNameInput.addEventListener("input", () => {
             state.name = fileNameInput.value.trim() || "Untitled";
@@ -238,7 +262,7 @@
             render();
         });
         resetButton.addEventListener("click", () => {
-            state = { ...samples[currentSampleIndex] };
+            state = { ...samples[currentSampleIndex], folder: "inbox" };
             fileNameInput.value = state.name;
             fileTypeSelect.value = state.type;
             render();
@@ -248,9 +272,12 @@
         helpOverlay.addEventListener("click", (event) => { if (event.target === helpOverlay) helpOverlay.hidden = true; });
         renderTypeOptions();
         renderSampleButtons();
+        renderFolderButtons();
         fileNameInput.value = state.name;
         fileTypeSelect.value = state.type;
         render();
     </script>
+    <script src="scripts/keadigi-shell.js"></script>
+    <script src="scripts/keadigi-dialogs.js"></script>
 </body>
 </html>

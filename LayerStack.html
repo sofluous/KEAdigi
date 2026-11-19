@@ -335,6 +335,10 @@
         }
 
         @media (max-width: 920px) {
+            .layer-stack-page {
+                grid-template-rows: auto max-content;
+            }
+
             .layer-stack-grid,
             .scene-panels {
                 grid-template-columns: 1fr;
@@ -352,7 +356,7 @@
         }
     </style>
 </head>
-<body class="kea-page">
+<body class="kea-page kea-module-page">
     <div class="kea-shell">
         <header class="kea-topbar kea-topbar--centered">
             <a class="kea-button kea-button--secondary" href="index.html">&larr; Go back</a>
@@ -368,7 +372,6 @@
             </div>
             <div class="kea-topbar__actions">
                 <button class="kea-button kea-button--secondary" id="helpButton" type="button">How to Play</button>
-                <button class="kea-button" id="newSceneButton" type="button">New Scene</button>
             </div>
         </header>
 
@@ -400,7 +403,10 @@
                             <div class="scene-stage kea-console-well" id="targetStage" aria-hidden="true"></div>
                         </article>
                         <article class="scene-panel">
-                            <p class="scene-label kea-console-label">Your Scene</p>
+                            <div class="kea-board-toolbar">
+                                <div class="kea-toolbar--spread"><p class="scene-label kea-console-label">Your Scene</p><button class="kea-button kea-button--secondary" id="newSceneButton" type="button">New Scene</button></div>
+                                <button class="kea-button kea-button--secondary kea-board-reset" id="resetSceneButton" type="button" aria-label="Reset scene" title="Reset scene"></button>
+                            </div>
                             <div class="scene-stage kea-console-well" id="playerStage"></div>
                         </article>
                     </div>
@@ -426,8 +432,7 @@
                             <div class="stack-order" id="orderList"></div>
                         </div>
                     </div>
-                    <div class="stack-actions kea-actions">
-                        <button class="kea-button kea-button--secondary" id="resetSceneButton" type="button">Reset Scene</button>
+                    <div class="kea-actions">
                         <button class="kea-button" id="nextSceneButton" type="button" disabled>Next Scene</button>
                     </div>
                 </aside>
@@ -663,5 +668,7 @@
 
         loadScene(0);
     </script>
+    <script src="scripts/keadigi-shell.js"></script>
+    <script src="scripts/keadigi-dialogs.js"></script>
 </body>
 </html>

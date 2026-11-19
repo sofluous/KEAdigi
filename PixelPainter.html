@@ -180,6 +180,13 @@
             border-color: rgba(20, 119, 189, 0.55);
         }
 
+        .pixel-cell:focus-visible {
+            outline: 2px solid var(--kea-border);
+            outline-offset: 1px;
+            box-shadow: 0 0 0 2px var(--kea-panel-strong);
+            z-index: 1;
+        }
+
         .pixel-preview {
             min-height: 0;
             display: grid;
@@ -289,7 +296,7 @@
             }
 
             .preview-zoom-controls {
-                grid-template-columns: repeat(3, minmax(0, 1fr));
+                grid-template-columns: repeat(2, minmax(0, 1fr));
             }
         }
 
@@ -308,8 +315,8 @@
         }
     </style>
 </head>
-<body class="kea-page">
-    <div class="kea-shell">
+<body class="kea-page kea-module-page">
+    <div class="kea-shell kea-pilot">
         <header class="kea-topbar kea-topbar--centered">
             <a class="kea-button kea-button--secondary" href="index.html">&larr; Go back</a>
             <div class="kea-topbar__brand kea-topbar__brand--center">
@@ -323,8 +330,8 @@
                 <p class="kea-app-subtitle" hidden>Paint one pixel at a time and compare the zoomed grid with the finished image view.</p>
             </div>
             <div class="kea-topbar__actions">
-                <button class="kea-button kea-button--secondary" id="helpButton" type="button">How to Play</button>
-                <button class="kea-button" id="newCanvasButton" type="button">New Canvas</button>
+                <button class="kea-button kea-button--secondary" id="helpButton" type="button">Help</button>
+                <button class="kea-button kea-button--secondary" id="classViewButton" type="button" aria-pressed="false">Class View</button>
             </div>
         </header>
 
@@ -350,9 +357,14 @@
 
             <section class="pixel-layout">
                 <section class="pixel-board-panel kea-console-surface">
-                    <div class="pixel-toolbar">
+                    <div class="pixel-toolbar kea-pilot-stage">
+                        <div class="kea-board-toolbar">
+                            <p class="kea-console-label kea-pilot-prompt">Paint one pixel at a time.</p>
+                            <button class="kea-button kea-button--secondary kea-board-reset" id="clearButton" type="button" aria-label="Clear canvas" title="Clear canvas"></button>
+                        </div>
                         <div class="pixel-toolbar-row">
                             <p class="kea-console-label">Canvas</p>
+                            <button class="kea-button kea-button--secondary" id="newCanvasButton" type="button">New Canvas</button>
                             <div class="kea-segmented pixel-size-group" aria-label="Grid size">
                                 <button class="kea-button kea-button--secondary" data-size="8" type="button">8 x 8</button>
                                 <button class="kea-button active" data-size="12" type="button">12 x 12</button>
@@ -370,24 +382,27 @@
                         </aside>
 
                         <div class="pixel-board-shell kea-console-well">
-                            <div class="pixel-board" id="pixelBoard" aria-label="Pixel painting board"></div>
+                            <div class="pixel-board" id="pixelBoard" role="group" aria-label="Pixel painting board. Use arrow keys to move and Enter or Space to paint."></div>
                         </div>
                     </div>
                 </section>
 
                 <aside class="pixel-console kea-side-panel kea-side-panel--console">
- 
+
                     <div class="kea-side-panel__body kea-side-panel__body--fill">
                         <div class="pixel-preview-screen kea-console-screen kea-screen-panel kea-terminal">
-                            <strong>Canvas View</strong>
+                            <div class="kea-board-toolbar">
+                                <strong>Canvas View</strong>
+                                <button class="kea-button kea-button--secondary kea-board-reset" id="zoomResetButton" type="button" aria-label="Reset preview zoom" title="Reset preview zoom"></button>
+                            </div>
                             <div class="preview-shell">
                                 <div class="preview-stage kea-console-well">
                                     <canvas class="preview-canvas" id="previewCanvas" width="16" height="16"></canvas>
                                 </div>
                                 <div class="preview-zoom-controls" aria-label="Preview zoom">
-                                    <button class="kea-button kea-button--secondary" id="zoomInButton" type="button">+</button>
-                                    <button class="kea-button kea-button--secondary" id="zoomResetButton" type="button">Reset</button>
-                                    <button class="kea-button kea-button--secondary" id="zoomOutButton" type="button">-</button>
+                                    <button class="kea-button kea-button--secondary" id="zoomInButton" type="button" aria-label="Zoom in">+</button>
+
+                                    <button class="kea-button kea-button--secondary" id="zoomOutButton" type="button" aria-label="Zoom out">-</button>
                                 </div>
                             </div>
                         </div>
@@ -399,13 +414,12 @@
                             </div>
                             <div class="zoom-card kea-console-screen">
                                 <strong>Preview</strong>
-                                <p>Changing the preview size helps show how the same image feels different at different distances.</p>
+                                <p class="kea-class-secondary">Changing the preview size helps show how the same image feels different at different distances.</p>
                             </div>
                         </div>
                     </div>
 
                     <div class="kea-actions">
-                        <button class="kea-button kea-button--secondary" id="clearButton" type="button">Clear</button>
                         <button class="kea-button" id="exportButton" type="button">Export</button>
                     </div>
                 </aside>
@@ -490,7 +504,7 @@
         let gridSize = 12;
         let activeColor = { ...PALETTE[0] };
         let pixels = [];
-        let isPainting = false;
+        let paintingPointer = null;
         let previewZoom = 100;
 
         function buildPixels(size) {
@@ -541,14 +555,18 @@
                 const cell = document.createElement("button");
                 cell.type = "button";
                 cell.className = "pixel-cell";
+                cell.dataset.index = index;
+                cell.tabIndex = index === 0 ? 0 : -1;
+                cell.setAttribute("aria-label", `Row ${Math.floor(index / gridSize) + 1}, column ${index % gridSize + 1}`);
                 cell.style.background = color;
                 cell.addEventListener("pointerdown", (event) => {
+                    if (event.button !== 0 || paintingPointer !== null) return;
                     event.preventDefault();
-                    isPainting = true;
+                    paintingPointer = event.pointerId;
                     paintIndex(index);
                 });
-                cell.addEventListener("pointerenter", () => {
-                    if (isPainting) paintIndex(index);
+                cell.addEventListener("click", (event) => {
+                    if (event.detail === 0) paintIndex(index);
                 });
                 pixelBoard.appendChild(cell);
             });
@@ -618,7 +636,6 @@
             exportNameInput.value = "";
             updateExportState();
             exportOverlay.hidden = false;
-            exportNameInput.focus();
         });
 
         customColorInput.addEventListener("input", () => {
@@ -631,9 +648,37 @@
         confirmExportButton.addEventListener("click", exportCanvas);
         cancelExportButton.addEventListener("click", () => { exportOverlay.hidden = true; });
 
-        pixelBoard.addEventListener("pointerup", () => { isPainting = false; });
-        pixelBoard.addEventListener("pointerleave", () => { isPainting = false; });
-        window.addEventListener("pointerup", () => { isPainting = false; });
+        pixelBoard.addEventListener("focusin", (event) => {
+            if (!event.target.matches(".pixel-cell")) return;
+            pixelBoard.querySelector('[tabindex="0"]').tabIndex = -1;
+            event.target.tabIndex = 0;
+        });
+        pixelBoard.addEventListener("keydown", (event) => {
+            if (!event.target.matches(".pixel-cell")) return;
+            const index = Number(event.target.dataset.index);
+            const row = Math.floor(index / gridSize);
+            const column = index % gridSize;
+            const offsets = { ArrowUp: [-1, 0], ArrowDown: [1, 0], ArrowLeft: [0, -1], ArrowRight: [0, 1] };
+            const offset = offsets[event.key];
+            if (!Array.isArray(offset)) return;
+            event.preventDefault();
+            const nextRow = Math.max(0, Math.min(gridSize - 1, row + offset[0]));
+            const nextColumn = Math.max(0, Math.min(gridSize - 1, column + offset[1]));
+            pixelBoard.children[nextRow * gridSize + nextColumn].focus();
+        });
+        pixelBoard.addEventListener("pointermove", (event) => {
+            if (event.pointerId !== paintingPointer) return;
+            const cell = document.elementFromPoint(event.clientX, event.clientY);
+            if (!cell?.matches(".pixel-cell") || cell.parentElement !== pixelBoard) return;
+            const index = Number(cell.dataset.index);
+            if (pixels[index] !== activeColor.hex) paintIndex(index);
+        });
+        function stopPainting(event) {
+            if (event.pointerId === paintingPointer) paintingPointer = null;
+        }
+        window.addEventListener("pointerup", stopPainting);
+        window.addEventListener("pointercancel", stopPainting);
+        window.addEventListener("blur", () => { paintingPointer = null; });
 
         helpButton.addEventListener("click", () => { helpOverlay.hidden = false; });
         closeHelpButton.addEventListener("click", () => { helpOverlay.hidden = true; });
@@ -651,5 +696,8 @@
         drawPreview();
         updateHud();
     </script>
+    <script src="scripts/keadigi-class-view.js"></script>
+    <script src="scripts/keadigi-shell.js"></script>
+    <script src="scripts/keadigi-dialogs.js"></script>
 </body>
 </html>

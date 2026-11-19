@@ -13,26 +13,25 @@
         .alpha-page { display:grid; grid-template-rows:auto minmax(0,1fr); gap:0.7rem; min-height:0; padding:0.7rem; overflow:hidden; }
         .alpha-layout { display:grid; grid-template-columns:minmax(0,1.28fr) minmax(255px,0.62fr); gap:0.7rem; min-height:0; }
         .alpha-stage, .alpha-console { min-height:0; padding:0.75rem; display:grid; gap:0.65rem; overflow:hidden; }
-        .alpha-stage { grid-template-rows:auto minmax(0,1fr); }
-        .alpha-toolbar { display:flex; justify-content:space-between; gap:0.55rem; align-items:center; flex-wrap:wrap; }
+        .alpha-stage { grid-template-rows:auto auto minmax(12rem,1fr); }
         .alpha-board { min-height:0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.65rem; }
         .alpha-panel { min-height:0; display:grid; grid-template-rows:auto minmax(0,1fr) auto; gap:0.45rem; }
         .alpha-shell { min-height:0; padding:0.2rem; display:grid; place-items:center; overflow:hidden; }
         .alpha-canvas { width:auto; height:100%; max-width:100%; max-height:100%; aspect-ratio:1; display:block; }
-        .alpha-console { grid-template-rows:auto minmax(0,1fr) auto; }
-        .alpha-slider-bank { display:grid; gap:0.55rem; }
-        .alpha-slider-row { display:grid; gap:0.25rem; }
+        .alpha-console { align-content:start; }
         .alpha-slider-head { display:flex; justify-content:space-between; gap:0.5rem; align-items:center; }
         .alpha-slider-head label { font-family:var(--kea-font-display); font-size:0.74rem; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:rgba(255,248,238,0.82); }
         .alpha-slider-head span { font-family:var(--kea-font-mono); color:var(--kea-console-screen-text); }
-        .alpha-slider-row input { width:100%; }
         .alpha-readouts { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.4rem; }
         .alpha-mini { min-height:0; padding:0.6rem; display:grid; gap:0.25rem; align-content:start; }
         @media (max-width: 980px) { .alpha-layout { grid-template-columns:1fr; } }
-        @media (max-width: 760px) { .alpha-board, .alpha-readouts { grid-template-columns:1fr; } }
+        @media (max-width: 760px) {
+            .alpha-board, .alpha-readouts { grid-template-columns:1fr; }
+            .alpha-shell { min-height:10rem; }
+        }
     </style>
 </head>
-<body class="kea-page">
+<body class="kea-page kea-module-page">
     <div class="kea-shell">
         <header class="kea-topbar kea-topbar--centered">
             <a class="kea-button kea-button--secondary" href="index.html">&larr; Go back</a>
@@ -50,18 +49,31 @@
                 <button class="kea-button kea-button--secondary" id="helpButton" type="button">How to Play</button>
             </div>
         </header>
-        <main class="kea-content alpha-page kea-console-frame">
+        <main class="kea-content kea-lab-page alpha-page kea-console-frame">
             <section class="kea-hud kea-console-surface" aria-label="Transparency Lab status">
                 <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Top Alpha</span><span class="kea-hud__value" id="topAlphaHud">70%</span></div>
                 <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Bottom Alpha</span><span class="kea-hud__value" id="bottomAlphaHud">100%</span></div>
                 <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Overlap</span><span class="kea-hud__value" id="overlapHud">Partial</span></div>
                 <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Result</span><span class="kea-hud__value" id="resultHud">Blend</span></div>
             </section>
-            <section class="alpha-layout">
-                <section class="alpha-stage kea-console-surface">
-                    <div class="alpha-toolbar">
-                        <p class="kea-console-label">Compare Surfaces</p>
-                        <div class="kea-segmented" id="shapeButtons" aria-label="Shape set"></div>
+            <section class="alpha-layout kea-lab-layout">
+                <section class="alpha-stage kea-lab-stage kea-console-surface">
+                    <div class="kea-board-toolbar">
+                        <div class="kea-toolbar--spread">
+                            <p class="kea-console-label">Compare Surfaces</p>
+                            <div class="kea-segmented" id="shapeButtons" aria-label="Shape set"></div>
+                        </div>
+                        <button class="kea-button kea-button--secondary kea-board-reset" id="resetButton" type="button" aria-label="Reset opacity and shapes" title="Reset opacity and shapes"></button>
+                    </div>
+                    <div class="kea-board-controls">
+                        <div class="kea-range-field">
+                            <div class="alpha-slider-head"><label for="topAlphaSlider">Top Opacity</label><span id="topAlphaValue">70%</span></div>
+                            <input id="topAlphaSlider" type="range" min="0" max="100" step="5" value="70" />
+                        </div>
+                        <div class="kea-range-field">
+                            <div class="alpha-slider-head"><label for="bottomAlphaSlider">Bottom Opacity</label><span id="bottomAlphaValue">100%</span></div>
+                            <input id="bottomAlphaSlider" type="range" min="0" max="100" step="5" value="100" />
+                        </div>
                     </div>
                     <div class="alpha-board">
                         <section class="alpha-panel">
@@ -77,16 +89,6 @@
                     </div>
                 </section>
                 <aside class="alpha-console kea-side-panel kea-side-panel--console">
-                    <div class="alpha-slider-bank">
-                        <div class="alpha-slider-row">
-                            <div class="alpha-slider-head"><label for="topAlphaSlider">Top Opacity</label><span id="topAlphaValue">70%</span></div>
-                            <input id="topAlphaSlider" type="range" min="0" max="100" step="5" value="70" />
-                        </div>
-                        <div class="alpha-slider-row">
-                            <div class="alpha-slider-head"><label for="bottomAlphaSlider">Bottom Opacity</label><span id="bottomAlphaValue">100%</span></div>
-                            <input id="bottomAlphaSlider" type="range" min="0" max="100" step="5" value="100" />
-                        </div>
-                    </div>
                     <div class="kea-side-panel__body kea-side-panel__body--fill">
                         <div class="alpha-readouts">
                             <div class="alpha-mini kea-console-screen"><strong>Opaque</strong><p>At 100%, a layer fully hides what is behind it.</p></div>
@@ -95,7 +97,6 @@
                             <div class="alpha-mini kea-console-screen"><strong>Try This</strong><p>Set the top shape to 50% and watch the overlap region change.</p></div>
                         </div>
                     </div>
-                    <div class="kea-actions"><button class="kea-button kea-button--secondary" id="resetButton" type="button">Reset</button></div>
                 </aside>
             </section>
         </main>
@@ -182,5 +183,7 @@
         renderShapeButtons();
         render();
     </script>
+    <script src="scripts/keadigi-shell.js"></script>
+    <script src="scripts/keadigi-dialogs.js"></script>
 </body>
 </html>

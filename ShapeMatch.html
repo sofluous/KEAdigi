@@ -127,7 +127,7 @@
         @media (max-width: 640px) { .shape-match-main { padding: .55rem; gap: .55rem; } .status-bar, .zone { padding: .6rem; } .play-area { gap: .55rem; } }
     </style>
 </head>
-<body class="kea-page shape-match-page">
+<body class="kea-page shape-match-page kea-module-page">
     <div class="kea-shell shape-match-shell">
         <header class="kea-topbar kea-topbar--centered">
             <a class="kea-button kea-button--secondary" href="index.html">&larr; Go back</a>
@@ -143,7 +143,6 @@
             </div>
             <div class="kea-topbar__actions">
                 <button class="kea-button kea-button--secondary" type="button" id="helpButton">How to Play</button>
-                <button class="kea-button" type="button" id="startButton">Start Game</button>
             </div>
         </header>
         <main class="shape-match-main kea-console-frame">
@@ -163,6 +162,7 @@
                 <section class="zone kea-console-surface">
                     <div class="zone-header">
                         <p class="label kea-console-label">Targets</p>
+                            <button class="kea-button kea-button--secondary" type="button" id="startButton">Start Game</button>
                         <p class="zone-hint">Use any valid match for the slot.</p>
                     </div>
                     <div class="slot-grid board" id="board"></div>
@@ -350,5 +350,7 @@
         window.addEventListener('resize', () => { if (currentRound) fitBoardToViewport(); });
         window.addEventListener('load', () => { timerDisplay.textContent = '00:00.000'; updateComboDisplay(); currentRound = buildRound(level); updateHud(currentRound); renderBoard(); updateShortcutBadges(); });
     </script>
+    <script src="scripts/keadigi-shell.js"></script>
+    <script src="scripts/keadigi-dialogs.js"></script>
 </body>
 </html>

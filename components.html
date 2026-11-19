@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Components | KEA Digi Hub</title>
+    <link rel="stylesheet" href="keadigi.css" />
+    <link rel="stylesheet" href="styles/kea-gallery.css" />
+  </head>
+  <body class="kea-page kea-module-page">
+    <div class="kea-shell kea-pilot">
+      <header class="kea-topbar kea-topbar--centered">
+        <a class="kea-button kea-button--secondary" href="index.html">Library</a>
+        <div class="kea-topbar__brand"><p class="kea-app-title">Components</p></div>
+        <div class="kea-topbar__actions">
+          <button type="button" class="kea-button kea-button--secondary" data-gallery-help>Help</button>
+          <button type="button" class="kea-button kea-button--secondary" id="classViewButton" aria-pressed="false">Class View</button>
+        </div>
+      </header>
+      <main class="kea-content kea-console-frame kea-gallery">
+        <h1 class="kea-section-label">KEA Digi components</h1>
+        <nav class="kea-category-nav kea-gallery-nav" aria-label="Component sections">
+          <a class="kea-button" href="#controls" aria-current="location">Controls</a>
+          <a class="kea-button" href="#console">Console</a>
+          <a class="kea-button" href="#library">Library</a>
+          <a class="kea-button" href="#dialogs">Dialogs</a>
+        </nav>
+        <div class="kea-gallery-grid">
+          <section class="kea-console-surface kea-gallery-panel" id="controls" aria-labelledby="controls-title">
+            <h2 class="kea-console-label" id="controls-title">Controls and fields</h2>
+            <div class="kea-toolbar">
+              <div class="kea-toolbar__group">
+                <button class="kea-button kea-button--ghost" type="button" data-gallery-help>Help</button>
+                <button class="kea-button" type="button" disabled>Disabled</button>
+              </div>
+              <div class="kea-toolbar__group">
+                <div class="kea-segmented" role="group" aria-label="Preview mode">
+                  <button class="kea-button active" type="button" data-gallery-mode aria-pressed="true">Standard</button>
+                  <button class="kea-button kea-button--secondary" type="button" data-gallery-mode aria-pressed="false">Large</button>
+                </div>
+              </div>
+            </div>
+            <div class="kea-range-field kea-range-field--inline kea-range-field--stack-narrow">
+              <label for="galleryLevel">Level</label>
+              <input type="range" id="galleryLevel" min="0" max="100" value="50" />
+            </div>
+            <div class="kea-field">
+              <label class="kea-console-label" for="galleryTopic">Topic</label>
+              <select class="kea-input" id="galleryTopic"><option>Pixels</option><option>Color</option><option>Layers</option></select>
+            </div>
+          </section>
+          <section class="kea-console-surface kea-gallery-panel" id="console" aria-labelledby="console-title">
+            <div class="kea-board-toolbar">
+                <h2 class="kea-console-label" id="console-title">Readouts and panels</h2>
+                <button class="kea-button kea-button--secondary kea-board-reset" id="galleryReset" type="button" aria-label="Reset component examples" title="Reset component examples"></button>
+            </div>
+            <dl class="kea-hud kea-console-surface">
+              <div class="kea-hud__item kea-console-screen"><dt class="kea-hud__label">Points</dt><dd class="kea-hud__value" id="galleryPoints">0</dd></div>
+              <div class="kea-hud__item kea-console-screen"><dt class="kea-hud__label">Level</dt><dd class="kea-hud__value" id="galleryLevelValue">50%</dd></div>
+            </dl>
+            <aside class="kea-side-panel kea-side-panel--console kea-side-panel--with-footer">
+              <div class="kea-side-panel__body">
+                <div class="kea-console-screen kea-screen-panel kea-terminal" role="status" aria-atomic="true" id="galleryReadout">
+                  <strong>Ready</strong>
+                  <p id="galleryStatus">Standard · Pixels</p>
+                </div>
+              </div>
+              <div class="kea-actions">
+
+                <button class="kea-button" id="galleryIncrement" type="button">Add point</button>
+              </div>
+            </aside>
+            <aside class="kea-side-panel kea-side-panel--reading">
+              <div class="kea-side-panel__copy"><p>Reading panel for instructions and longer text.</p></div>
+            </aside>
+          </section>
+          <section class="kea-console-surface kea-gallery-panel" id="library" aria-labelledby="library-title">
+            <h2 class="kea-console-label" id="library-title">Library card and tags</h2>
+            <div class="kea-card-grid">
+              <a class="kea-card kea-surface" href="ImageZoomLab.html" aria-label="Launch Image Zoom Lab">
+                <div class="kea-card__meta"><span class="kea-chip">Pixels</span></div>
+                <div class="kea-card__thumb"><img src="assets/module-art/image-zoom-lab.jpg" width="384" height="384" alt="" /></div>
+                <h3>Image Zoom Lab</h3>
+                <p>Zoom in to see how pixels build an image.</p>
+              </a>
+            </div>
+            <div class="kea-toolbar__group"><span class="kea-chip">Topic</span><span class="kea-chip kea-chip--wip">Preview</span><span class="kea-skill-chip">Inspection</span></div>
+          </section>
+          <section class="kea-console-surface kea-gallery-panel" id="dialogs" aria-labelledby="dialogs-title">
+            <h2 class="kea-console-label" id="dialogs-title">Dialog and form</h2>
+            <div class="kea-console-well kea-gallery-well">
+              <button class="kea-button" type="button" data-gallery-help>Open dialog</button>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+    <div class="kea-help-overlay" id="galleryDialog" hidden>
+      <div class="kea-help-dialog" role="dialog" aria-modal="true" aria-labelledby="galleryDialogTitle">
+        <h2 class="kea-section-label" id="galleryDialogTitle">Dialog example</h2>
+        <div class="kea-modal-form">
+          <div class="kea-field">
+            <label class="kea-field__label" for="galleryName">Name</label>
+            <input class="kea-input" id="galleryName" type="text" />
+          </div>
+        </div>
+        <div class="kea-actions"><button class="kea-button kea-button--secondary" id="galleryClose" type="button">Close</button></div>
+      </div>
+    </div>
+    <script src="scripts/keadigi-shell.js"></script>
+    <script src="scripts/keadigi-class-view.js"></script>
+    <script src="scripts/keadigi-dialogs.js"></script>
+    <script src="scripts/kea-gallery.js"></script>
+  </body>
+</html>

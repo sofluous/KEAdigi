@@ -53,10 +53,6 @@
             grid-template-rows: auto minmax(0, 1fr);
         }
 
-        .sort-console {
-            grid-template-rows: 1fr auto;
-        }
-
         .prompt-screen,
         .feedback-screen {
             gap: 0.5rem;
@@ -246,11 +242,6 @@
             color: rgba(255, 248, 238, 0.88);
         }
 
-        .sort-actions {
-            grid-row: 3;
-            justify-content: flex-end;
-        }
-
         @media (max-width: 900px) {
             .sort-grid {
                 grid-template-columns: 1fr;
@@ -279,7 +270,7 @@
         }
     </style>
 </head>
-<body class="kea-page">
+<body class="kea-page kea-module-page">
     <div class="kea-shell">
         <header class="kea-topbar kea-topbar--centered">
             <a class="kea-button kea-button--secondary" href="index.html">&larr; Go back</a>
@@ -295,7 +286,6 @@
             </div>
             <div class="kea-topbar__actions">
                 <button class="kea-button kea-button--secondary" id="helpButton" type="button">How to Play</button>
-                <button class="kea-button" id="newRoundButton" type="button">New Round</button>
             </div>
         </header>
 
@@ -327,7 +317,10 @@
                     </div>
 
                     <section class="tray-section">
-                        <p class="kea-console-label">Palette Tray</p>
+                        <div class="kea-board-toolbar">
+                            <div class="kea-toolbar--spread"><p class="kea-console-label">Palette Tray</p><button class="kea-button kea-button--secondary" id="newRoundButton" type="button">New Round</button></div>
+                            <button class="kea-button kea-button--secondary kea-board-reset" id="clearButton" type="button" aria-label="Clear sort" title="Clear sort"></button>
+                        </div>
                         <div class="swatch-tray kea-console-well" id="swatchTray"></div>
                     </section>
 
@@ -336,15 +329,14 @@
                         <div class="bucket-grid" id="bucketGrid"></div>
                     </section>
             </section>
-            <aside class="sort-console kea-side-panel kea-side-panel--console">
+            <aside class="sort-console kea-side-panel kea-side-panel--console kea-side-panel--with-footer">
                     <div class="kea-side-panel__body kea-side-panel__body--fill">
                         <div class="feedback-screen kea-console-screen kea-screen-panel kea-terminal" id="feedbackScreen">
                             <strong>Ready</strong>
                             <p>Select a swatch from the tray, then tap a color group.</p>
                         </div>
                     </div>
-                    <div class="sort-actions kea-actions">
-                        <button class="kea-button kea-button--secondary" id="clearButton" type="button">Clear Sort</button>
+                    <div class="kea-actions">
                         <button class="kea-button" id="nextRoundButton" type="button" disabled>Next Round</button>
                     </div>
             </aside>
@@ -592,5 +584,7 @@
 
         startRound(0);
     </script>
+    <script src="scripts/keadigi-shell.js"></script>
+    <script src="scripts/keadigi-dialogs.js"></script>
 </body>
 </html>

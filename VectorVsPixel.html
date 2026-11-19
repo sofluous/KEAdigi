@@ -13,26 +13,24 @@
         .vector-page { display:grid; grid-template-rows:auto minmax(0,1fr); gap:0.7rem; min-height:0; padding:0.7rem; overflow:hidden; }
         .vector-layout { display:grid; grid-template-columns:minmax(0,1.34fr) minmax(250px,0.62fr); gap:0.7rem; min-height:0; }
         .vector-stage, .vector-console { min-height:0; padding:0.75rem; display:grid; gap:0.65rem; overflow:hidden; }
-        .vector-stage { grid-template-rows:auto minmax(0,1fr); }
+        .vector-stage { grid-template-rows:auto auto minmax(12rem,1fr); }
         .vector-stage-grid { min-height:0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.65rem; }
         .vector-panel { min-height:0; display:grid; grid-template-rows:auto minmax(0,1fr) auto; gap:0.45rem; }
         .vector-shell { min-height:0; padding:0.2rem; display:grid; place-items:center; overflow:hidden; }
         .vector-display, .vector-svg { width:auto; height:100%; max-width:100%; max-height:100%; aspect-ratio:1; display:block; }
         .vector-shell canvas { image-rendering:pixelated; image-rendering:crisp-edges; }
-        .vector-toolbar { display:flex; flex-wrap:wrap; gap:0.55rem; justify-content:space-between; align-items:center; }
         .vector-toolbar-group { display:flex; gap:0.55rem; align-items:center; flex-wrap:wrap; }
         .vector-console { grid-template-rows:auto auto minmax(0,1fr) auto; }
         .vector-screen-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.4rem; }
         .vector-mini { min-height:0; padding:0.6rem; display:grid; gap:0.25rem; align-content:start; }
-        .vector-slider-row { display:grid; gap:0.25rem; }
-        .vector-slider-row label { font-family:var(--kea-font-display); font-size:0.76rem; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:rgba(255,248,238,0.82); }
-        .vector-slider-row input { width:100%; }
-        .vector-console .kea-segmented.sample-set { width:100%; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); }
         @media (max-width: 980px) { .vector-layout { grid-template-columns:1fr; } }
-        @media (max-width: 760px) { .vector-stage-grid, .vector-screen-grid { grid-template-columns:1fr; } }
+        @media (max-width: 760px) {
+            .vector-stage-grid, .vector-screen-grid { grid-template-columns:1fr; }
+            .vector-shell { min-height:10rem; }
+        }
     </style>
 </head>
-<body class="kea-page">
+<body class="kea-page kea-module-page">
     <div class="kea-shell">
         <header class="kea-topbar kea-topbar--centered">
             <a class="kea-button kea-button--secondary" href="index.html">&larr; Go back</a>
@@ -50,7 +48,7 @@
                 <button class="kea-button kea-button--secondary" id="helpButton" type="button">How to Play</button>
             </div>
         </header>
-        <main class="kea-content vector-page kea-console-frame">
+        <main class="kea-content kea-lab-page vector-page kea-console-frame">
             <section class="kea-hud kea-console-surface" aria-label="Vector Vs Pixel status">
                 <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Sample</span><span class="kea-hud__value" id="sampleValue">Rocket</span></div>
                 <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Zoom</span><span class="kea-hud__value" id="zoomValue">400%</span></div>
@@ -58,18 +56,33 @@
                 <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Vector</span><span class="kea-hud__value">Scales cleanly</span></div>
                 <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Pixel</span><span class="kea-hud__value">Shows cells</span></div>
             </section>
-            <section class="vector-layout">
-                <section class="vector-stage kea-console-surface">
-                    <div class="vector-toolbar">
-                        <p class="kea-console-label">Compare</p>
-                        <div class="vector-toolbar-group">
-                            <div class="kea-segmented sample-set" id="sampleButtons" aria-label="Sample art"></div>
-                            <div class="kea-segmented" aria-label="Zoom controls">
-                                <button class="kea-button kea-button--secondary" id="zoomOutButton" type="button">-</button>
-                                <button class="kea-button kea-button--secondary" id="zoomResetButton" type="button">Reset</button>
-                                <button class="kea-button kea-button--secondary" id="zoomInButton" type="button">+</button>
+            <section class="vector-layout kea-lab-layout">
+                <section class="vector-stage kea-lab-stage kea-console-surface">
+                    <div class="kea-board-toolbar">
+                        <div class="kea-toolbar--spread">
+                            <p class="kea-console-label">Compare</p>
+                            <div class="vector-toolbar-group">
+                                <div class="kea-segmented sample-set" id="sampleButtons" aria-label="Sample art"></div>
+                                <button class="kea-button kea-button--secondary" id="sampleCycleButton" type="button">Next Sample</button>
+                                <div class="kea-segmented" aria-label="Zoom controls">
+                                    <button class="kea-button kea-button--secondary" id="zoomOutButton" type="button">-</button>
+
+                                    <button class="kea-button kea-button--secondary" id="zoomInButton" type="button">+</button>
+                                </div>
                             </div>
                         </div>
+                        <button class="kea-button kea-button--secondary kea-board-reset" id="zoomResetButton" type="button" aria-label="Reset comparison zoom" title="Reset comparison zoom"></button>
+                    </div>
+                    <div class="kea-board-controls">
+                        <div class="kea-range-field">
+                            <label for="gridSlider">Raster Grid Size</label>
+                        <input id="gridSlider" type="range" min="12" max="48" step="12" value="24" />
+                        </div>
+                        <div class="kea-range-field">
+                            <label for="zoomSlider">Compare Zoom</label>
+                        <input id="zoomSlider" type="range" min="100" max="800" step="100" value="400" />
+                        </div>
+
                     </div>
                     <div class="vector-stage-grid">
                         <section class="vector-panel">
@@ -89,14 +102,6 @@
                     </div>
                 </section>
                 <aside class="vector-console kea-side-panel kea-side-panel--console">
-                    <div class="vector-slider-row">
-                        <label for="gridSlider">Raster Grid Size</label>
-                        <input id="gridSlider" type="range" min="12" max="48" step="12" value="24" />
-                    </div>
-                    <div class="vector-slider-row">
-                        <label for="zoomSlider">Compare Zoom</label>
-                        <input id="zoomSlider" type="range" min="100" max="800" step="100" value="400" />
-                    </div>
                     <div class="kea-side-panel__body kea-side-panel__body--fill">
                         <div class="vector-screen-grid">
                             <div class="vector-mini kea-console-screen"><strong>Vector</strong><p>Curves stay smooth because the drawing is recalculated at every size.</p></div>
@@ -105,7 +110,6 @@
                             <div class="vector-mini kea-console-screen"><strong>Try This</strong><p>Switch samples and compare the edges as the raster grid gets coarser.</p></div>
                         </div>
                     </div>
-                    <div class="kea-actions"><button class="kea-button kea-button--secondary" id="sampleCycleButton" type="button">Next Sample</button></div>
                 </aside>
             </section>
         </main>
@@ -213,5 +217,7 @@
         updateButtons();
         render();
     </script>
+    <script src="scripts/keadigi-shell.js"></script>
+    <script src="scripts/keadigi-dialogs.js"></script>
 </body>
 </html>

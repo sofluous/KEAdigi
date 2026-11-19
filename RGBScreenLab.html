@@ -13,27 +13,26 @@
         .rgb-page { display:grid; grid-template-rows:auto minmax(0,1fr); gap:0.7rem; min-height:0; padding:0.7rem; overflow:hidden; }
         .rgb-layout { display:grid; grid-template-columns:minmax(0,1.28fr) minmax(260px,0.62fr); gap:0.7rem; min-height:0; }
         .rgb-stage, .rgb-console { min-height:0; padding:0.75rem; display:grid; gap:0.65rem; overflow:hidden; }
-        .rgb-stage { grid-template-rows:auto minmax(0,1fr); }
-        .rgb-toolbar { display:flex; flex-wrap:wrap; gap:0.55rem; justify-content:space-between; align-items:center; }
+        .rgb-stage { grid-template-rows:auto auto minmax(12rem,1fr); }
         .rgb-stage-grid { min-height:0; display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,0.8fr); gap:0.65rem; }
         .rgb-main-shell, .rgb-pixel-shell { min-height:0; padding:0.2rem; display:grid; place-items:center; overflow:hidden; }
         .rgb-main-preview { width:auto; height:100%; max-width:100%; max-height:100%; aspect-ratio:1; border-radius:1rem; background:#000; box-shadow: inset 0 0 0 4px rgba(255,255,255,0.06); }
         .rgb-pixel-canvas { width:auto; height:100%; max-width:100%; max-height:100%; aspect-ratio:1; display:block; image-rendering:pixelated; image-rendering:crisp-edges; }
-        .rgb-console { grid-template-rows:auto minmax(0,1fr) auto; }
-        .rgb-slider-bank { display:grid; gap:0.5rem; }
-        .rgb-slider-row { display:grid; gap:0.28rem; }
+        .rgb-console { align-content:start; }
         .rgb-slider-head { display:flex; justify-content:space-between; gap:0.5rem; align-items:center; }
         .rgb-slider-head label { font-family:var(--kea-font-display); font-size:0.74rem; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:rgba(255,248,238,0.82); }
         .rgb-slider-head span { font-family:var(--kea-font-mono); color:var(--kea-console-screen-text); }
-        .rgb-slider-row input { width:100%; }
         .rgb-readout-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.4rem; }
         .rgb-mini { min-height:0; padding:0.6rem; display:grid; gap:0.25rem; align-content:start; }
-        .rgb-console .kea-segmented { width:100%; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); }
-        @media (max-width: 980px) { .rgb-layout, .rgb-stage-grid { grid-template-columns:1fr; } }
+        @media (max-width: 980px) {
+            .rgb-layout, .rgb-stage-grid { grid-template-columns:1fr; }
+            .rgb-stage-grid { grid-auto-rows:minmax(12rem,auto); }
+            .rgb-main-preview, .rgb-pixel-canvas { width:min(100%,12rem); height:auto; }
+        }
         @media (max-width: 760px) { .rgb-readout-grid { grid-template-columns:1fr; } }
     </style>
 </head>
-<body class="kea-page">
+<body class="kea-page kea-module-page">
     <div class="kea-shell">
         <header class="kea-topbar kea-topbar--centered">
             <a class="kea-button kea-button--secondary" href="index.html">&larr; Go back</a>
@@ -51,7 +50,7 @@
                 <button class="kea-button kea-button--secondary" id="helpButton" type="button">How to Play</button>
             </div>
         </header>
-        <main class="kea-content rgb-page kea-console-frame">
+        <main class="kea-content kea-lab-page rgb-page kea-console-frame">
             <section class="kea-hud kea-console-surface" aria-label="RGB Screen Lab status">
                 <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Red</span><span class="kea-hud__value" id="redHud">255</span></div>
                 <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Green</span><span class="kea-hud__value" id="greenHud">180</span></div>
@@ -59,11 +58,28 @@
                 <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Hex</span><span class="kea-hud__value" id="hexHud">#FFB448</span></div>
                 <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Blend</span><span class="kea-hud__value" id="blendHud">Warm amber</span></div>
             </section>
-            <section class="rgb-layout">
-                <section class="rgb-stage kea-console-surface">
-                    <div class="rgb-toolbar">
-                        <p class="kea-console-label">Screen Preview</p>
-                        <div class="kea-segmented" id="presetButtons" aria-label="RGB presets"></div>
+            <section class="rgb-layout kea-lab-layout">
+                <section class="rgb-stage kea-lab-stage kea-console-surface">
+                    <div class="kea-board-toolbar">
+                        <div class="kea-toolbar--spread">
+                            <p class="kea-console-label">Screen Preview</p>
+                            <div class="kea-segmented" id="presetButtons" aria-label="RGB presets"></div>
+                        </div>
+                        <button class="kea-button kea-button--secondary kea-board-reset" id="resetButton" type="button" aria-label="Reset mix" title="Reset mix"></button>
+                    </div>
+                    <div class="kea-board-controls kea-board-controls--three">
+                        <div class="kea-range-field">
+                            <div class="rgb-slider-head"><label for="redSlider">Red</label><span id="redValue">255</span></div>
+                            <input id="redSlider" type="range" min="0" max="255" step="1" value="255" />
+                        </div>
+                        <div class="kea-range-field">
+                            <div class="rgb-slider-head"><label for="greenSlider">Green</label><span id="greenValue">180</span></div>
+                            <input id="greenSlider" type="range" min="0" max="255" step="1" value="180" />
+                        </div>
+                        <div class="kea-range-field">
+                            <div class="rgb-slider-head"><label for="blueSlider">Blue</label><span id="blueValue">72</span></div>
+                            <input id="blueSlider" type="range" min="0" max="255" step="1" value="72" />
+                        </div>
                     </div>
                     <div class="rgb-stage-grid">
                         <div class="rgb-main-shell kea-console-well">
@@ -75,20 +91,6 @@
                     </div>
                 </section>
                 <aside class="rgb-console kea-side-panel kea-side-panel--console">
-                    <div class="rgb-slider-bank">
-                        <div class="rgb-slider-row">
-                            <div class="rgb-slider-head"><label for="redSlider">Red</label><span id="redValue">255</span></div>
-                            <input id="redSlider" type="range" min="0" max="255" step="1" value="255" />
-                        </div>
-                        <div class="rgb-slider-row">
-                            <div class="rgb-slider-head"><label for="greenSlider">Green</label><span id="greenValue">180</span></div>
-                            <input id="greenSlider" type="range" min="0" max="255" step="1" value="180" />
-                        </div>
-                        <div class="rgb-slider-row">
-                            <div class="rgb-slider-head"><label for="blueSlider">Blue</label><span id="blueValue">72</span></div>
-                            <input id="blueSlider" type="range" min="0" max="255" step="1" value="72" />
-                        </div>
-                    </div>
                     <div class="kea-side-panel__body kea-side-panel__body--fill">
                         <div class="rgb-readout-grid">
                             <div class="rgb-mini kea-console-screen"><strong>Subpixels</strong><p>The right panel shows enlarged red, green, and blue lights inside a tiny screen area.</p></div>
@@ -97,7 +99,6 @@
                             <div class="rgb-mini kea-console-screen"><strong>Light</strong><p>Screen colors mix with light, so stronger channels usually make the result brighter.</p></div>
                         </div>
                     </div>
-                    <div class="kea-actions"><button class="kea-button kea-button--secondary" id="resetButton" type="button">Reset Mix</button></div>
                 </aside>
             </section>
         </main>
@@ -156,18 +157,17 @@
             pixelCtx.clearRect(0, 0, pixelCanvas.width, pixelCanvas.height);
             pixelCtx.fillStyle = "#060606";
             pixelCtx.fillRect(0, 0, pixelCanvas.width, pixelCanvas.height);
-            const startX = 28;
-            const startY = 30;
-            for (let row = 0; row < 3; row += 1) {
-                for (let col = 0; col < 3; col += 1) {
-                    const x = startX + (col * 100);
-                    const y = startY + (row * 100);
-                    pixelCtx.fillStyle = `rgba(255,0,0,${r / 255})`;
-                    pixelCtx.fillRect(x, y, 20, 60);
-                    pixelCtx.fillStyle = `rgba(0,255,0,${g / 255})`;
-                    pixelCtx.fillRect(x + 24, y, 20, 60);
-                    pixelCtx.fillStyle = `rgba(0,0,255,${b / 255})`;
-                    pixelCtx.fillRect(x + 48, y, 20, 60);
+            const colors = [`rgb(${r},0,0)`, `rgb(0,${g},0)`, `rgb(0,0,${b})`];
+            const pitch = Math.floor(Math.min(pixelCanvas.width, pixelCanvas.height) / 6);
+            const stripe = Math.floor((pitch - 8) / 3);
+            const marginX = Math.floor((pixelCanvas.width - pitch * 6) / 2);
+            const marginY = Math.floor((pixelCanvas.height - pitch * 6) / 2);
+            for (let row = 0; row < 6; row += 1) {
+                for (let col = 0; col < 6; col += 1) {
+                    colors.forEach((color, channel) => {
+                        pixelCtx.fillStyle = color;
+                        pixelCtx.fillRect(marginX + col * pitch + channel * (stripe + 2), marginY + row * pitch, stripe, pitch - 4);
+                    });
                 }
             }
         }
@@ -207,5 +207,7 @@
         helpOverlay.addEventListener("click", (event) => { if (event.target === helpOverlay) helpOverlay.hidden = true; });
         setPreset(presets[1]);
     </script>
+    <script src="scripts/keadigi-shell.js"></script>
+    <script src="scripts/keadigi-dialogs.js"></script>
 </body>
 </html>

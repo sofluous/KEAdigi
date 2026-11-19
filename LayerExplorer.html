@@ -16,24 +16,27 @@
         .layer-console { grid-template-rows:auto minmax(0,1fr); }
         .layer-list { min-height:0; display:grid; gap:0.4rem; align-content:start; overflow:auto; padding-right:0.1rem; }
         .layer-item { padding:0.5rem; display:grid; gap:0.35rem; }
+        .layer-grip { touch-action:none; cursor:grab; }
+        .layer-item.is-drop-target { outline:3px solid var(--kea-module-focus); outline-offset:-3px; }
         .layer-item__head { display:grid; grid-template-columns:auto minmax(0,1fr) auto auto; gap:0.6rem; align-items:center; }
         .layer-badge { width:1.8rem; height:1.8rem; border:3px solid var(--kea-border); border-radius:0.6rem; box-shadow:inset 0 2px 0 rgba(255,255,255,0.32), inset 0 -2px 0 rgba(0,0,0,0.2); }
         .layer-name, .layer-caption { margin:0; }
         .layer-name { font-family:var(--kea-font-display); font-size:0.8rem; font-weight:800; letter-spacing:0.04em; text-transform:uppercase; color:rgba(255,248,238,0.95); }
         .layer-caption { font-size:0.68rem; color:rgba(255,248,238,0.74); }
-        .layer-controls { display:grid; grid-template-columns:auto minmax(0,1fr); gap:0.4rem; align-items:center; }
-        .layer-controls label { font-family:var(--kea-font-display); font-size:0.68rem; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:rgba(255,248,238,0.84); }
-        .layer-controls input[type="range"] { width:100%; }
         .layer-preview-panel { grid-template-rows:minmax(0,1fr) auto; }
         .layer-preview-shell { min-height:0; padding:0.2rem; display:grid; place-items:center; overflow:hidden; }
         .layer-canvas { width:auto; height:auto; display:block; border-radius:1rem; background:rgba(255,255,255,0.05); }
         .layer-note-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.35rem; }
         .layer-note { min-height:0; padding:0.45rem 0.55rem; display:grid; gap:0.2rem; align-content:start; }
-        @media (max-width: 980px) { .layer-layout { grid-template-columns:1fr; } }
+        @media (max-width: 980px) {
+            .kea-module-page .layer-page.kea-lab-page { grid-template-rows:auto max-content; }
+            .layer-layout { grid-template-columns:1fr; }
+            .layer-list { max-height:55dvh; }
+        }
         @media (max-width: 760px) { .layer-note-grid { grid-template-columns:1fr; } }
     </style>
 </head>
-<body class="kea-page">
+<body class="kea-page kea-module-page">
     <div class="kea-shell">
         <header class="kea-topbar kea-topbar--centered">
             <a class="kea-button kea-button--secondary" href="index.html">&larr; Go back</a>
@@ -49,25 +52,28 @@
             </div>
             <div class="kea-topbar__actions">
                 <button class="kea-button kea-button--secondary" id="helpButton" type="button">How to Play</button>
-                <button class="kea-button" id="resetLayersButton" type="button">Reset Stack</button>
             </div>
         </header>
-        <main class="kea-content layer-page kea-console-frame">
+        <main class="kea-content kea-lab-page layer-page kea-console-frame">
             <section class="kea-hud kea-hud--4 kea-console-surface" aria-label="Layer Explorer status">
                 <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Layers</span><span class="kea-hud__value" id="layerCountValue">4</span></div>
                 <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Visible</span><span class="kea-hud__value" id="visibleCountValue">4</span></div>
                 <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Top Layer</span><span class="kea-hud__value" id="topLayerValue">Foreground</span></div>
                 <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Focus</span><span class="kea-hud__value" id="focusValue">Order matters</span></div>
             </section>
-            <section class="layer-layout">
+            <section class="layer-layout kea-lab-layout">
                 <aside class="layer-console kea-side-panel kea-side-panel--console">
-                    <div class="kea-side-panel__copy">
-                        <p class="kea-console-label">Stack Controls</p>
-                        <p class="kea-muted">Move layers up and down, hide them, or fade them to see how the full picture changes.</p>
+                    <div class="kea-board-toolbar">
+                        <div class="kea-side-panel__copy">
+                            <p class="kea-console-label">Stack Controls</p>
+                            <p class="kea-muted">Drag a grip to another layer, or use Up and Down. Hide or fade layers to see what changes.</p>
+
+                        </div>
+                        <button class="kea-button kea-button--secondary kea-board-reset" id="resetLayersButton" type="button" aria-label="Reset stack" title="Reset stack"></button>
                     </div>
                     <div class="layer-list" id="layerList"></div>
                 </aside>
-                <section class="layer-preview-panel kea-console-surface">
+                <section class="layer-preview-panel kea-lab-stage kea-console-surface">
                     <div class="layer-preview-shell kea-console-well"><canvas class="layer-canvas" id="layerCanvas" width="800" height="600"></canvas></div>
                     <div class="layer-note-grid">
                         <div class="layer-note kea-console-screen"><strong>Reorder</strong><p>Moving a layer higher makes it appear in front of the layers below it.</p></div>
@@ -135,8 +141,70 @@
             layers.forEach((layer, index) => {
                 const item = document.createElement("section");
                 item.className = "layer-item kea-console-well";
-                item.innerHTML = `<div class="layer-item__head"><span class="layer-badge" style="background:${layer.color};"></span><div><p class="layer-name">${layer.name}</p><p class="layer-caption">${index === layers.length - 1 ? "Currently on top" : "Below another layer"}</p></div></div><div class="layer-controls"><label>Opacity</label><input type="range" min="0" max="100" value="${layer.opacity}" data-role="opacity" /></div><div class="kea-segmented"><button class="kea-button kea-button--secondary" type="button" data-role="toggle">${layer.visible ? "Hide" : "Show"}</button><button class="kea-button kea-button--secondary" type="button" data-role="up">Up</button><button class="kea-button kea-button--secondary" type="button" data-role="down">Down</button></div>`;
-                item.querySelector('[data-role="opacity"]').addEventListener("input", (event) => { layer.opacity = Number(event.target.value); renderAll(); });
+                item.dataset.layer = layer.id;
+                const opacityId = `opacity-${layer.id}`;
+                item.innerHTML = `<div class="layer-item__head"><span class="layer-badge" style="background:${layer.color};"></span><div><p class="layer-name">${layer.name}</p><p class="layer-caption">${index === layers.length - 1 ? "Currently on top" : "Below another layer"}</p></div></div><div class="kea-range-field kea-range-field--inline"><label for="${opacityId}"><span class="visually-hidden">${layer.name} </span>Opacity</label><input id="${opacityId}" type="range" min="0" max="100" value="${layer.opacity}" /></div><div class="kea-segmented"><button class="kea-button kea-button--secondary" type="button" data-role="toggle">${layer.visible ? "Hide" : "Show"}</button><button class="kea-button kea-button--secondary" type="button" data-role="up">Up</button><button class="kea-button kea-button--secondary" type="button" data-role="down">Down</button></div>`;
+                const grip = document.createElement("span");
+                grip.className = "layer-grip kea-button kea-button--secondary";
+                grip.textContent = "⠿";
+                grip.title = "Drag to reorder";
+                grip.setAttribute("aria-hidden", "true");
+                item.querySelector(".layer-item__head").appendChild(grip);
+                let dropTarget = null;
+                let scrollFrame = 0;
+                let pointer = null;
+                function updateDropTarget() {
+                    const target = document.elementFromPoint(pointer.clientX, pointer.clientY)?.closest(".layer-item");
+                    const next = target && target !== item ? target : null;
+                    if (next === dropTarget) return;
+                    dropTarget?.classList.remove("is-drop-target");
+                    dropTarget = next;
+                    dropTarget?.classList.add("is-drop-target");
+                }
+                function scrollNearEdge() {
+                    if (!grip.isConnected || !pointer) return;
+                    const bounds = layerList.getBoundingClientRect();
+                    const y = pointer.clientY;
+                    const previousScroll = layerList.scrollTop;
+                    if (pointer.clientX >= bounds.left && pointer.clientX <= bounds.right && y >= bounds.top && y <= bounds.bottom) {
+                        if (y < bounds.top + 28) layerList.scrollTop -= 8;
+                        else if (y > bounds.bottom - 28) layerList.scrollTop += 8;
+                    }
+                    if (layerList.scrollTop !== previousScroll) updateDropTarget();
+                    scrollFrame = requestAnimationFrame(scrollNearEdge);
+                }
+                grip.addEventListener("pointerdown", (event) => {
+                    if (event.button !== 0) return;
+                    grip.setPointerCapture(event.pointerId);
+                    pointer = event;
+                    scrollFrame = requestAnimationFrame(scrollNearEdge);
+                });
+                grip.addEventListener("pointermove", (event) => {
+                    if (!grip.hasPointerCapture(event.pointerId)) return;
+                    pointer = event;
+                    updateDropTarget();
+                });
+                grip.addEventListener("pointerup", (event) => {
+                    if (!grip.hasPointerCapture(event.pointerId)) return;
+                    pointer = event;
+                    updateDropTarget();
+                    if (!dropTarget) return;
+                    const index = layers.indexOf(layer);
+                    const targetIndex = layers.findIndex((candidate) => candidate.id === dropTarget.dataset.layer);
+                    layers.splice(index, 1);
+                    layers.splice(targetIndex, 0, layer);
+                    renderAll();
+                });
+                grip.addEventListener("lostpointercapture", () => {
+                    cancelAnimationFrame(scrollFrame);
+                    pointer = null;
+                    dropTarget?.classList.remove("is-drop-target");
+                    dropTarget = null;
+                });
+                item.querySelector("input").addEventListener("input", (event) => {
+                    layer.opacity = Number(event.target.value);
+                    renderScene();
+                });
                 item.querySelector('[data-role="toggle"]').addEventListener("click", () => { layer.visible = !layer.visible; renderAll(); });
                 item.querySelector('[data-role="up"]').addEventListener("click", () => moveLayer(index, 1));
                 item.querySelector('[data-role="down"]').addEventListener("click", () => moveLayer(index, -1));
@@ -152,5 +220,7 @@
         fitLayerCanvas();
         window.addEventListener("resize", fitLayerCanvas);
     </script>
+    <script src="scripts/keadigi-shell.js"></script>
+    <script src="scripts/keadigi-dialogs.js"></script>
 </body>
 </html>

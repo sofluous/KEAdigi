@@ -1,0 +1,115 @@
+/* KEA Digi foundations and surface roles. */
+@font-face {
+  font-family: "Bricolage Grotesque";
+  src: url("../assets/fonts/bricolage-grotesque-latin.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+}
+:root {
+  --kea-bg: #f4bc2e;
+  --kea-bg-soft: #ffd766;
+  --kea-panel: #fff8ee;
+  --kea-panel-strong: #ffffff;
+  --kea-text: #141414;
+  --kea-text-muted: #4e4a43;
+  --kea-border: #111111;
+  --kea-accent: #29adff;
+  --kea-accent-strong: #1477bd;
+  --kea-secondary: #c2c3c7;
+  --kea-success: #00e436;
+  --kea-danger: #ff004d;
+  --kea-control-face: linear-gradient(180deg, #fdfbf4 0%, #d9d4c8 100%);
+  --kea-control-face-blue: linear-gradient(180deg, #8ed8ff 0%, #2f9ee6 100%);
+  --kea-control-face-grey: linear-gradient(180deg, #efefec 0%, #babcc0 100%);
+  --kea-control-face-dark: linear-gradient(180deg, #4b4b4f 0%, #202125 100%);
+  --kea-control-highlight: inset 0 2px 0 rgba(255, 255, 255, 0.7);
+  --kea-control-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.24);
+  --kea-shadow: 0 7px 0 rgba(17, 17, 17, 0.96);
+  --kea-shadow-pressed: inset 0 3px 4px rgba(0, 0, 0, 0.28), 0 2px 0 rgba(17, 17, 17, 0.96);
+  --kea-console-frame-face:
+    linear-gradient(180deg, rgba(76, 78, 84, 0.95), rgba(34, 36, 41, 0.98)),
+    var(--kea-control-face-dark);
+  --kea-console-surface-face:
+    linear-gradient(180deg, rgba(103, 107, 115, 0.92), rgba(53, 56, 62, 0.98));
+  --kea-console-screen-face:
+    linear-gradient(180deg, rgba(4, 27, 11, 0.98), rgba(2, 11, 5, 0.98));
+  --kea-console-screen-text: #8dff9c;
+  --kea-console-screen-glow: 0 0 8px rgba(112, 255, 145, 0.28);
+  --kea-font-sans: "Bricolage Grotesque", "Segoe UI", Arial, sans-serif;
+  --kea-font-display: var(--kea-font-sans);
+  --kea-font-mono: "Courier New", Courier, monospace;
+  --kea-space-1: 0.5rem;
+  --kea-space-2: 0.75rem;
+  --kea-space-3: 1rem;
+  --kea-space-4: 1.5rem;
+  --kea-space-5: 2rem;
+  --kea-space-6: 3rem;
+  --kea-radius-sm: 0.5rem;
+  --kea-radius-md: 0.9rem;
+  --kea-radius-lg: 1.2rem;
+  --kea-shell-border: 8px;
+  --kea-card-border: 4px;
+  --kea-case-radius: 0.65rem;
+  --kea-control-target: 3rem;
+  --kea-toolbar-gap: 0.55rem;
+  --kea-range-gap: 0.25rem;
+  --kea-range-inline-gap: 0.5rem;
+  --kea-range-label-size: 0.76rem;
+  --kea-range-compact-label-size: 0.68rem;
+  --kea-range-label-color: #fff2d1;
+  --kea-slider-track-size: 0.875rem;
+  --kea-slider-track-face: #24232c;
+  --kea-slider-thumb-width: 1.375rem;
+  --kea-slider-thumb-height: 1.875rem;
+  --kea-slider-thumb-face: var(--kea-control-face);
+  --kea-rail-compact-width: 4.25rem;
+  --kea-rail-start-padding: 0.4rem;
+  --kea-control-selected: #f99ac4;
+  --kea-key-shadow: 3px 4px 0 var(--kea-border);
+  --kea-concept-accent: #a995ff;
+  --kea-tool-accent: #83ddf3;
+  --kea-practice-accent: #a3e688;
+  --kea-game-accent: #ffab84;
+  --kea-activity-accent: #f99ac4;
+  --kea-focus-ring: 0 0 0 4px rgba(41, 173, 255, 0.32);
+  --kea-hud-gap: 0.75rem;
+  --kea-hud-padding: 0.65rem;
+  --kea-hud-item-padding: 0.55rem 0.8rem;
+  --kea-hud-label-size: 0.78rem;
+  --kea-hud-value-size: clamp(1rem, 1.5vw, 1.25rem);
+  --kea-hud-item-height: 3.25rem;
+  --kea-hud-item-min-width: 9.2rem;
+  --kea-screen-panel-min-height: 6.75rem;
+  --kea-text-ui: 0.92rem;
+  --kea-text-copy: 0.98rem;
+  --kea-text-small: 0.78rem;
+  --kea-motion-fast: 120ms;
+  --kea-motion-medium: 180ms;
+  --kea-motion-slow: 260ms;
+  --kea-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --kea-ease-press: cubic-bezier(0.2, 0.9, 0.25, 1);
+}
+
+.kea-module-page,
+.kea-library-page {
+  --kea-rail-face: #fff2d1;
+  --kea-rail-yellow: #ffda2e;
+  --kea-card-accent: var(--kea-concept-accent);
+  --kea-console-edge: 4px solid var(--kea-border);
+  --kea-console-offset: 5px 5px 0 var(--kea-border);
+}
+
+.kea-module-page {
+  --kea-module-radius: var(--kea-case-radius);
+  --kea-module-ivory: var(--kea-rail-face);
+  --kea-module-focus: #59d3ff;
+  --kea-console-frame-face: #33313b;
+  --kea-console-surface-face: #575363;
+  --kea-console-screen-face: #0c1b14;
+  --kea-console-screen-glow: 0 0 5px rgb(112 255 145 / 22%);
+  --kea-control-face: #f8e9ca;
+  --kea-control-face-blue: #82dcf1;
+  --kea-control-face-grey: #f0e8d9;
+  --kea-control-face-dark: #36343f;
+}

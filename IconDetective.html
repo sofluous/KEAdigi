@@ -107,19 +107,15 @@
             color: var(--kea-border);
         }
 
-        .coach-panel {
-            grid-template-rows: 1fr auto;
-        }
-
         .feedback-screen {
             gap: 0.4rem;
         }
 
-        .coach-actions {
-            grid-row: 3;
-        }
-
         @media (max-width: 860px) {
+            .icon-detective-page {
+                grid-template-rows: auto max-content;
+            }
+
             .icon-detective-grid {
                 grid-template-columns: 1fr;
             }
@@ -132,7 +128,7 @@
         }
     </style>
 </head>
-<body class="kea-page">
+<body class="kea-page kea-module-page">
     <div class="kea-shell">
         <header class="kea-topbar kea-topbar--centered">
             <a class="kea-button kea-button--secondary" href="index.html">&larr; Go back</a>
@@ -148,7 +144,6 @@
             </div>
             <div class="kea-topbar__actions">
                 <button class="kea-button kea-button--secondary" id="helpButton" type="button">How to Play</button>
-                <button class="kea-button" id="resetButton" type="button">New Set</button>
             </div>
         </header>
 
@@ -171,20 +166,23 @@
             <section class="icon-detective-grid">
                 <section class="icon-board kea-console-surface">
                     <div class="prompt-screen kea-console-screen kea-screen-panel">
-                        <p class="prompt-label kea-hud__label">Find This Icon</p>
+                        <div class="kea-board-toolbar">
+                            <div class="kea-toolbar--spread"><p class="prompt-label kea-hud__label">Find This Icon</p></div>
+                            <button class="kea-button kea-button--secondary kea-board-reset" id="resetButton" type="button" aria-label="Restart icon set" title="Restart icon set"></button>
+                        </div>
                         <p class="prompt-text" id="promptText">Open settings.</p>
                     </div>
                     <div class="icon-grid" id="iconGrid" aria-live="polite"></div>
                 </section>
 
-                <aside class="coach-panel kea-side-panel kea-side-panel--console">
+                <aside class="coach-panel kea-side-panel kea-side-panel--console kea-side-panel--with-footer">
                     <div class="kea-side-panel__body kea-side-panel__body--fill">
                         <div class="feedback-screen kea-console-screen kea-screen-panel kea-terminal" id="feedbackScreen">
                             <strong>Ready</strong>
                             <p>Choose the icon that matches the clue.</p>
                         </div>
                     </div>
-                    <div class="coach-actions kea-actions">
+                    <div class="kea-actions">
                         <button class="kea-button" id="nextButton" type="button" disabled>Next Clue</button>
                     </div>
                 </aside>
@@ -248,5 +246,7 @@
             }
         });
     </script>
+    <script src="scripts/keadigi-shell.js"></script>
+    <script src="scripts/keadigi-dialogs.js"></script>
 </body>
 </html>

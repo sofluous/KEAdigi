@@ -13,9 +13,8 @@
         .zoom-lab-page { display:grid; grid-template-rows:auto minmax(0,1fr); gap:0.7rem; min-height:0; padding:0.7rem; overflow:hidden; }
         .zoom-lab-layout { display:grid; grid-template-columns:minmax(0,1.45fr) minmax(280px,0.65fr); gap:0.75rem; min-height:0; }
         .zoom-stage-panel, .zoom-console { min-height:0; padding:0.75rem; display:grid; gap:0.75rem; }
-        .zoom-stage-panel { grid-template-rows:auto minmax(0,1fr); }
+        .zoom-stage-panel { grid-template-rows:auto auto minmax(12rem,1fr); }
         .zoom-console { grid-template-rows:auto auto minmax(0,1fr) auto; overflow:hidden; }
-        .zoom-toolbar { display:flex; flex-wrap:wrap; gap:0.55rem; justify-content:space-between; align-items:center; }
         .zoom-stage-shell { min-height:0; padding:0.15rem; display:grid; place-items:center; overflow:hidden; }
         .zoom-viewport { width:auto; height:100%; max-width:100%; min-height:0; aspect-ratio:16 / 10; position:relative; overflow:hidden; touch-action:none; cursor:grab; }
         .zoom-viewport.dragging { cursor:grabbing; }
@@ -29,16 +28,12 @@
         .inspect-swatch { width:100%; aspect-ratio:1; border:4px solid var(--kea-border); border-radius:0.9rem; box-shadow:inset 0 2px 0 rgba(255,255,255,0.24), inset 0 -2px 0 rgba(0,0,0,0.16); }
         .zoom-upload { position:relative; overflow:hidden; }
         .zoom-upload input { position:absolute; inset:0; opacity:0; cursor:pointer; }
-        .zoom-slider-stack, .zoom-slider-row { display:grid; gap:0.45rem; }
-        .zoom-slider-row { gap:0.25rem; }
-        .zoom-slider-row label { font-family:var(--kea-font-display); font-size:0.76rem; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:rgba(255,248,238,0.82); }
-        .zoom-slider-row input[type="range"] { width:100%; }
         @media (max-width: 980px) { .zoom-lab-layout { grid-template-columns:1fr; } .zoom-console { grid-template-rows:auto auto auto auto; } }
         @media (max-width: 760px) { .zoom-grid { grid-template-columns:1fr; } }
     </style>
 </head>
-<body class="kea-page">
-    <div class="kea-shell">
+<body class="kea-page kea-module-page">
+    <div class="kea-shell kea-pilot">
         <header class="kea-topbar kea-topbar--centered">
             <a class="kea-button kea-button--secondary" href="index.html">&larr; Go back</a>
             <div class="kea-topbar__brand kea-topbar__brand--center">
@@ -52,29 +47,40 @@
                 <p class="kea-app-subtitle" hidden>Zoom in, pan around, and inspect how nearby colors work together to build the image.</p>
             </div>
             <div class="kea-topbar__actions">
-                <button class="kea-button kea-button--secondary" id="helpButton" type="button">How to Play</button>
-                <label class="kea-button zoom-upload">Load Image<input id="imageUploadInput" type="file" accept="image/*" /></label>
+                <button class="kea-button kea-button--secondary" id="helpButton" type="button">Help</button>
+                <button class="kea-button kea-button--secondary" id="classViewButton" type="button" aria-pressed="false">Class View</button>
             </div>
         </header>
-        <main class="kea-content zoom-lab-page kea-console-frame">
+        <main class="kea-content kea-lab-page zoom-lab-page kea-console-frame">
             <section class="kea-hud kea-hud--4 kea-console-surface" aria-label="Image Zoom Lab status">
                 <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Zoom</span><span class="kea-hud__value" id="zoomValue">400%</span></div>
                 <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Sample</span><span class="kea-hud__value" id="sampleValue">Center</span></div>
                 <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Pixel</span><span class="kea-hud__value" id="pixelValue">255, 214, 88</span></div>
                 <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Blend</span><span class="kea-hud__value" id="blendValue">Warm gold</span></div>
             </section>
-            <section class="zoom-lab-layout">
-                <section class="zoom-stage-panel kea-console-surface">
-                    <div class="zoom-toolbar">
-                        <p class="kea-console-label">Viewport</p>
-                        <div class="kea-segmented" aria-label="Zoom controls">
-                            <button class="kea-button kea-button--secondary" id="zoomOutButton" type="button">-</button>
-                            <button class="kea-button kea-button--secondary" id="zoomResetButton" type="button">Reset</button>
-                            <button class="kea-button kea-button--secondary" id="zoomInButton" type="button">+</button>
+            <section class="zoom-lab-layout kea-lab-layout">
+                <section class="zoom-stage-panel kea-lab-stage kea-console-surface kea-pilot-stage">
+                    <div class="kea-board-toolbar">
+                        <div class="kea-toolbar--spread">
+                            <p class="kea-console-label kea-pilot-prompt">Zoom in to see the pixels.</p>
+                            <div class="kea-segmented" aria-label="Zoom controls">
+                                <button class="kea-button kea-button--secondary" id="zoomOutButton" type="button" aria-label="Zoom out">-</button>
+
+                                <button class="kea-button kea-button--secondary" id="zoomInButton" type="button" aria-label="Zoom in">+</button>
+                            </div>
                         </div>
+                        <button class="kea-button kea-button--secondary kea-board-reset" id="zoomResetButton" type="button" aria-label="Reset view" title="Reset view"></button>
+                    </div>
+                    <div class="kea-board-controls">
+                        <label class="kea-button zoom-upload">Load Image<input id="imageUploadInput" type="file" accept="image/*" /></label>
+                        <button class="kea-button kea-button--secondary" id="sampleButton" type="button">Load Sample</button>
+                        <div class="kea-range-field kea-board-fields-full">
+                                    <label for="inspectZoomSlider">Inspect Area</label>
+                                    <input id="inspectZoomSlider" type="range" min="5" max="17" step="2" value="9" />
+                                </div>
                     </div>
                     <div class="zoom-stage-shell kea-console-well">
-                        <div class="zoom-viewport" id="zoomViewport"><canvas class="zoom-canvas" id="zoomCanvas" width="960" height="600"></canvas></div>
+                        <div class="zoom-viewport" id="zoomViewport" tabindex="0" role="group" aria-label="Image viewport. Use arrow keys to pan."><canvas class="zoom-canvas" id="zoomCanvas" width="960" height="600"></canvas></div>
                     </div>
                 </section>
                 <aside class="zoom-console kea-side-panel kea-side-panel--console">
@@ -86,18 +92,13 @@
                                     <div class="inspect-canvas-wrap kea-console-well"><canvas class="inspect-canvas" id="inspectCanvas" width="144" height="144"></canvas></div>
                                     <div class="inspect-swatch" id="inspectSwatch"></div>
                                 </div>
-                                <div class="zoom-slider-row">
-                                    <label for="inspectZoomSlider">Inspect Area</label>
-                                    <input id="inspectZoomSlider" type="range" min="5" max="17" step="2" value="9" />
-                                </div>
                             </div>
-                            <div class="zoom-grid">
+                            <div class="zoom-grid kea-class-secondary">
                                 <div class="zoom-mini-screen kea-console-screen"><strong>Difference</strong><p>Many tiny squares blend together when you move back.</p></div>
                                 <div class="zoom-mini-screen kea-console-screen"><strong>Inspection</strong><p>Zoom in to separate the picture into visible color cells.</p></div>
                             </div>
                         </div>
                     </div>
-                    <div class="kea-actions"><button class="kea-button kea-button--secondary" id="sampleButton" type="button">Load Sample</button></div>
                 </aside>
             </section>
         </main>
@@ -186,17 +187,46 @@
         inspectZoomSlider.addEventListener("input", () => { inspectSpan = Number(inspectZoomSlider.value); render(); });
         zoomInButton.addEventListener("click", () => { zoomPercent = clamp(zoomPercent + 100, 100, 1400); render(); });
         zoomOutButton.addEventListener("click", () => { zoomPercent = clamp(zoomPercent - 100, 100, 1400); render(); });
+        zoomViewport.addEventListener("wheel", (event) => {
+            if (event.ctrlKey || event.metaKey || event.deltaY === 0) return;
+            event.preventDefault();
+            const next = clamp(zoomPercent - Math.sign(event.deltaY) * 100, 100, 1400);
+            if (next !== zoomPercent) {
+                zoomPercent = next;
+                render();
+            }
+        }, { passive: false });
         zoomResetButton.addEventListener("click", resetView);
         sampleButton.addEventListener("click", buildSampleImage);
         imageUploadInput.addEventListener("change", () => { const file = imageUploadInput.files[0]; if (file) loadImageFromFile(file); });
         zoomViewport.addEventListener("pointerdown", (event) => { dragging = true; dragStartX = event.clientX; dragStartY = event.clientY; dragBaseX = offsetX; dragBaseY = offsetY; zoomViewport.classList.add("dragging"); });
         window.addEventListener("pointermove", (event) => { if (dragging) { offsetX = dragBaseX - (event.clientX - dragStartX); offsetY = dragBaseY - (event.clientY - dragStartY); render(); } });
-        window.addEventListener("pointerup", () => { dragging = false; zoomViewport.classList.remove("dragging"); });
+        function stopDragging() {
+            dragging = false;
+            zoomViewport.classList.remove("dragging");
+        }
+        window.addEventListener("pointerup", stopDragging);
+        window.addEventListener("pointercancel", stopDragging);
+        zoomViewport.addEventListener("keydown", (event) => {
+            const directions = { ArrowLeft: [-32, 0], ArrowRight: [32, 0], ArrowUp: [0, -32], ArrowDown: [0, 32] };
+            const direction = directions[event.key];
+            if (!Array.isArray(direction)) return;
+            event.preventDefault();
+            offsetX += direction[0];
+            offsetY += direction[1];
+            clampOffsets();
+            const bounds = zoomViewport.getBoundingClientRect();
+            samplePoint = sourcePointFromClient(bounds.left + bounds.width / 2, bounds.top + bounds.height / 2);
+            render();
+        });
         zoomCanvas.addEventListener("pointermove", (event) => { samplePoint = sourcePointFromClient(event.clientX, event.clientY); render(); });
         helpButton.addEventListener("click", () => { helpOverlay.hidden = false; });
         closeHelpButton.addEventListener("click", () => { helpOverlay.hidden = true; });
         helpOverlay.addEventListener("click", (event) => { if (event.target === helpOverlay) helpOverlay.hidden = true; });
         buildSampleImage(); resizeCanvas(); window.addEventListener("resize", resizeCanvas);
     </script>
+    <script src="scripts/keadigi-class-view.js"></script>
+    <script src="scripts/keadigi-shell.js"></script>
+    <script src="scripts/keadigi-dialogs.js"></script>
 </body>
 </html>

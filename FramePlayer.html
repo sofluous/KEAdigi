@@ -17,9 +17,6 @@
         .frame-stage-shell { min-height:0; padding:0.2rem; display:grid; place-items:center; overflow:hidden; }
         .frame-canvas { width:auto; height:auto; display:block; border-radius:1rem; background:rgba(255,255,255,0.05); }
         .frame-playback-bar { padding:0.5rem 0.62rem; display:grid; grid-template-columns:auto minmax(0,1fr) auto auto; gap:0.5rem; align-items:center; }
-        .frame-speed-inline { display:grid; grid-template-columns:auto minmax(0,1fr); gap:0.5rem; align-items:center; min-width:0; }
-        .frame-speed-inline label { font-family:var(--kea-font-display); font-size:0.68rem; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:#d7ffd8; white-space:nowrap; }
-        .frame-speed-inline input { width:100%; }
         .timeline-scroll { min-height:0; overflow-x:auto; overflow-y:hidden; padding-bottom:0.15rem; }
         .timeline-strip { width:max-content; min-width:100%; display:grid; grid-auto-flow:column; grid-auto-columns:minmax(4.4rem,4.4rem); gap:0.3rem; }
         .frame-thumb { min-height:3.25rem; padding:0.26rem; display:grid; gap:0.12rem; align-content:start; }
@@ -38,10 +35,10 @@
         .frame-note { min-height:0; padding:0.45rem 0.55rem; display:grid; gap:0.2rem; align-content:start; }
         .frame-tick-row { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:0.3rem; color:#d7ffd8; font-family:var(--kea-font-display); font-size:0.58rem; font-weight:800; letter-spacing:0.05em; text-transform:uppercase; }
         @media (max-width: 980px) { .frame-layout { grid-template-columns:1fr; } }
-        @media (max-width: 760px) { .frame-playback-bar { grid-template-columns:1fr; } .frame-speed-inline { grid-template-columns:1fr; } }
+        @media (max-width: 760px) { .frame-playback-bar { grid-template-columns:1fr; } }
     </style>
 </head>
-<body class="kea-page">
+<body class="kea-page kea-module-page">
     <div class="kea-shell">
         <header class="kea-topbar kea-topbar--centered">
             <a class="kea-button kea-button--secondary" href="index.html">&larr; Go back</a>
@@ -59,7 +56,7 @@
                 <button class="kea-button kea-button--secondary" id="helpButton" type="button">How to Play</button>
             </div>
         </header>
-        <main class="kea-content frame-page kea-console-frame">
+        <main class="kea-content kea-lab-page frame-page kea-console-frame">
             <section class="kea-hud kea-hud--4 kea-console-surface" aria-label="Frame Player status">
                 <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Frame</span><span class="kea-hud__value" id="frameValue">1 / 6</span></div>
                 <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Playback</span><span class="kea-hud__value" id="speedValue">24 fps</span></div>
@@ -67,12 +64,12 @@
                 <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Mode</span><span class="kea-hud__value" id="modeValue">Paused</span></div>
                 <div class="kea-hud__item kea-console-screen"><span class="kea-hud__label">Compare</span><span class="kea-hud__value" id="compareValue">Choppy</span></div>
             </section>
-            <section class="frame-layout">
-                <section class="frame-stage-panel kea-console-surface">
+            <section class="frame-layout kea-lab-layout">
+                <section class="frame-stage-panel kea-lab-stage kea-console-surface">
                     <div class="frame-stage-shell kea-console-well"><canvas class="frame-canvas" id="frameCanvas" width="800" height="600"></canvas></div>
                     <div class="frame-playback-bar kea-console-screen">
                         <button class="kea-button" id="playPauseButton" type="button">Play</button>
-                        <div class="frame-speed-inline">
+                        <div class="kea-range-field kea-range-field--inline kea-range-field--stack-narrow">
                             <label for="speedSlider">Playback Speed</label>
                             <input id="speedSlider" type="range" min="0" max="4" step="1" value="2" list="frameSpeedMarks" />
                         </div>
@@ -250,5 +247,7 @@
         renderFrameSetButtons(); renderTimeline(); renderStage(); fitFrameCanvas();
         window.addEventListener("resize", fitFrameCanvas);
     </script>
+    <script src="scripts/keadigi-shell.js"></script>
+    <script src="scripts/keadigi-dialogs.js"></script>
 </body>
 </html>

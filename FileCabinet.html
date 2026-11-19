@@ -243,14 +243,6 @@
                 var(--kea-panel-strong);
         }
 
-        .file-console {
-            grid-template-rows: 1fr auto;
-        }
-
-        .file-actions {
-            justify-content: flex-end;
-        }
-
         @media (max-width: 980px) {
             .file-cabinet-grid {
                 grid-template-columns: 1fr;
@@ -269,7 +261,7 @@
         }
     </style>
 </head>
-<body class="kea-page">
+<body class="kea-page kea-module-page">
     <div class="kea-shell">
         <header class="kea-topbar kea-topbar--centered">
             <a class="kea-button kea-button--secondary" href="index.html">&larr; Go back</a>
@@ -285,7 +277,6 @@
             </div>
             <div class="kea-topbar__actions">
                 <button class="kea-button kea-button--secondary" id="helpButton" type="button">How to Play</button>
-                <button class="kea-button" id="newRoundButton" type="button">New Round</button>
             </div>
         </header>
 
@@ -317,7 +308,10 @@
                     </div>
 
                     <section class="file-tray-section">
-                        <p class="kea-console-label">Tray</p>
+                        <div class="kea-board-toolbar">
+                            <div class="kea-toolbar--spread"><p class="kea-console-label">Tray</p><button class="kea-button kea-button--secondary" id="newRoundButton" type="button">New Round</button></div>
+                            <button class="kea-button kea-button--secondary kea-board-reset" id="clearRoundButton" type="button" aria-label="Clear round" title="Clear round"></button>
+                        </div>
                         <div class="file-tray" id="fileTray"></div>
                     </section>
 
@@ -327,15 +321,14 @@
                     </section>
                 </section>
 
-                <aside class="file-console kea-side-panel kea-side-panel--console">
+                <aside class="file-console kea-side-panel kea-side-panel--console kea-side-panel--with-footer">
                     <div class="kea-side-panel__body kea-side-panel__body--fill">
                         <div class="kea-console-screen kea-screen-panel kea-terminal" id="feedbackScreen">
                             <strong>Ready</strong>
                             <p>Select a file from the tray, then tap the folder where it belongs.</p>
                         </div>
                     </div>
-                    <div class="file-actions kea-actions">
-                        <button class="kea-button kea-button--secondary" id="clearRoundButton" type="button">Clear Round</button>
+                    <div class="kea-actions">
                         <button class="kea-button" id="nextRoundButton" type="button" disabled>Next Round</button>
                     </div>
                 </aside>
@@ -561,5 +554,7 @@
 
         loadRound(0, true);
     </script>
+    <script src="scripts/keadigi-shell.js"></script>
+    <script src="scripts/keadigi-dialogs.js"></script>
 </body>
 </html>

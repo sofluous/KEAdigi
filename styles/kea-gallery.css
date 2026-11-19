@@ -1,0 +1,48 @@
+.kea-gallery {
+  color: var(--kea-module-ivory);
+}
+
+.kea-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  gap: var(--kea-space-3);
+  padding-bottom: var(--kea-space-2);
+}
+
+.kea-gallery-panel {
+  display: grid;
+  gap: var(--kea-space-3);
+  align-content: start;
+  padding: var(--kea-space-3);
+  scroll-margin-top: var(--kea-space-3);
+}
+
+.kea-gallery-nav {
+  flex-flow: row wrap;
+  margin-block: var(--kea-space-3);
+}
+
+.kea-gallery .kea-hud {
+  margin: 0;
+}
+
+.kea-gallery .kea-hud__value {
+  margin-inline-start: 0;
+}
+
+.kea-gallery .kea-side-panel--reading {
+  color: var(--kea-text);
+}
+
+.kea-gallery .kea-card-grid {
+  justify-self: start;
+  max-width: 18rem;
+}
+
+.kea-gallery-well {
+  padding: var(--kea-space-3);
+}
+
+.kea-gallery-large .kea-hud__value {
+  font-size: 1.5rem;
+}

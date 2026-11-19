@@ -36,19 +36,13 @@
             min-height: 0;
         }
 
-        .tool-coach {
-            grid-template-rows: 1fr auto;
-        }
-
         .tool-prompt {
             min-height: 7rem;
             gap: 0.6rem;
         }
 
-        .tool-prompt__label,
         .tool-prompt__text,
-        .tool-card__name,
-        .tool-card__use {
+        .tool-card__name {
             margin: 0;
         }
 
@@ -113,19 +107,17 @@
             color: var(--kea-border);
         }
 
-        .tool-card__use {
-            font-size: 0.82rem;
-            line-height: 1.25;
-            color: var(--kea-text-soft);
-            max-width: 16ch;
-        }
-
         .tool-feedback {
             gap: 0.4rem;
         }
 
-        .tool-actions {
-            grid-row: 3;
+        .kea-class-view .tool-card {
+            min-height: clamp(96px, 18vh, 170px);
+            padding-block: var(--kea-space-1);
+        }
+
+        .kea-class-view .tool-coach {
+            align-self: start;
         }
 
         @media (max-width: 860px) {
@@ -141,8 +133,8 @@
         }
     </style>
 </head>
-<body class="kea-page">
-    <div class="kea-shell">
+<body class="kea-page kea-module-page">
+    <div class="kea-shell kea-pilot">
         <header class="kea-topbar kea-topbar--centered">
             <a class="kea-button kea-button--secondary" href="index.html">&larr; Go back</a>
             <div class="kea-topbar__brand kea-topbar__brand--center">
@@ -156,8 +148,8 @@
                 <p class="kea-app-subtitle" hidden>Match common creative tools to the job they perform.</p>
             </div>
             <div class="kea-topbar__actions">
-                <button class="kea-button kea-button--secondary" id="helpButton" type="button">How to Play</button>
-                <button class="kea-button" id="resetButton" type="button">New Set</button>
+                <button class="kea-button kea-button--secondary" id="helpButton" type="button">Help</button>
+                <button class="kea-button kea-button--secondary" id="classViewButton" type="button" aria-pressed="false">Class View</button>
             </div>
         </header>
 
@@ -178,22 +170,32 @@
             </section>
 
             <section class="tool-match-grid">
-                <section class="tool-board kea-console-surface">
+                <section class="tool-board kea-console-surface kea-pilot-stage">
                     <div class="tool-prompt kea-console-screen kea-screen-panel">
-                        <p class="tool-prompt__label kea-hud__label">Match The Tool</p>
-                        <p class="tool-prompt__text" id="promptText">Paint freehand lines.</p>
+                        <p class="tool-prompt__text kea-pilot-prompt" id="promptText" tabindex="-1">Paint freehand lines.</p>
                     </div>
-                    <div class="tool-grid" id="toolGrid" aria-live="polite"></div>
+                    <div class="kea-board-toolbar">
+                        <div class="kea-field">
+                            <label for="toolSet">Tool set</label>
+
+                            <select class="kea-input kea-set-select" id="toolSet">
+                                <option value="toolMatch">Drawing basics</option>
+                                <option value="toolMatchEditing">Editing and arranging</option>
+                            </select>
+                        </div>
+                        <button class="kea-button kea-button--secondary kea-board-reset" id="resetButton" type="button" aria-label="Restart tool set" title="Restart tool set"></button>
+                    </div>
+                    <div class="tool-grid" id="toolGrid"></div>
                 </section>
 
-                <aside class="tool-coach kea-side-panel kea-side-panel--console">
+                <aside class="tool-coach kea-side-panel kea-side-panel--console kea-side-panel--with-footer">
                     <div class="kea-side-panel__body kea-side-panel__body--fill">
-                        <div class="tool-feedback kea-console-screen kea-screen-panel kea-terminal" id="feedbackScreen">
+                        <div class="tool-feedback kea-console-screen kea-screen-panel kea-terminal" id="feedbackScreen" role="status" aria-atomic="true">
                             <strong>Ready</strong>
                             <p>Pick the tool that would do the job in an art or design app.</p>
                         </div>
                     </div>
-                    <div class="tool-actions kea-actions">
+                    <div class="kea-actions">
                         <button class="kea-button" id="nextButton" type="button" disabled>Next Tool</button>
                     </div>
                 </aside>
@@ -219,9 +221,11 @@
     </div>
 
     <script src="decks/toolMatchDeck.js"></script>
+    <script src="decks/toolMatchEditingDeck.js"></script>
     <script src="scripts/keadigi-activities.js"></script>
     <script>
-        const deck = window.KEADigiDecks.toolMatch;
+        const decks = window.KEADigiDecks;
+        const toolSet = document.getElementById("toolSet");
         const roundValue = document.getElementById("roundValue");
         const scoreValue = document.getElementById("scoreValue");
         const streakValue = document.getElementById("streakValue");
@@ -240,8 +244,9 @@
             if (event.target === helpOverlay) helpOverlay.hidden = true;
         });
 
-        window.KEADigiActivities.createMultipleChoiceActivity({
-            deck,
+        toolSet.value = "toolMatch";
+        const activity = window.KEADigiActivities.createMultipleChoiceActivity({
+            deck: decks.toolMatch,
             elements: {
                 roundValue,
                 scoreValue,
@@ -254,9 +259,22 @@
             },
             choiceClassName: "kea-button tool-card",
             renderChoice(choice) {
-                return `<span class="tool-card__badge">${choice.svg}</span><p class="tool-card__name">${choice.label}</p><p class="tool-card__use">${choice.use || "Use this tool."}</p>`;
+                return `<span class="tool-card__badge">${choice.svg}</span><p class="tool-card__name">${choice.label}</p>`;
+            }
+        });
+        let selectedSet = toolSet.value;
+        toolSet.addEventListener("change", () => {
+            try {
+                activity.setDeck(decks[toolSet.value]);
+                selectedSet = toolSet.value;
+            } catch (error) {
+                toolSet.value = selectedSet;
+                feedbackScreen.textContent = error.message;
             }
         });
     </script>
+    <script src="scripts/keadigi-class-view.js"></script>
+    <script src="scripts/keadigi-shell.js"></script>
+    <script src="scripts/keadigi-dialogs.js"></script>
 </body>
 </html>
