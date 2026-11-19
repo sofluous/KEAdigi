@@ -5,128 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Icon Detective | KEA Digi</title>
     <link rel="stylesheet" href="keadigi.css" />
-    <style>
-        .icon-detective-page {
-            display: grid;
-            grid-template-rows: auto minmax(0, 1fr);
-            gap: var(--kea-space-3);
-            min-height: 0;
-            padding: 1rem;
-            overflow: hidden;
-        }
-
-        .icon-detective-grid {
-            display: grid;
-            grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
-            gap: var(--kea-space-3);
-            align-items: stretch;
-            min-height: 0;
-        }
-
-        .icon-board,
-        .coach-panel {
-            padding: 1rem;
-        }
-
-        .icon-board,
-        .coach-panel {
-            display: grid;
-            gap: var(--kea-space-3);
-            align-content: start;
-        }
-
-        .prompt-screen {
-            min-height: 7rem;
-            gap: 0.6rem;
-        }
-
-        .prompt-label {
-            margin: 0;
-        }
-
-        .prompt-text {
-            margin: 0;
-            font-size: clamp(1.25rem, 2vw, 1.8rem);
-            line-height: 1.15;
-        }
-
-        .icon-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 1rem;
-        }
-
-        .icon-choice {
-            min-height: 170px;
-            padding: 1rem 0.8rem 0.9rem;
-            display: grid;
-            justify-items: center;
-            align-content: center;
-            gap: 0.85rem;
-            text-align: center;
-        }
-
-        .icon-choice.correct {
-            border-color: var(--kea-success);
-            background: linear-gradient(180deg, #d7ffdd 0%, #8effaf 100%);
-        }
-
-        .icon-choice.wrong {
-            border-color: var(--kea-danger);
-            background: linear-gradient(180deg, #ffd4df 0%, #ff8daf 100%);
-        }
-
-        .icon-badge {
-            width: clamp(62px, 8vw, 88px);
-            height: clamp(62px, 8vw, 88px);
-            display: grid;
-            place-items: center;
-            border: 4px solid var(--kea-border);
-            border-radius: 1rem;
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(229, 225, 214, 1));
-            box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.7), inset 0 -2px 0 rgba(0, 0, 0, 0.2);
-        }
-
-        .icon-choice svg {
-            width: 62%;
-            height: 62%;
-            stroke: var(--kea-border);
-            fill: none;
-            stroke-width: 6;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        .icon-name {
-            margin: 0;
-            font-family: var(--kea-font-display);
-            font-weight: 800;
-            font-size: 0.92rem;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-            color: var(--kea-border);
-        }
-
-        .feedback-screen {
-            gap: 0.4rem;
-        }
-
-        @media (max-width: 860px) {
-            .icon-detective-page {
-                grid-template-rows: auto max-content;
-            }
-
-            .icon-detective-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 640px) {
-            .icon-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="modules/icon-detective/module.css" />
 </head>
 <body class="kea-page kea-module-page">
     <div class="kea-shell">
@@ -165,11 +44,11 @@
 
             <section class="icon-detective-grid">
                 <section class="icon-board kea-console-surface">
+                    <div class="kea-board-toolbar">
+                        <p class="kea-console-label">Find This Icon</p>
+                        <button class="kea-button kea-button--secondary kea-board-reset" id="resetButton" type="button" aria-label="Restart icon set" title="Restart icon set"></button>
+                    </div>
                     <div class="prompt-screen kea-console-screen kea-screen-panel">
-                        <div class="kea-board-toolbar">
-                            <div class="kea-toolbar--spread"><p class="prompt-label kea-hud__label">Find This Icon</p></div>
-                            <button class="kea-button kea-button--secondary kea-board-reset" id="resetButton" type="button" aria-label="Restart icon set" title="Restart icon set"></button>
-                        </div>
                         <p class="prompt-text" id="promptText">Open settings.</p>
                     </div>
                     <div class="icon-grid" id="iconGrid" aria-live="polite"></div>
@@ -209,43 +88,7 @@
 
     <script src="decks/iconDetectiveDeck.js"></script>
     <script src="scripts/keadigi-activities.js"></script>
-    <script>
-        const deck = window.KEADigiDecks.iconDetective;
-        const roundValue = document.getElementById("roundValue");
-        const scoreValue = document.getElementById("scoreValue");
-        const streakValue = document.getElementById("streakValue");
-        const promptText = document.getElementById("promptText");
-        const iconGrid = document.getElementById("iconGrid");
-        const feedbackScreen = document.getElementById("feedbackScreen");
-        const nextButton = document.getElementById("nextButton");
-        const resetButton = document.getElementById("resetButton");
-        const helpButton = document.getElementById("helpButton");
-        const closeHelpButton = document.getElementById("closeHelpButton");
-        const helpOverlay = document.getElementById("helpOverlay");
-        helpButton.addEventListener("click", () => { helpOverlay.hidden = false; });
-        closeHelpButton.addEventListener("click", () => { helpOverlay.hidden = true; });
-        helpOverlay.addEventListener("click", (event) => {
-            if (event.target === helpOverlay) helpOverlay.hidden = true;
-        });
-
-        window.KEADigiActivities.createMultipleChoiceActivity({
-            deck,
-            elements: {
-                roundValue,
-                scoreValue,
-                streakValue,
-                promptText,
-                choicesContainer: iconGrid,
-                feedbackScreen,
-                nextButton,
-                resetButton
-            },
-            choiceClassName: "kea-button icon-choice",
-            renderChoice(choice) {
-                return `<span class="icon-badge">${choice.svg}</span><p class="icon-name">${choice.label}</p>`;
-            }
-        });
-    </script>
+    <script src="modules/icon-detective/module.js"></script>
     <script src="scripts/keadigi-shell.js"></script>
     <script src="scripts/keadigi-dialogs.js"></script>
 </body>

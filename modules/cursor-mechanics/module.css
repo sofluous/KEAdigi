@@ -1,0 +1,27 @@
+        html, body { height:100%; overflow:hidden; }
+        body.kea-page { overflow:hidden; }
+        .kea-shell { height:100dvh; min-height:100vh; overflow:hidden; }
+        .kea-topbar { flex:0 0 auto; padding:0.65rem 0.9rem; }
+        .cursor-page { display:grid; grid-template-rows:auto minmax(0,1fr); gap:0.7rem; min-height:0; padding:0.7rem; overflow:hidden; }
+        .cursor-layout { display:grid; grid-template-columns:minmax(0,1.28fr) minmax(260px,0.62fr); gap:0.7rem; min-height:0; }
+        .cursor-stage, .cursor-console { min-height:0; padding:0.75rem; display:grid; gap:0.65rem; overflow:hidden; }
+        .cursor-stage { grid-template-rows:auto auto minmax(15rem,1fr); }
+        .cursor-well { min-height:0; padding:0.4rem; position:relative; overflow:hidden; touch-action:none; }
+        .cursor-board { position:relative; width:100%; height:100%; min-height:0; border-radius:1rem; background:
+            linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px),
+            linear-gradient(180deg, rgba(255,255,255,0.04) 1px, transparent 1px),
+            #101317;
+            background-size:32px 32px, 32px 32px, auto; }
+        .cursor-example { position:absolute; display:grid; place-items:center; text-align:center; padding:0.35rem; color:var(--kea-text); overflow-wrap:anywhere; }
+        .cursor-example:nth-child(2) { background:var(--kea-rail-yellow); }
+        .cursor-example:nth-child(3) { background:var(--kea-practice-accent); }
+        .cursor-example.is-highlighted { background:var(--kea-control-face-blue); }
+        .cursor-example[data-action="drag"] { cursor:grab; touch-action:none; }
+        .cursor-example[data-action="resize"] { cursor:nwse-resize; touch-action:none; resize:none; }
+        .cursor-example[data-action="resize"]::after { content:""; position:absolute; right:0.2rem; bottom:0.2rem; width:0.75rem; height:0.75rem; border-right:3px solid; border-bottom:3px solid; }
+        .cursor-well { min-height:15rem; touch-action:auto; }
+        .cursor-console { grid-template-rows:auto auto minmax(0,1fr) auto; }
+        .cursor-screen-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.4rem; }
+        .cursor-mini { min-height:0; padding:0.6rem; display:grid; gap:0.25rem; align-content:start; }
+        @media (max-width: 980px) { .cursor-layout { grid-template-columns:1fr; } }
+        @media (max-width: 760px) { .cursor-screen-grid { grid-template-columns:1fr; } }

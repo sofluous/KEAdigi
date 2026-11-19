@@ -5,31 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Transparency Lab | KEA Digi</title>
     <link rel="stylesheet" href="keadigi.css" />
-    <style>
-        html, body { height:100%; overflow:hidden; }
-        body.kea-page { overflow:hidden; }
-        .kea-shell { height:100dvh; min-height:100vh; overflow:hidden; }
-        .kea-topbar { flex:0 0 auto; padding:0.65rem 0.9rem; }
-        .alpha-page { display:grid; grid-template-rows:auto minmax(0,1fr); gap:0.7rem; min-height:0; padding:0.7rem; overflow:hidden; }
-        .alpha-layout { display:grid; grid-template-columns:minmax(0,1.28fr) minmax(255px,0.62fr); gap:0.7rem; min-height:0; }
-        .alpha-stage, .alpha-console { min-height:0; padding:0.75rem; display:grid; gap:0.65rem; overflow:hidden; }
-        .alpha-stage { grid-template-rows:auto auto minmax(12rem,1fr); }
-        .alpha-board { min-height:0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.65rem; }
-        .alpha-panel { min-height:0; display:grid; grid-template-rows:auto minmax(0,1fr) auto; gap:0.45rem; }
-        .alpha-shell { min-height:0; padding:0.2rem; display:grid; place-items:center; overflow:hidden; }
-        .alpha-canvas { width:auto; height:100%; max-width:100%; max-height:100%; aspect-ratio:1; display:block; }
-        .alpha-console { align-content:start; }
-        .alpha-slider-head { display:flex; justify-content:space-between; gap:0.5rem; align-items:center; }
-        .alpha-slider-head label { font-family:var(--kea-font-display); font-size:0.74rem; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:rgba(255,248,238,0.82); }
-        .alpha-slider-head span { font-family:var(--kea-font-mono); color:var(--kea-console-screen-text); }
-        .alpha-readouts { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.4rem; }
-        .alpha-mini { min-height:0; padding:0.6rem; display:grid; gap:0.25rem; align-content:start; }
-        @media (max-width: 980px) { .alpha-layout { grid-template-columns:1fr; } }
-        @media (max-width: 760px) {
-            .alpha-board, .alpha-readouts { grid-template-columns:1fr; }
-            .alpha-shell { min-height:10rem; }
-        }
-    </style>
+    <link rel="stylesheet" href="modules/transparency-lab/module.css" />
 </head>
 <body class="kea-page kea-module-page">
     <div class="kea-shell">
@@ -116,73 +92,7 @@
             <div class="kea-actions"><button class="kea-button kea-button--secondary" id="closeHelpButton" type="button">Close</button></div>
         </div>
     </div>
-    <script>
-        const splitCanvas = document.getElementById("splitCanvas");
-        const blendCanvas = document.getElementById("blendCanvas");
-        const splitCtx = splitCanvas.getContext("2d");
-        const blendCtx = blendCanvas.getContext("2d");
-        const topAlphaSlider = document.getElementById("topAlphaSlider");
-        const bottomAlphaSlider = document.getElementById("bottomAlphaSlider");
-        const topAlphaValue = document.getElementById("topAlphaValue");
-        const bottomAlphaValue = document.getElementById("bottomAlphaValue");
-        const topAlphaHud = document.getElementById("topAlphaHud");
-        const bottomAlphaHud = document.getElementById("bottomAlphaHud");
-        const overlapHud = document.getElementById("overlapHud");
-        const resultHud = document.getElementById("resultHud");
-        const shapeButtons = document.getElementById("shapeButtons");
-        const resetButton = document.getElementById("resetButton");
-        const helpButton = document.getElementById("helpButton");
-        const closeHelpButton = document.getElementById("closeHelpButton");
-        const helpOverlay = document.getElementById("helpOverlay");
-        const shapeModes = [{ id: "circle", label: "Circles" }, { id: "square", label: "Squares" }, { id: "diamond", label: "Diamonds" }];
-        let currentShape = "circle";
-        function drawShape(ctx, mode, x, y, size, color, alpha) {
-            ctx.save();
-            ctx.globalAlpha = alpha;
-            ctx.fillStyle = color;
-            ctx.beginPath();
-            if (mode === "circle") ctx.arc(x, y, size / 2, 0, Math.PI * 2);
-            if (mode === "square") ctx.rect(x - size / 2, y - size / 2, size, size);
-            if (mode === "diamond") { ctx.moveTo(x, y - size / 2); ctx.lineTo(x + size / 2, y); ctx.lineTo(x, y + size / 2); ctx.lineTo(x - size / 2, y); ctx.closePath(); }
-            ctx.fill();
-            ctx.restore();
-        }
-        function renderShapeButtons() {
-            shapeButtons.innerHTML = "";
-            shapeModes.forEach((mode) => {
-                const button = document.createElement("button");
-                button.type = "button";
-                button.className = "kea-button kea-button--secondary";
-                button.textContent = mode.label;
-                button.setAttribute("aria-pressed", String(mode.id === currentShape));
-                if (mode.id === currentShape) button.classList.add("is-active");
-                button.addEventListener("click", () => { currentShape = mode.id; renderShapeButtons(); render(); });
-                shapeButtons.appendChild(button);
-            });
-        }
-        function render() {
-            const topAlpha = Number(topAlphaSlider.value) / 100;
-            const bottomAlpha = Number(bottomAlphaSlider.value) / 100;
-            topAlphaValue.textContent = `${Math.round(topAlpha * 100)}%`;
-            bottomAlphaValue.textContent = `${Math.round(bottomAlpha * 100)}%`;
-            topAlphaHud.textContent = `${Math.round(topAlpha * 100)}%`;
-            bottomAlphaHud.textContent = `${Math.round(bottomAlpha * 100)}%`;
-            overlapHud.textContent = topAlpha > 0 && bottomAlpha > 0 ? "Partial" : "Hidden";
-            resultHud.textContent = topAlpha > 0.8 ? "Strong top" : topAlpha < 0.3 ? "Lower shows" : "Blend";
-            [splitCtx, blendCtx].forEach((ctx) => { ctx.clearRect(0, 0, 420, 420); ctx.fillStyle = "#121418"; ctx.fillRect(0, 0, 420, 420); });
-            drawShape(splitCtx, currentShape, 120, 210, 150, "#29adff", bottomAlpha);
-            drawShape(splitCtx, currentShape, 300, 210, 150, "#ff5c93", topAlpha);
-            drawShape(blendCtx, currentShape, 165, 210, 180, "#29adff", bottomAlpha);
-            drawShape(blendCtx, currentShape, 255, 210, 180, "#ff5c93", topAlpha);
-        }
-        resetButton.addEventListener("click", () => { topAlphaSlider.value = "70"; bottomAlphaSlider.value = "100"; currentShape = "circle"; renderShapeButtons(); render(); });
-        [topAlphaSlider, bottomAlphaSlider].forEach((slider) => slider.addEventListener("input", render));
-        helpButton.addEventListener("click", () => { helpOverlay.hidden = false; });
-        closeHelpButton.addEventListener("click", () => { helpOverlay.hidden = true; });
-        helpOverlay.addEventListener("click", (event) => { if (event.target === helpOverlay) helpOverlay.hidden = true; });
-        renderShapeButtons();
-        render();
-    </script>
+    <script src="modules/transparency-lab/module.js"></script>
     <script src="scripts/keadigi-shell.js"></script>
     <script src="scripts/keadigi-dialogs.js"></script>
 </body>

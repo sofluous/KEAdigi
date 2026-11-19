@@ -14,7 +14,7 @@
         <div class="kea-topbar__brand"><p class="kea-app-title">Components</p></div>
         <div class="kea-topbar__actions">
           <button type="button" class="kea-button kea-button--secondary" data-gallery-help>Help</button>
-          <button type="button" class="kea-button kea-button--secondary" id="classViewButton" aria-pressed="false">Class View</button>
+          <button type="button" class="kea-button kea-button--secondary kea-toggle" id="classViewButton" aria-pressed="false">Class View</button>
         </div>
       </header>
       <main class="kea-content kea-console-frame kea-gallery">
@@ -24,19 +24,47 @@
           <a class="kea-button" href="#console">Console</a>
           <a class="kea-button" href="#library">Library</a>
           <a class="kea-button" href="#dialogs">Dialogs</a>
+          <a class="kea-button" href="#foundations">Palette &amp; type</a>
+          <a class="kea-button" href="#button-states">Button states</a>
         </nav>
+        <section class="kea-console-surface kea-gallery-panel" id="foundations" aria-labelledby="foundations-title">
+          <h2 class="kea-console-label" id="foundations-title">Palette and type</h2>
+          <dl class="kea-swatch-grid">
+            <div class="kea-swatch kea-swatch--light" style="--swatch:var(--kea-surface-base)"><dt>Yellow · base</dt><dd>Background below the rails and board groups.</dd></div>
+            <div class="kea-swatch" style="--swatch:var(--kea-surface-level-1)"><dt>Gray · level 1</dt><dd>Category groups, module frames and navigation rails.</dd></div>
+            <div class="kea-swatch" style="--swatch:var(--kea-surface-level-2)"><dt>Gray · level 2</dt><dd>Raised panels and control groups.</dd></div>
+            <div class="kea-swatch kea-swatch--light" style="--swatch:var(--kea-panel)"><dt>Cream · launch card</dt><dd>Interactive cards and readable foreground content.</dd></div>
+            <div class="kea-swatch" style="--swatch:var(--kea-console-screen-face);--swatch-ink:var(--kea-console-screen-text)"><dt>Green · readout</dt><dd>Live values and feedback on inset screens.</dd></div>
+            <div class="kea-swatch kea-swatch--light" style="--swatch:var(--kea-control-face-blue)"><dt>Blue · action</dt><dd>Primary controls and slider feedback.</dd></div>
+          </dl>
+          <ul class="kea-type-samples">
+            <li><strong class="kea-type-display">Headings &amp; labels</strong><span>Bricolage Grotesque · bold display and control labels</span></li>
+            <li><strong class="kea-type-body">Interface and lesson copy</strong><span>Bricolage Grotesque · regular reading text</span></li>
+            <li><strong class="kea-type-mono">RGB 255 · 180 · 72</strong><span>Courier New · readouts, values and paths</span></li>
+          </ul>
+        </section>
+        <section class="kea-console-surface kea-gallery-panel kea-button-matrix-panel" id="button-states" aria-labelledby="button-states-title">
+          <h2 class="kea-console-label" id="button-states-title">Button state matrix</h2>
+          <p id="button-states-key">Missing means a shared style is absent. N/A means the state does not apply. Samples are static. Use the Controls section to try live buttons.</p>
+          <div class="kea-matrix-scroll" role="region" aria-label="Scrollable button state matrix" tabindex="0">
+            <table class="kea-button-matrix" aria-labelledby="button-states-title" aria-describedby="button-states-key">
+              <thead><tr><th scope="col">Control type &amp; purpose</th><th scope="col">Default</th><th scope="col">Hover</th><th scope="col">Pressed</th><th scope="col">Focus</th><th scope="col">Selected / on</th><th scope="col">Disabled</th><th scope="col">Loading</th></tr></thead>
+              <tbody id="buttonMatrixBody"></tbody>
+            </table>
+          </div>
+        </section>
         <div class="kea-gallery-grid">
           <section class="kea-console-surface kea-gallery-panel" id="controls" aria-labelledby="controls-title">
             <h2 class="kea-console-label" id="controls-title">Controls and fields</h2>
-            <div class="kea-toolbar">
+            <div class="kea-toolbar kea-control-deck" role="group" aria-label="Example controls">
               <div class="kea-toolbar__group">
                 <button class="kea-button kea-button--ghost" type="button" data-gallery-help>Help</button>
                 <button class="kea-button" type="button" disabled>Disabled</button>
               </div>
               <div class="kea-toolbar__group">
                 <div class="kea-segmented" role="group" aria-label="Preview mode">
-                  <button class="kea-button active" type="button" data-gallery-mode aria-pressed="true">Standard</button>
-                  <button class="kea-button kea-button--secondary" type="button" data-gallery-mode aria-pressed="false">Large</button>
+                  <button class="kea-button kea-button--secondary kea-toggle active" type="button" data-gallery-mode aria-pressed="true">Standard</button>
+                  <button class="kea-button kea-button--secondary kea-toggle" type="button" data-gallery-mode aria-pressed="false">Large</button>
                 </div>
               </div>
             </div>

@@ -14,6 +14,14 @@
   --kea-text: #141414;
   --kea-text-muted: #4e4a43;
   --kea-border: #111111;
+  --kea-surface-base: var(--kea-bg);
+  --kea-surface-level-1: #33313b;
+  --kea-surface-level-2: #575363;
+  --kea-on-gray: #fff4e3;
+  --kea-on-gray-muted: #e2dce9;
+  --kea-scrollbar-track: #24232c;
+  --kea-scrollbar-thumb: #b1a9bd;
+  --kea-scrollbar-size: 0.875rem;
   --kea-accent: #29adff;
   --kea-accent-strong: #1477bd;
   --kea-secondary: #c2c3c7;
@@ -65,6 +73,8 @@
   --kea-slider-thumb-face: var(--kea-control-face);
   --kea-rail-compact-width: 4.25rem;
   --kea-rail-start-padding: 0.4rem;
+  --kea-rail-key-face: #f0e8d9;
+  --kea-rail-icon-size: 1.4rem;
   --kea-control-selected: #f99ac4;
   --kea-key-shadow: 3px 4px 0 var(--kea-border);
   --kea-concept-accent: #a995ff;
@@ -72,7 +82,9 @@
   --kea-practice-accent: #a3e688;
   --kea-game-accent: #ffab84;
   --kea-activity-accent: #f99ac4;
-  --kea-focus-ring: 0 0 0 4px rgba(41, 173, 255, 0.32);
+  --kea-focus-color: #eee2d1;
+  --kea-focus-ring: 0 0 0 2px var(--kea-focus-color);
+  --kea-hover-border: #6c6570;
   --kea-hud-gap: 0.75rem;
   --kea-hud-padding: 0.65rem;
   --kea-hud-item-padding: 0.55rem 0.8rem;
@@ -93,7 +105,6 @@
 
 .kea-module-page,
 .kea-library-page {
-  --kea-rail-face: #fff2d1;
   --kea-rail-yellow: #ffda2e;
   --kea-card-accent: var(--kea-concept-accent);
   --kea-console-edge: 4px solid var(--kea-border);
@@ -102,14 +113,14 @@
 
 .kea-module-page {
   --kea-module-radius: var(--kea-case-radius);
-  --kea-module-ivory: var(--kea-rail-face);
-  --kea-module-focus: #59d3ff;
-  --kea-console-frame-face: #33313b;
-  --kea-console-surface-face: #575363;
+  --kea-module-ivory: var(--kea-on-gray);
+  --kea-module-focus: var(--kea-focus-color);
+  --kea-console-frame-face: var(--kea-surface-level-1);
+  --kea-console-surface-face: var(--kea-surface-level-2);
   --kea-console-screen-face: #0c1b14;
   --kea-console-screen-glow: 0 0 5px rgb(112 255 145 / 22%);
   --kea-control-face: #f8e9ca;
   --kea-control-face-blue: #82dcf1;
-  --kea-control-face-grey: #f0e8d9;
+  --kea-control-face-grey: var(--kea-rail-key-face);
   --kea-control-face-dark: #36343f;
 }

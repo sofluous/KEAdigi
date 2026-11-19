@@ -5,32 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RGB Screen Lab | KEA Digi</title>
     <link rel="stylesheet" href="keadigi.css" />
-    <style>
-        html, body { height:100%; overflow:hidden; }
-        body.kea-page { overflow:hidden; }
-        .kea-shell { height:100dvh; min-height:100vh; overflow:hidden; }
-        .kea-topbar { flex:0 0 auto; padding:0.65rem 0.9rem; }
-        .rgb-page { display:grid; grid-template-rows:auto minmax(0,1fr); gap:0.7rem; min-height:0; padding:0.7rem; overflow:hidden; }
-        .rgb-layout { display:grid; grid-template-columns:minmax(0,1.28fr) minmax(260px,0.62fr); gap:0.7rem; min-height:0; }
-        .rgb-stage, .rgb-console { min-height:0; padding:0.75rem; display:grid; gap:0.65rem; overflow:hidden; }
-        .rgb-stage { grid-template-rows:auto auto minmax(12rem,1fr); }
-        .rgb-stage-grid { min-height:0; display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,0.8fr); gap:0.65rem; }
-        .rgb-main-shell, .rgb-pixel-shell { min-height:0; padding:0.2rem; display:grid; place-items:center; overflow:hidden; }
-        .rgb-main-preview { width:auto; height:100%; max-width:100%; max-height:100%; aspect-ratio:1; border-radius:1rem; background:#000; box-shadow: inset 0 0 0 4px rgba(255,255,255,0.06); }
-        .rgb-pixel-canvas { width:auto; height:100%; max-width:100%; max-height:100%; aspect-ratio:1; display:block; image-rendering:pixelated; image-rendering:crisp-edges; }
-        .rgb-console { align-content:start; }
-        .rgb-slider-head { display:flex; justify-content:space-between; gap:0.5rem; align-items:center; }
-        .rgb-slider-head label { font-family:var(--kea-font-display); font-size:0.74rem; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:rgba(255,248,238,0.82); }
-        .rgb-slider-head span { font-family:var(--kea-font-mono); color:var(--kea-console-screen-text); }
-        .rgb-readout-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.4rem; }
-        .rgb-mini { min-height:0; padding:0.6rem; display:grid; gap:0.25rem; align-content:start; }
-        @media (max-width: 980px) {
-            .rgb-layout, .rgb-stage-grid { grid-template-columns:1fr; }
-            .rgb-stage-grid { grid-auto-rows:minmax(12rem,auto); }
-            .rgb-main-preview, .rgb-pixel-canvas { width:min(100%,12rem); height:auto; }
-        }
-        @media (max-width: 760px) { .rgb-readout-grid { grid-template-columns:1fr; } }
-    </style>
+    <link rel="stylesheet" href="modules/rgb-screen-lab/module.css" />
 </head>
 <body class="kea-page kea-module-page">
     <div class="kea-shell">
@@ -118,95 +93,7 @@
             <div class="kea-actions"><button class="kea-button kea-button--secondary" id="closeHelpButton" type="button">Close</button></div>
         </div>
     </div>
-    <script>
-        const mainPreview = document.getElementById("rgbMainPreview");
-        const pixelCanvas = document.getElementById("rgbPixelCanvas");
-        const pixelCtx = pixelCanvas.getContext("2d");
-        const redSlider = document.getElementById("redSlider");
-        const greenSlider = document.getElementById("greenSlider");
-        const blueSlider = document.getElementById("blueSlider");
-        const redValue = document.getElementById("redValue");
-        const greenValue = document.getElementById("greenValue");
-        const blueValue = document.getElementById("blueValue");
-        const redHud = document.getElementById("redHud");
-        const greenHud = document.getElementById("greenHud");
-        const blueHud = document.getElementById("blueHud");
-        const hexHud = document.getElementById("hexHud");
-        const blendHud = document.getElementById("blendHud");
-        const presetButtons = document.getElementById("presetButtons");
-        const resetButton = document.getElementById("resetButton");
-        const helpButton = document.getElementById("helpButton");
-        const closeHelpButton = document.getElementById("closeHelpButton");
-        const helpOverlay = document.getElementById("helpOverlay");
-        const presets = [
-            { label: "White", r:255, g:255, b:255 },
-            { label: "Amber", r:255, g:180, b:72 },
-            { label: "Magenta", r:255, g:64, b:200 },
-            { label: "Cyan", r:60, g:230, b:255 }
-        ];
-        function describeBlend(r, g, b) {
-            if (r > 220 && g > 220 && b > 220) return "Bright white";
-            if (r > 220 && g > 150 && b < 120) return "Warm amber";
-            if (r > 200 && b > 180 && g < 130) return "Magenta glow";
-            if (g > 180 && b > 180 && r < 130) return "Cyan glow";
-            if (r > 180 && g > 180 && b < 90) return "Yellow light";
-            return "Mixed light";
-        }
-        function toHex(r, g, b) { return `#${[r, g, b].map((value) => value.toString(16).padStart(2, "0")).join("").toUpperCase()}`; }
-        function drawSubpixels(r, g, b) {
-            pixelCtx.clearRect(0, 0, pixelCanvas.width, pixelCanvas.height);
-            pixelCtx.fillStyle = "#060606";
-            pixelCtx.fillRect(0, 0, pixelCanvas.width, pixelCanvas.height);
-            const colors = [`rgb(${r},0,0)`, `rgb(0,${g},0)`, `rgb(0,0,${b})`];
-            const pitch = Math.floor(Math.min(pixelCanvas.width, pixelCanvas.height) / 6);
-            const stripe = Math.floor((pitch - 8) / 3);
-            const marginX = Math.floor((pixelCanvas.width - pitch * 6) / 2);
-            const marginY = Math.floor((pixelCanvas.height - pitch * 6) / 2);
-            for (let row = 0; row < 6; row += 1) {
-                for (let col = 0; col < 6; col += 1) {
-                    colors.forEach((color, channel) => {
-                        pixelCtx.fillStyle = color;
-                        pixelCtx.fillRect(marginX + col * pitch + channel * (stripe + 2), marginY + row * pitch, stripe, pitch - 4);
-                    });
-                }
-            }
-        }
-        function render() {
-            const r = Number(redSlider.value);
-            const g = Number(greenSlider.value);
-            const b = Number(blueSlider.value);
-            redValue.textContent = String(r);
-            greenValue.textContent = String(g);
-            blueValue.textContent = String(b);
-            redHud.textContent = String(r);
-            greenHud.textContent = String(g);
-            blueHud.textContent = String(b);
-            hexHud.textContent = toHex(r, g, b);
-            blendHud.textContent = describeBlend(r, g, b);
-            mainPreview.style.background = `radial-gradient(circle at 35% 30%, rgba(255,255,255,0.28), transparent 30%), rgb(${r}, ${g}, ${b})`;
-            drawSubpixels(r, g, b);
-        }
-        function setPreset(preset) {
-            redSlider.value = String(preset.r);
-            greenSlider.value = String(preset.g);
-            blueSlider.value = String(preset.b);
-            render();
-        }
-        presets.forEach((preset) => {
-            const button = document.createElement("button");
-            button.type = "button";
-            button.className = "kea-button kea-button--secondary";
-            button.textContent = preset.label;
-            button.addEventListener("click", () => setPreset(preset));
-            presetButtons.appendChild(button);
-        });
-        [redSlider, greenSlider, blueSlider].forEach((slider) => slider.addEventListener("input", render));
-        resetButton.addEventListener("click", () => setPreset(presets[1]));
-        helpButton.addEventListener("click", () => { helpOverlay.hidden = false; });
-        closeHelpButton.addEventListener("click", () => { helpOverlay.hidden = true; });
-        helpOverlay.addEventListener("click", (event) => { if (event.target === helpOverlay) helpOverlay.hidden = true; });
-        setPreset(presets[1]);
-    </script>
+    <script src="modules/rgb-screen-lab/module.js"></script>
     <script src="scripts/keadigi-shell.js"></script>
     <script src="scripts/keadigi-dialogs.js"></script>
 </body>

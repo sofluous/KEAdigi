@@ -189,13 +189,12 @@ textarea {
 }
 
 .kea-back-link:hover,
-.kea-button:hover {
-  transform: translateY(-1px);
-  border-color: var(--kea-accent-strong);
+.kea-button:is(:hover, [data-kea-preview="hover"]) {
+  border-color: var(--kea-hover-border);
 }
 
 .kea-back-link:active,
-.kea-button:active {
+.kea-button:is(:active, [data-kea-preview="pressed"]) {
   transform: translateY(4px);
   box-shadow: var(--kea-shadow-pressed);
 }
@@ -214,9 +213,9 @@ textarea {
 }
 
 .kea-back-link:focus-visible,
-.kea-button:focus-visible {
-  outline: none;
-  box-shadow: var(--kea-shadow), var(--kea-focus-ring);
+.kea-button:is(:focus-visible, [data-kea-preview="focus"]) {
+  outline: 2px solid var(--kea-focus-color);
+  outline-offset: 2px;
 }
 
 input:focus-visible,
@@ -233,6 +232,8 @@ textarea:focus-visible {
 }
 
 .kea-surface {
+  --kea-copy-muted: var(--kea-text-muted);
+  color: var(--kea-text);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(245, 239, 227, 0.96)),
     var(--kea-panel-strong);
@@ -273,6 +274,45 @@ textarea:focus-visible {
   text-shadow: var(--kea-console-screen-glow);
 }
 
+.kea-control-deck {
+  background: var(--kea-surface-level-2);
+  color: var(--kea-on-gray);
+  border: var(--kea-card-border) solid var(--kea-border);
+  border-radius: var(--kea-case-radius);
+  box-shadow: var(--kea-key-shadow);
+  padding: var(--kea-space-2);
+}
+
+@media (forced-colors: none) {
+  @supports selector(::-webkit-scrollbar) {
+    .kea-page ::-webkit-scrollbar {
+      width: var(--kea-scrollbar-size);
+      height: var(--kea-scrollbar-size);
+    }
+
+    .kea-page ::-webkit-scrollbar-track,
+    .kea-page ::-webkit-scrollbar-corner {
+      background: var(--kea-scrollbar-track);
+    }
+
+    .kea-page ::-webkit-scrollbar-thumb {
+      border: 2px solid var(--kea-scrollbar-track);
+      border-radius: var(--kea-radius-sm);
+      background: var(--kea-scrollbar-thumb);
+    }
+
+    .kea-page ::-webkit-scrollbar-thumb:hover {
+      background: var(--kea-on-gray-muted);
+    }
+  }
+
+  @supports not selector(::-webkit-scrollbar) {
+    .kea-page {
+      scrollbar-color: var(--kea-scrollbar-thumb) var(--kea-scrollbar-track);
+    }
+  }
+}
+
 .kea-console-label {
   margin: 0;
   font-family: var(--kea-font-display);
@@ -293,7 +333,7 @@ textarea:focus-visible {
 }
 
 .kea-muted {
-  color: var(--kea-text-muted);
+  color: var(--kea-copy-muted, var(--kea-text-muted));
   font-size: var(--kea-text-copy);
   line-height: 1.42;
 }
@@ -423,6 +463,9 @@ textarea:focus-visible {
 }
 
 .kea-side-panel--reading {
+  --kea-focus-color: var(--kea-border);
+  --kea-copy-muted: var(--kea-text-muted);
+  color: var(--kea-text);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(245, 239, 227, 0.96)),
     var(--kea-panel-strong);
@@ -741,7 +784,7 @@ textarea:focus-visible {
   min-inline-size: 3rem;
 }
 
-.kea-pilot .kea-button[aria-pressed="true"] {
+.kea-toggle[aria-pressed="true"] {
   background: var(--kea-control-face-blue);
   color: var(--kea-text);
 }
@@ -770,6 +813,7 @@ textarea:focus-visible {
 }
 
 .kea-help-dialog {
+  --kea-focus-color: var(--kea-border);
   max-width: 38rem;
   margin: min(12vh, 6rem) auto 0;
   padding: var(--kea-space-4);
@@ -881,9 +925,9 @@ textarea:focus-visible {
 }
 
 /* Classroom console chrome */
-.kea-module-page,
-.kea-library-page {
-  background: var(--kea-rail-yellow);
+.kea-page.kea-module-page,
+.kea-page.kea-library-page {
+  background: var(--kea-surface-base);
 }
 
 .kea-page.kea-module-page,
@@ -924,8 +968,8 @@ textarea:focus-visible {
   padding: 0.7rem 0.85rem 0.95rem 0.65rem;
   gap: 0.65rem;
   border-inline-end: var(--kea-console-edge);
-  background: var(--kea-rail-face);
-  color: var(--kea-border);
+  background: var(--kea-surface-level-1);
+  color: var(--kea-on-gray);
 }
 
 .kea-module-page .kea-topbar {
@@ -968,6 +1012,7 @@ textarea:focus-visible {
 }
 
 .kea-module-page .kea-topbar .kea-button,
+.kea-library-rail .kea-button,
 .kea-category-nav a {
   min-height: var(--kea-control-target);
   padding: 0.45rem;
@@ -985,13 +1030,13 @@ textarea:focus-visible {
   box-shadow: 2px 2px 0 var(--kea-border);
 }
 
-.kea-module-page .kea-topbar .kea-button:is(:hover, :active),
-.kea-library-rail .kea-button:is(:hover, :active) {
+.kea-module-page .kea-topbar .kea-button:is(:hover, :active, [data-kea-preview="hover"], [data-kea-preview="pressed"]),
+.kea-library-rail .kea-button:is(:hover, :active, [data-kea-preview="hover"], [data-kea-preview="pressed"]) {
   transform: none;
 }
 
-.kea-module-page .kea-topbar .kea-button:active,
-.kea-library-rail .kea-button:active {
+.kea-module-page .kea-topbar .kea-button:is(:active, [data-kea-preview="pressed"]),
+.kea-library-rail .kea-button:is(:active, [data-kea-preview="pressed"]) {
   box-shadow: 1px 2px 0 var(--kea-border);
 }
 
@@ -1000,7 +1045,7 @@ textarea:focus-visible {
   background: var(--kea-rail-yellow);
 }
 
-.kea-module-page .kea-rail-toggle[aria-expanded="true"] {
+.kea-disclosure[aria-expanded="true"] {
   background: var(--kea-control-selected);
 }
 
@@ -1014,42 +1059,44 @@ textarea:focus-visible {
   translate: none;
 }
 
-.kea-module-page .kea-topbar .kea-rail-icon:focus-visible {
-  outline: 2px solid var(--kea-text);
+.kea-module-page .kea-topbar .kea-rail-icon:is(:focus-visible, [data-kea-preview="focus"]),
+.kea-library-rail .kea-button:is(:focus-visible, [data-kea-preview="focus"]) {
+  outline: 2px solid var(--kea-focus-color);
   outline-offset: 2px;
 }
 
-.kea-rail-icon::before {
+.kea-rail-icon::before,
+.kea-board-reset::before {
   content: "";
-  width: 1.4rem;
-  height: 1.4rem;
+  flex: 0 0 auto;
+  width: var(--kea-rail-icon-size);
+  height: var(--kea-rail-icon-size);
+  box-sizing: border-box;
+  forced-color-adjust: none;
   background: currentColor;
   mask: var(--kea-rail-icon) center / contain no-repeat;
 }
 
 .kea-rail-library {
-  --kea-rail-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 9l9-6 9 6M5 9v11h14V9M9 20v-6h6v6'/%3E%3C/svg%3E");
+  --kea-rail-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 9l9-6 9 6M5 9v11h14V9M9 20v-6h6v6'/%3E%3C/svg%3E");
 }
 
 .kea-rail-toggle {
-  --kea-rail-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='14' rx='2'/%3E%3Cpath d='M9 5v14M13 9h4m-4 4h4'/%3E%3C/svg%3E");
+  --kea-rail-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='14' rx='2'/%3E%3Cpath d='M9 5v14M13 9h4m-4 4h4'/%3E%3C/svg%3E");
 }
 
 .kea-library-title {
   margin: 0;
-  padding: 0.5rem;
+  padding: 0.2rem 0.25rem;
   font-family: var(--kea-font-display);
-  font-size: 1.75rem;
+  font-size: 1.15rem;
   font-weight: 800;
-  line-height: 0.95;
+  line-height: 1.05;
   text-transform: uppercase;
 }
 
 .kea-component-link {
   margin-top: auto;
-  min-height: var(--kea-control-target);
-  border-radius: var(--kea-case-radius);
-  box-shadow: var(--kea-key-shadow);
 }
 
 .kea-category-nav {
@@ -1068,10 +1115,51 @@ textarea:focus-visible {
   text-transform: none;
 }
 
+.kea-library-rail .kea-button {
+  display: flex;
+  justify-content: flex-start;
+  gap: var(--kea-space-1);
+  padding-inline: var(--kea-space-1);
+  background: var(--kea-rail-key-face);
+  font-size: 0.78rem;
+  line-height: 1.1;
+  text-align: start;
+  text-transform: uppercase;
+}
+
+.kea-library-rail .kea-tab[aria-selected="true"] {
+  background: var(--kea-rail-yellow);
+}
+
+.kea-library-rail a[href="#concept"] {
+  --kea-rail-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 18h6m-5 3h4M8 15c0-2-3-3-3-7a7 7 0 1 1 14 0c0 4-3 5-3 7z'/%3E%3C/svg%3E");
+}
+
+.kea-library-rail a[href="#tool"] {
+  --kea-rail-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 16 12-12 4 4L8 20H4zm10-10 4 4'/%3E%3C/svg%3E");
+}
+
+.kea-library-rail a[href="#practice"] {
+  --kea-rail-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 4h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm2 8 3 3 5-6'/%3E%3C/svg%3E");
+}
+
+.kea-library-rail a[href="#game"] {
+  --kea-rail-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 8h10a4 4 0 0 1 4 4v3a2 2 0 0 1-3 2l-2-2H8l-2 2a2 2 0 0 1-3-2v-3a4 4 0 0 1 4-4zm0 4h4m-2-2v4m7-2h.01m2 2h.01'/%3E%3C/svg%3E");
+}
+
+.kea-library-rail a[href="#activity"] {
+  --kea-rail-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m3 8 9-5 9 5-9 5zm0 4 9 5 9-5M3 16l9 5 9-5'/%3E%3C/svg%3E");
+}
+
+.kea-component-link {
+  --kea-rail-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 4h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm6 0v16M4 12h16'/%3E%3C/svg%3E");
+}
+
 .kea-library-page .kea-dashboard-section {
   padding: clamp(0.85rem, 2vw, 1.6rem);
   gap: 1.35rem;
-  background: var(--kea-rail-face);
+  background: var(--kea-surface-level-1);
+  color: var(--kea-on-gray);
   box-shadow: var(--kea-console-offset);
 }
 
@@ -1083,7 +1171,7 @@ textarea:focus-visible {
 }
 
 .kea-library-page .kea-dashboard-section__title {
-  color: var(--kea-border);
+  color: inherit;
   font-size: clamp(1.55rem, 4vw, 3.75rem);
   line-height: 1;
   letter-spacing: -0.04em;
@@ -1100,7 +1188,7 @@ textarea:focus-visible {
   gap: 0.7rem;
   min-width: 0;
   background: var(--kea-panel);
-  color: var(--kea-border);
+  color: var(--kea-text);
   border: var(--kea-console-edge);
   border-radius: var(--kea-case-radius);
   box-shadow: var(--kea-console-offset);
@@ -1125,9 +1213,12 @@ textarea:focus-visible {
 .kea-library-page #game { --kea-card-accent: var(--kea-game-accent); }
 .kea-library-page #activity { --kea-card-accent: var(--kea-activity-accent); }
 
-.kea-card:hover,
-.kea-card:focus-visible {
-  background: var(--kea-card-accent);
+.kea-card:hover {
+  background: color-mix(in srgb, var(--kea-panel) 92%, var(--kea-card-accent));
+}
+
+.kea-card p {
+  color: var(--kea-text-muted);
 }
 
 .kea-card h3 {
@@ -1135,13 +1226,14 @@ textarea:focus-visible {
   font-weight: 900;
 }
 
-.kea-category-nav a:focus-visible,
+.kea-category-nav a:is(:focus-visible, [data-kea-preview="focus"]),
 .kea-card:focus-visible {
-  outline: 3px solid var(--kea-border);
-  outline-offset: 3px;
+  outline: 2px solid var(--kea-focus-color);
+  outline-offset: 2px;
 }
 
-.kea-module-page {
+.kea-module-page,
+.kea-library-page {
   user-select: none;
 }
 
@@ -1169,13 +1261,8 @@ textarea:focus-visible {
   padding: 0;
 }
 
-.kea-board-reset::before {
-  content: "";
-  width: 1.35rem;
-  height: 1.35rem;
-  background: currentColor;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 11a9 9 0 1 1 2.8 7.5M3 5v6h6'/%3E%3C/svg%3E") center / contain no-repeat;
-  forced-color-adjust: none;
+.kea-board-reset {
+  --kea-rail-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 11a9 9 0 1 1 2.8 7.5M3 5v6h6'/%3E%3C/svg%3E");
 }
 
 .kea-board-controls {
@@ -1301,6 +1388,8 @@ textarea:focus-visible {
 
 
 .kea-module-page .kea-console-frame {
+  --kea-copy-muted: var(--kea-on-gray-muted);
+  color: var(--kea-on-gray);
   border-radius: var(--kea-module-radius);
   box-shadow: inset 0 2px 0 rgb(255 255 255 / 16%), inset 0 -4px 0 rgb(0 0 0 / 32%);
 }
@@ -1310,6 +1399,11 @@ textarea:focus-visible {
 .kea-module-page .kea-side-panel--reading {
   border-radius: var(--kea-module-radius);
   box-shadow: var(--kea-key-shadow), inset 0 2px 0 rgb(255 255 255 / 18%);
+}
+
+.kea-module-page :is(.kea-console-surface, .kea-side-panel--console, .kea-console-well) {
+  --kea-copy-muted: var(--kea-on-gray-muted);
+  color: var(--kea-on-gray);
 }
 
 .kea-module-page .kea-console-well,
@@ -1323,20 +1417,20 @@ textarea:focus-visible {
   text-shadow: none;
 }
 
-.kea-module-page .kea-content .kea-button:not(:disabled):not(.kea-button--ghost) {
+.kea-module-page .kea-content .kea-button:not(:disabled):not(:where(.kea-topbar *, .kea-library-rail *)):not(.kea-button--ghost) {
   border-radius: var(--kea-module-radius);
   box-shadow: var(--kea-key-shadow);
   text-shadow: none;
 }
 
-.kea-module-page .kea-content .kea-button:not(:disabled):active {
+.kea-module-page .kea-content .kea-button:not(:disabled):not(:where(.kea-topbar *, .kea-library-rail *)):is(:active, [data-kea-preview="pressed"]) {
   translate: 2px 2px;
   transform: none;
   box-shadow: 1px 2px 0 var(--kea-border);
 }
 
-.kea-module-page .kea-content :is(.kea-button, .kea-input, .zoom-viewport):focus-visible {
-  outline: 3px solid var(--kea-module-focus);
+.kea-module-page .kea-content :is(.kea-button, .kea-input, .zoom-viewport):not(:where(.kea-topbar *, .kea-library-rail *)):is(:focus-visible, [data-kea-preview="focus"]) {
+  outline: 2px solid var(--kea-focus-color);
   outline-offset: 2px;
 }
 

@@ -11,6 +11,7 @@
 
 .kea-gallery-panel {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--kea-space-3);
   align-content: start;
   padding: var(--kea-space-3);
@@ -36,7 +37,7 @@
 
 .kea-gallery .kea-card-grid {
   justify-self: start;
-  max-width: 18rem;
+  width: min(100%, 18rem);
 }
 
 .kea-gallery-well {
@@ -45,4 +46,120 @@
 
 .kea-gallery-large .kea-hud__value {
   font-size: 1.5rem;
+}
+
+#foundations {
+  margin-block-end: var(--kea-space-3);
+}
+
+.kea-swatch-grid, .kea-type-samples {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  gap: var(--kea-space-2);
+  margin: 0;
+  padding: 0;
+}
+
+.kea-swatch {
+  border: var(--kea-console-edge);
+  border-radius: var(--kea-case-radius);
+  padding: var(--kea-space-2);
+  background: var(--swatch);
+  color: var(--swatch-ink, var(--kea-on-gray));
+}
+
+.kea-swatch--light {
+  --swatch-ink: var(--kea-text);
+}
+
+.kea-swatch dt {
+  font-weight: 800;
+}
+
+.kea-swatch dd {
+  margin: var(--kea-space-1) 0 0;
+}
+
+.kea-type-samples {
+  list-style: none;
+}
+
+.kea-type-samples li {
+  display: grid;
+  gap: var(--kea-space-1);
+  padding: var(--kea-space-2);
+}
+
+.kea-type-samples span { color: var(--kea-on-gray-muted); }
+.kea-type-display { font: 800 1.25rem var(--kea-font-display); }
+.kea-type-body { font: 400 1rem var(--kea-font-sans); }
+.kea-type-mono { font: 700 1rem var(--kea-font-mono); color: var(--kea-console-screen-text); }
+
+.kea-button-matrix-panel {
+  margin-block-end: var(--kea-space-3);
+}
+
+.kea-button-matrix-panel p {
+  margin: 0;
+  color: var(--kea-on-gray-muted);
+}
+
+.kea-matrix-scroll {
+  overflow-x: auto;
+  min-inline-size: 0;
+  padding-block-end: var(--kea-space-1);
+}
+
+.kea-matrix-scroll:focus-visible {
+  outline: 2px solid var(--kea-module-focus);
+  outline-offset: 2px;
+}
+
+.kea-button-matrix {
+  width: 100%;
+  min-width: 65rem;
+  border-spacing: 0;
+  text-align: start;
+}
+
+.kea-button-matrix :is(th, td) {
+  border-block-end: 1px solid var(--kea-border);
+  padding: var(--kea-space-1);
+}
+
+.kea-button-matrix tbody th {
+  position: sticky;
+  inset-inline-start: 0;
+  z-index: 1;
+  background: var(--kea-surface-level-2);
+  min-width: 8rem;
+}
+
+.kea-matrix-purpose {
+  display: block;
+  margin-block-start: 0.25rem;
+  color: var(--kea-on-gray-muted);
+  font-weight: 400;
+}
+
+.kea-gallery .kea-matrix-sample {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: auto;
+  min-height: 4rem;
+  gap: 0;
+  padding: 0;
+  overflow: visible;
+  background: transparent;
+  border: 0;
+}
+
+.kea-matrix-missing {
+  font-weight: 800;
+  color: var(--kea-rail-yellow);
+}
+
+.kea-matrix-na {
+  color: var(--kea-on-gray-muted);
 }

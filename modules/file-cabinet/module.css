@@ -1,0 +1,253 @@
+        :root {
+            --file-slot-height: 5rem;
+        }
+
+        .file-cabinet-page {
+            display: grid;
+            grid-template-rows: auto minmax(0, 1fr);
+            gap: var(--kea-space-3);
+            min-height: 0;
+            padding: 1rem;
+            overflow: hidden;
+        }
+
+        .file-cabinet-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
+            gap: var(--kea-space-3);
+            min-height: 0;
+        }
+
+        .file-board,
+        .file-console {
+            min-height: 0;
+            padding: 1rem;
+            display: grid;
+            gap: var(--kea-space-3);
+        }
+
+        .file-board {
+            grid-template-rows: auto auto minmax(0, 1fr);
+            align-content: start;
+        }
+
+        .file-prompt {
+            min-height: 7rem;
+        }
+
+        .file-tray-section,
+        .folder-section {
+            display: grid;
+            gap: 0.75rem;
+            min-height: 0;
+        }
+
+        .file-tray {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-rows: repeat(2, var(--file-slot-height));
+            gap: 0.7rem;
+            min-height: calc((var(--file-slot-height) * 2) + 0.7rem);
+        }
+
+        .file-slot {
+            min-height: var(--file-slot-height);
+            height: var(--file-slot-height);
+            display: grid;
+        }
+
+        .file-card,
+        .file-placeholder {
+            width: 100%;
+            height: 100%;
+            border: 4px solid var(--kea-border);
+            border-radius: 1rem;
+        }
+
+        .file-card {
+            padding: 0.75rem 0.8rem;
+            display: grid;
+            gap: 0.45rem;
+            justify-items: start;
+            align-content: start;
+            text-align: left;
+        }
+
+        .file-card.active {
+            border-color: var(--kea-accent-strong);
+        }
+
+        .file-card__tag {
+            display: inline-flex;
+            align-items: center;
+            min-height: 1.5rem;
+            padding: 0.15rem 0.45rem;
+            border: 2px solid var(--kea-border);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.82);
+            font-family: var(--kea-font-display);
+            font-size: 0.68rem;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .file-card__name,
+        .file-card__type {
+            margin: 0;
+        }
+
+        .file-card__name {
+            font-family: var(--kea-font-display);
+            font-size: 0.9rem;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--kea-border);
+            word-break: break-word;
+        }
+
+        .file-card__type {
+            font-size: 0.76rem;
+            line-height: 1.2;
+            color: var(--kea-text-muted);
+        }
+
+        .file-placeholder {
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04)),
+                rgba(0, 0, 0, 0.12);
+            border-style: dashed;
+            opacity: 0.44;
+        }
+
+        .folder-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.8rem;
+            min-height: 0;
+        }
+
+        .folder-card {
+            min-height: 0;
+            padding: 0.8rem;
+            display: grid;
+            grid-template-rows: auto 1fr;
+            gap: 0.7rem;
+        }
+
+        .folder-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+        }
+
+        .folder-name,
+        .folder-hint {
+            margin: 0;
+        }
+
+        .folder-name {
+            font-family: var(--kea-font-display);
+            font-size: 0.98rem;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: rgba(255, 248, 238, 0.95);
+        }
+
+        .folder-hint {
+            font-size: 0.74rem;
+            line-height: 1.25;
+            color: rgba(255, 248, 238, 0.8);
+        }
+
+        .folder-mark {
+            display: inline-grid;
+            place-items: center;
+            min-width: 2.75rem;
+            min-height: 2rem;
+            padding: 0.2rem 0.45rem;
+            border: 3px solid var(--kea-border);
+            border-radius: 0.8rem;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(226, 223, 213, 0.98));
+            color: var(--kea-border);
+            font-family: var(--kea-font-display);
+            font-size: 0.76rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .folder-slots {
+            display: grid;
+            grid-template-rows: repeat(2, var(--file-slot-height));
+            gap: 0.7rem;
+            min-height: 0;
+        }
+
+        .folder-slot {
+            min-height: var(--file-slot-height);
+            height: var(--file-slot-height);
+            display: grid;
+        }
+
+        .folder-drop {
+            width: 100%;
+            height: 100%;
+            padding: 0.55rem;
+            display: grid;
+            place-items: center;
+            border: 4px dashed rgba(255, 248, 238, 0.3);
+            border-radius: 0.95rem;
+            background: rgba(10, 11, 14, 0.24);
+            color: rgba(255, 248, 238, 0.55);
+            text-align: center;
+            cursor: pointer;
+            transition:
+                border-color var(--kea-motion-fast) var(--kea-ease-out),
+                background var(--kea-motion-fast) var(--kea-ease-out);
+        }
+
+        .folder-drop:hover,
+        .folder-drop:focus-visible {
+            border-color: rgba(141, 255, 156, 0.72);
+            background: rgba(20, 24, 29, 0.5);
+            outline: none;
+        }
+
+        .folder-drop--filled {
+            border-style: solid;
+            border-color: var(--kea-border);
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(245, 239, 227, 0.98)),
+                var(--kea-panel-strong);
+            color: var(--kea-text);
+            cursor: default;
+        }
+
+        .folder-drop--filled:hover,
+        .folder-drop--filled:focus-visible {
+            border-color: var(--kea-border);
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(245, 239, 227, 0.98)),
+                var(--kea-panel-strong);
+        }
+
+        @media (max-width: 980px) {
+            .file-cabinet-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .file-tray,
+            .folder-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .folder-card {
+                grid-template-rows: auto auto;
+            }
+        }
